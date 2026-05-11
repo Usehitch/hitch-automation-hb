@@ -67,17 +67,6 @@ npm install
 npx playwright install chromium
 ```
 
-Create a `.env` file in the project root:
-
-```env
-BASE_URL=https://hb-staging-pos.onrender.com
-EMAIL=<broker-portal-email>
-PASSWORD=<broker-portal-password>
-OTP_SECRET=<totp-secret>
-```
-
----
-
 ## Running Tests
 
 | Command | Description |
@@ -98,38 +87,6 @@ npx playwright test tests/myloans.spec.js
 ## Authentication
 
 `auth.setup.js` runs once before the test suite. It logs in with email/password + TOTP and saves the browser session to `.playwright/.auth/user.json`. All other tests reuse this session — no repeated logins.
-
----
-
-## Test Specs
-
-### `pre-qual-manual.spec.js`
-Covers the full 5-step broker pre-qualification flow via the portal:
-1. Application Details (property, applicant, income, loan purpose)
-2. Mortgages & Liens
-3. Offer Review (loan amount, debt payoff plan, upfront draw)
-4. Loan Officer Certifications
-5. Confirmation
-
-Runs twice — once for a solo applicant, once with a co-borrower.
-
-### `myloans.spec.js`
-Covers the My Loans Active dashboard:
-- Page content and pipeline section headings
-- Search by address, filter modal (all dropdowns, status options, state options)
-- MLO Certification — checks certifications, signs, submits, verifies the broker certification PDF opens
-- Loan Detail — tabs, sub-nav, overview tiles, action buttons
-
-### `econsent.spec.js`
-Creates a co-borrower application end-to-end, then navigates to the loan's Documents tab and verifies:
-- The `esigned_method_consent` section contains 2 documents
-- The co-borrower's Credit Inquiry consent (identified by their email and `coborrowerMethodConsentSignature`) is accessible
-
-### `twn-monitor.spec.js`
-Uses the broker's shareable app link to open the borrower-facing DTC flow in a new tab and verifies that **The Work Number** auto-populates employer and income data from the sandbox SSN.
-
-### `login.spec.js`
-Smoke test for valid credential + OTP authentication.
 
 ---
 
