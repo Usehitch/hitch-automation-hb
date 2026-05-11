@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "mcp__Claude_in_Chrome__browser_batch",
+      "mcp__Claude_in_Chrome__computer",
+      "WebFetch(domain:linear.app)",
+      "Bash(not exist *)",
+      "Bash(Get-ChildItem \"D:\\\\Projects\\\\Automation\\\\Hitch-Playwright\\\\homebridge\" -Exclude node_modules)",
+      "Bash(Select-Object Name, PSIsContainer)"
+    ]
+  }
+}

@@ -1,0 +1,71 @@
+name: TWN Vendor Monitor
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'   # every 30 minutes
+  workflow_dispatch:           # allow manual trigger from GitHub UI
+
+jobs:
+  twn-monitor:
+    name: The Work Number — Integration Check
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Run TWN monitor test
+        id: twn_test
+        run: npx playwright test tests/twn-monitor.spec.js --reporter=list
+        env:
+          BASE_URL:   ${{ secrets.BASE_URL }}
+          EMAIL:      ${{ secrets.EMAIL }}
+          PASSWORD:   ${{ secrets.PASSWORD }}
+          OTP_SECRET: ${{ secrets.OTP_SECRET }}
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: twn-monitor-report-${{ github.run_number }}
+          path: playwright-report/
+          retention-days: 7
+
+      # -----------------------------------------------------------------------
+      # Slack alert — only fires when the test step fails.
+      # Requires a repo/org secret named SLACK_WEBHOOK_URL.
+      # Set it up at: Settings → Secrets → Actions → New repository secret
+      # Webhook guide: https://api.slack.com/messaging/webhooks
+      # -----------------------------------------------------------------------
+      - name: Notify Slack on failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          payload: |
+            {
+              "text": "🚨 *TWN Integration Alert* — The Work Number check failed on staging.",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "🚨 *TWN Integration Alert*\n\nThe Work Number income verification is *not working* on staging. Automated employer-data population may be broken.\n\n*Run:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View details>\n*Triggered:* `${{ github.event_name }}`\n*Time:* ${{ github.run_started_at }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL:  ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
