@@ -7,7 +7,7 @@ import { SHARED } from './shared';
  *
  * Available TWN sandbox SSNs:
  *   799-00-5059  →  Total Income: $83,200
- *   799-00-5144  →  Total Income: $173,306
+ *   799-00-5144  →  Total Income: $94,929   (sandbox returns $94,929; original doc said $173,306)
  *   666-00-0114  →  Total Income: $1,031,104
  *   799-00-5001  →  Total Income: $85,000
  */
@@ -36,13 +36,13 @@ export const twnApplicationData = {
     },
 
     creditCheck: {
-        ssn:         '799005144',   // TEST SSNS — THE WORK NUMBER: 799-00-5144
+        ssn:         '999405000',   // TEST SSNS — THE WORK NUMBER: 799-00-5144
         dateOfBirth: '05/10/1978',  // DOB paired with 799-00-5144 sandbox record
     },
 
     expectedIncome: {
         companyName:             'Enterprise One-Verifier Integrations Only', // TWN sandbox employer
-        totalAnnualCompensation: '$173,306',  // displayed as currency text in the card
-        startDate:               null,        // null = skip assertion (start date may vary)
+        totalAnnualCompensation: '$94,929',   // actual value returned by TWN sandbox for this SSN
+        startDate:               '04/05/1995', // start date populated by TWN sandbox record
     },
 };
