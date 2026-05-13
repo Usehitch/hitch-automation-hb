@@ -12,7 +12,10 @@ homebridge/
 │   ├── auth.setup.js             # Login once, save session to .playwright/.auth/
 │   ├── login.spec.js             # Login flow
 │   ├── pre-qual-manual.spec.js   # Pre-Qual manual application flow (solo + co-borrower)
-│   ├── myloans.spec.js           # My Loans dashboard — content, search, filter, certify, view
+│   ├── myloans.spec.js           # My Loans — Active tab: content, search, filter, certify, view
+│   ├── adversed.spec.js          # My Loans — Adversed tab: structure, search, filter, certify, view
+│   ├── inactive.spec.js          # My Loans — Inactive tab: structure, search, filter, certify, view
+│   ├── shadow-borrower-view.spec.js  # Shadow Borrower View — modal, cancel, read-only new-tab flow
 │   ├── econsent.spec.js          # E-Consent — co-borrower method consent document
 │   └── twn-monitor.spec.js       # Vendor monitor — The Work Number income verification
 │
@@ -28,7 +31,8 @@ homebridge/
 │   ├── My Loans/
 │   │   ├── ActivePage.js
 │   │   ├── MloCertificationModal.js
-│   │   └── LoanDetailPage.js
+│   │   ├── LoanDetailPage.js
+│   │   └── ShadowBorrowerViewPage.js
 │   └── The Work Number/
 │       └── TWNPage.js
 │
@@ -112,3 +116,14 @@ Requires an additional secret:
 | Secret | Description |
 |---|---|
 | `SLACK_WEBHOOK_URL` | Incoming webhook for failure notifications |
+
+
+---
+
+## Local Development (VS Code)
+
+Install the **Playwright Test for VSCode** extension (Microsoft) to run, debug, and step through individual tests directly from the editor without using the terminal.
+
+1. Open the Extensions panel (`Ctrl+Shift+X` / `Cmd+Shift+X`)
+2. Search for **Playwright Test for VSCode** and install it
+3. Open the Testing panel (`Ctrl+Shift+T` / `Cmd+Shift+T`) to browse and run specs

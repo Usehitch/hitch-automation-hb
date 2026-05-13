@@ -76,7 +76,7 @@ test.describe('E-Consent', () => {
         // Step 7 — Documents tab: verify co-borrower method consent
         await loanDetailPage.clickDocumentsTab();
         await loanDetailPage.verifyESignedMethodConsent();
-        await loanDetailPage.openCoBorrowerMethodConsent(coBorrowerApplicationData.coBorrower);
-        await loanDetailPage.verifyCoBorrowerConsentDoc(coBorrowerApplicationData.coBorrower);
+        await loanDetailPage.openCoBorrowerMethodConsent();
+        await loanDetailPage.verifyCoBorrowerConsentDoc();
     });
 });

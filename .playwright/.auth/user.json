@@ -2,7 +2,7 @@
   "cookies": [
     {
       "name": "next-auth.applicant-csrf-token",
-      "value": "948b5d89cdfbfb882b9f9b064531825139f030924fe71ee0b958f5fb419e25c4%7C8442d1fa46bf8ba2bcc9f28dcb4aac22ea7dbd274ab4eb631df5ba8545bed305",
+      "value": "4edd8e22645f0b45175a98fcf8c115bedfd03112c6a1be8f96ea3202a5565bee%7C094466a6b83c3a2962373f29b2a4b1d85cb326ce41a9987273b2aaad612897a1",
       "domain": "hb-staging-pos.onrender.com",
       "path": "/",
       "expires": -1,
@@ -22,50 +22,50 @@
     },
     {
       "name": "__cf_bm",
-      "value": "zmGk8iyPZAbnGxdDi9AEdVPNexQTY3.a_WInejefJxE-1778608256.7591023-1.0.1.1-Imz8u42q.4KYJZgtyKBiF_VwY1O6bFzgYP2Gv98tk25xGvetN4mCV9Tnsgfp_rlOygK.PLw.DYebBDdcGJjWEyDbe5DvksyYPIE3ZamYBPmKT89pfaZ5Ucje9YU2iex8",
+      "value": "nlWrMJ93ipkIDsxqrvVUYktINtBcb73iDx3i_KAobkI-1778699792.4083626-1.0.1.1-.o2ZWytANHN2C4r15luNY6bEDEkM_mw8Xy2xeehfTYgUNOym23k9CPY0eGB0agcoTaEX4.crxGGvGuL596oHx067gOk6faW.MZ_w8V6P2FPk9XskpK6ySkdBeRbFFjSq",
       "domain": ".argyle.com",
       "path": "/",
-      "expires": 1778610057.045983,
+      "expires": 1778701592.370023,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "__cf_bm",
-      "value": "IEMFJUYA91hJD0JrwAwenET5KQDz6m_5azsII6Q_Bak-1778608258.386685-1.0.1.1-KTuMpo5De8TqtEb84Ga.FKrRPbwztTqSefOrhdPc.OfAAz9denvM9J1le_P5CCsMXOz28TWwlPZys48Q7NhaV5BUBuO14Mx1pYTV0yKkUyXtQuh31XhhibtMj0Qdp.my",
+      "value": "48dIrou1AXTOSg4_TYX6VZk2kjiYBBTGTrriCdazS7A-1778699794.0879574-1.0.1.1-2AmnHnJOW8_AwmA4dGWgjFsNs1hwHLJ4pDWQfr.GvufoL04wZmrsHuL4Tx1.VvlqdETtKOhixDFGp3X8bOF_1gOjSGtKKH1vjt9h4iiTiySqY2BnHYxE4RPLnlkMmGj9",
       "domain": ".hs-scripts.com",
       "path": "/",
-      "expires": 1778610058.363519,
+      "expires": 1778701594.986763,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "CLID",
-      "value": "8f56d69a15d7457db91e3a1a5f9a0fdd.20260512.20270512",
+      "value": "d887900aa60f4c66b364e83f0fb18d14.20260513.20270513",
       "domain": "www.clarity.ms",
       "path": "/",
-      "expires": 1810144260.358508,
+      "expires": 1810235795.998318,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "__cf_bm",
-      "value": "nd_KNBVZRd5h6wkwQAh2IZ9cukEea21_cVX1tN906Bg-1778608264.6335776-1.0.1.1-o5K3kchvWk1I0l.qwhvN9aZ493XcqV1fcTd8IE7LYJiOd_JgBPkHCqihU3WaJiMseW7j.lEqcAgUCChr0BseFUhmdqVuNdJjzYEnlHKwkbPxeQN.wI_Yf_p8yI78P8Sw",
+      "value": "A5T6YtMv87DkxjA9hBrfsUAGP3yxVbVz4xF5rTn4yNI-1778699797.952324-1.0.1.1-4S6Dq.OXhcTOnF1SXX7KVZtJvaptL6RVykC2jgj1xVql6mToZ3lgNNaaD6WE3Wi474sIHxY1uTaKd5IfaMYW0Kl2EsQxHxIg61B.hOvNqZmhSjsyUbAJ1cdW_ZghIgkg",
       "domain": ".hs-analytics.net",
       "path": "/",
-      "expires": 1778610064.61292,
+      "expires": 1778701597.913323,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "MUID",
-      "value": "0202558EC4BF69E42F7942D9C5AB6807",
+      "value": "30AC9A6FE450668411A18D37E5B56703",
       "domain": ".bing.com",
       "path": "/",
-      "expires": 1812304264.887422,
+      "expires": 1812395798.360214,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
@@ -75,17 +75,27 @@
       "value": "0",
       "domain": ".c.bing.com",
       "path": "/",
-      "expires": 1779213064.887525,
+      "expires": 1779304598.360356,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "SRM_B",
-      "value": "0202558EC4BF69E42F7942D9C5AB6807",
+      "value": "30AC9A6FE450668411A18D37E5B56703",
       "domain": ".c.bing.com",
       "path": "/",
-      "expires": 1812304264.88759,
+      "expires": 1812395798.360402,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "AWSALBCORS",
+      "value": "IZdDfZkIZkwJzc0IHG927cC7/vx0P3I09K/YP4UHawPJzUGMxpKvA733PvyaJiA+Deroa80WbWtjzzYGD3U02Q24YNfb81pK8FcudSMJxxdz/7wnUbYCavpyWazZ",
+      "domain": "app.usecanopy.com",
+      "path": "/",
+      "expires": 1779304598.433724,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
@@ -102,10 +112,10 @@
     },
     {
       "name": "MUID",
-      "value": "0202558EC4BF69E42F7942D9C5AB6807",
+      "value": "30AC9A6FE450668411A18D37E5B56703",
       "domain": ".clarity.ms",
       "path": "/",
-      "expires": 1812304264.95879,
+      "expires": 1812395798.464202,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
@@ -115,7 +125,7 @@
       "value": "0",
       "domain": ".c.clarity.ms",
       "path": "/",
-      "expires": 1779213064.958835,
+      "expires": 1779304598.464284,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
@@ -125,24 +135,14 @@
       "value": "0",
       "domain": ".c.clarity.ms",
       "path": "/",
-      "expires": 1778608864.958854,
-      "httpOnly": false,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "AWSALBCORS",
-      "value": "rFX0E+NIXh/MPbOi61Mxz+sxtmzfmwsDbzlhU8drdf/+icwvB39ahsgMwuQxm6IFmlKPEKJxjEeyhHKtmV167DJp3MX23x5bZsnYcPTgIoVErBzR45uWIMkfGiY9",
-      "domain": "app.usecanopy.com",
-      "path": "/",
-      "expires": 1779213065.083354,
+      "expires": 1778700398.464314,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "next-auth.portal-csrf-token",
-      "value": "38eb0c64109430e97b8d7767eb07487a38be1c8e7c47b6529b69beca9e666121%7C46fcfb54bc6472b136f8a653f3ac9a20f393838ceb6b86c56803feb21d2c9be3",
+      "value": "15ccb94b31d8c6c0d88c787782301f8d97cb2905a5a75fc065396e09003214bc%7Cb8974349c0627f6d5d2309ca041aa84a05d3a281ad4de4c23870ca02ec71e1ca",
       "domain": "hb-staging-pos.onrender.com",
       "path": "/",
       "expires": -1,
@@ -162,10 +162,10 @@
     },
     {
       "name": "next-auth.portal-session-token",
-      "value": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..vDCwmn0uhbEY_hft.B7mzwyPDVPjP1VjuIfIlmiQDOa4wcLPkIIc-5wluSvKj9LRNURcuEcKx0l5sXc2NGWCFSILTF9cxGXzE0QwjNDrVHGq3NBOZRA-Nm3e0UzUhKoTfadrUouPapAZZzVoX0luu-dxQ1peaQ-AEbywEH-3UNAj8sG_x-6VJk7FvIuU-lZXjPGo2sVH0-KxW38sURwaryuhqIJW82J8sMkQtntj8Q1iS0vl150tFKtWeLQL6flC-aRzgdijCpgsAJBvxTuBeQbdhdzr95j7JzpFameBVEaZXCMnQC5GSMlXCiXZsqbXRYxr3K_qGJ2pATJos5BoO2XVfjpr3ZHP6j5LHSJ_9kW5AbF38mxyEZowLOXuHlEgJ8kheuvcEzCpvQSM.RGSO2jKzPz0IqqnmUB_3nQ",
+      "value": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..BstEZ7-86XAULNAG.T6gPySikG5MuZSR1bUNJqEfjJ-g1MN9hlWg_TWVlewS8ANt-h29QsrRhpWLgo_9zEkPF_DVTaTy7h3xEyB9fiZIwadP-8Z6qXfwNOCw-vEOX6fVMiAMtBYw6Doj8ntgq_1xLNMZa9WE94GomHConcExDIpohFdTwTvBrIcnwtPA629LFHo9b7IuV2arGpO6w-M_Ipot-h8L9jLxqSA3rB-6oRJxGMhorUu-SE2mrxn--PT3PIwaeCpaFQSRMchbah5AzeHklbf526kkRs7f_qvS4PFGaKntbikUgwGYWSe2ZCvCC0VelKiRSOxCKOXQLCif3C7b40PPwmbXuHz1bQ5CDq2v5IjGETcuGpYIcY-RUSs299-WRMbkDfwB4fr4.MJi9T95ErVDJ4CwiuI5bhg",
       "domain": "hb-staging-pos.onrender.com",
       "path": "/",
-      "expires": 1781200273.107453,
+      "expires": 1781291806.785709,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -177,15 +177,15 @@
       "localStorage": [
         {
           "name": "nextauth.message",
-          "value": "{\"event\":\"session\",\"data\":{\"trigger\":\"getSession\"},\"timestamp\":1778608258}"
+          "value": "{\"event\":\"session\",\"data\":{\"trigger\":\"getSession\"},\"timestamp\":1778699793}"
         },
         {
           "name": "ZD-suid",
-          "value": "{\"id\":\"99ae96ef37984bee9d5b21c9b2c09cce\",\"expiry\":1778609158796,\"tabs\":{\"count\":1,\"expiry\":0}}"
+          "value": "{\"id\":\"1425cae77de4468498c0766001d1ee5d\",\"expiry\":1778700694882,\"tabs\":{\"count\":1,\"expiry\":0}}"
         },
         {
           "name": "_cobrowse_device_id",
-          "value": "{\"value\":{\"id\":\"a456c8b5-cb1e-49de-a7f3-f4ef1d51ca05\",\"token\":\"8bb97cae-c285-4279-8905-166493ac8efe\"}}"
+          "value": "{\"value\":{\"id\":\"8b996249-d7a0-4ec3-871e-a5b31902f0a8\",\"token\":\"8e9e3d55-5655-4f58-bf7d-4916fb306718\"}}"
         },
         {
           "name": "email",
@@ -206,7 +206,7 @@
       "localStorage": [
         {
           "name": "rc::a",
-          "value": "MW9vMTlwcXI2OGU4NQ=="
+          "value": "MTUya3FsaXcwcm85YQ=="
         }
       ]
     },
@@ -215,7 +215,7 @@
       "localStorage": [
         {
           "name": "_gcl_ls",
-          "value": "{\"schema\":\"gcl\",\"version\":1,\"gcl_ctr\":{\"value\":{\"value\":0,\"timeouts\":0,\"errors\":0,\"eopCount\":0,\"creationTimeMs\":1778608260147},\"expires\":1786384260147}}"
+          "value": "{\"schema\":\"gcl\",\"version\":1,\"gcl_ctr\":{\"value\":{\"value\":0,\"timeouts\":0,\"errors\":0,\"eopCount\":0,\"creationTimeMs\":1778699795638},\"expires\":1786475795638}}"
         }
       ]
     }

@@ -4,6 +4,20 @@ class ActivePage {
     constructor(page) {
         this.page = page;
 
+        // -- Sidebar navigation -----------------------------------------------
+        // data-sidebar="menu-button" targets the collapsible My Loans nav button
+        this.myLoansNavItem  = this.page.getByRole('button', {name: 'My Loans'})
+        // data-sidebar="menu-sub-button" targets sub-items revealed after My Loans
+        // is expanded (Active, Adversed, Inactive, Funded)
+        this.adversedNavItem = this.page
+            .locator('[data-sidebar="menu-sub-button"]')
+            .filter({ hasText: /^Adversed$/ })
+            .first();
+        this.inactiveNavItem = this.page
+            .locator('[data-sidebar="menu-sub-button"]')
+            .filter({ hasText: /^Inactive$/ })
+            .first();
+
         // -- Page heading ------------------------------------------------------
         this.pageHeading = this.page.getByRole('heading', { name: 'My Loans' });
 
@@ -18,7 +32,7 @@ class ActivePage {
 
         // -- Toolbar -----------------------------------------------------------
         this.searchInput = this.page.getByPlaceholder(/Search by email, name, full address or loan number/i);
-        this.filterBtn   = this.page.getByRole('button', { name: /Filter/i });
+        this.filterBtn   = this.page.getByRole('button').filter({ hasText: /Filter/i }).first();
 
         // -- Pipeline section headings -----------------------------------------
         // Pre-Qual / In Process / Closing / Funded also appear in the overview
@@ -60,6 +74,29 @@ class ActivePage {
         this.showTestAccountsChk = this.filterModal.getByRole('checkbox', { name: /Show Test Accounts/i });
         this.clearAllFiltersBtn  = this.filterModal.getByRole('button', { name: /Clear All Filters/i });
         this.applyFiltersBtn     = this.filterModal.getByRole('button', { name: /Apply Filters/i });
+    }
+
+    async clickMyLoansNav() {
+        await test.step('Click My Loans in sidebar navigation', async () => {
+            await this.myLoansNavItem.click();
+            await this.page.waitForLoadState('networkidle');
+        });
+    }
+
+    async navigateToAdversed() {
+        await test.step('Navigate to Adversed tab via sidebar', async () => {
+            await this.clickMyLoansNav();
+            await this.adversedNavItem.click();
+            await this.page.waitForLoadState('networkidle');
+        });
+    }
+
+    async navigateToInactive() {
+        await test.step('Navigate to Inactive tab via sidebar', async () => {
+            await this.clickMyLoansNav();
+            await this.inactiveNavItem.click();
+            await this.page.waitForLoadState('networkidle');
+        });
     }
 
     async verifyOverviewTiles() {
@@ -291,7 +328,17 @@ class ActivePage {
     async clearAllFilters() {
         await test.step('Clear all filters', async () => {
             const isOpen = await this.filterModal.isVisible();
-            if (!isOpen) await this.filterBtn.click();
+            if (!isOpen) {
+                // Re-query with hasText so the locator matches both the default
+                // "Filter" label and any active-filter state like "Filter · 1" or
+                // "Filter (1)" where a badge span changes the accessible name.
+                const filterBtn = this.page
+                    .getByRole('button')
+                    .filter({ hasText: /Filter/i })
+                    .first();
+                await filterBtn.waitFor({ state: 'visible', timeout: 15000 });
+                await filterBtn.click();
+            }
             await expect(this.filterModalHeading).toBeVisible({ timeout: 10000 });
             await this.clearAllFiltersBtn.click();
             await this.applyFiltersBtn.click();

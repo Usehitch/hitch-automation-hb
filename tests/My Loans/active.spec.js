@@ -1,5 +1,5 @@
-import { expect, test } from '../fixtures';
-import { applicationData } from '../data/newApplication';
+import { expect, test } from '../../fixtures';
+import { applicationData } from '../../data/newApplication';
 
 test.describe('My Loans - Active', () => {
     test.beforeEach(async ({ page }) => {

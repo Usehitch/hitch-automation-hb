@@ -9,6 +9,7 @@ import ConfirmationPage from '../pages/Pre-Qual Manual/ConfirmationPage';
 import ActivePage from '../pages/My Loans/ActivePage';
 import MloCertificationModal from '../pages/My Loans/MloCertificationModal';
 import LoanDetailPage from '../pages/My Loans/LoanDetailPage';
+import ShadowBorrowerViewPage from '../pages/My Loans/ShadowBorrowerViewPage';
 
 export const test = base.extend({
     loginPage: async ({ page }, use) => {
@@ -49,6 +50,10 @@ export const test = base.extend({
 
     loanDetailPage: async ({ page }, use) => {
         await use(new LoanDetailPage(page));
+    },
+
+    shadowBorrowerViewPage: async ({ page }, use) => {
+        await use(new ShadowBorrowerViewPage(page));
     },
 });
 
