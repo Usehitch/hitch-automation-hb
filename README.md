@@ -17,7 +17,15 @@ homebridge/
 │   ├── inactive.spec.js          # My Loans — Inactive tab: structure, search, filter, certify, view
 │   ├── shadow-borrower-view.spec.js  # Shadow Borrower View — modal, cancel, read-only new-tab flow
 │   ├── econsent.spec.js          # E-Consent — co-borrower method consent document
-│   └── twn-monitor.spec.js       # Vendor monitor — The Work Number income verification
+│   ├── twn-monitor.spec.js       # Vendor monitor — The Work Number income verification
+│   ├── quick-pricer.spec.js      # Quick Pricer — HELOC Rate Calculator structure, fill, run scenario, history
+│   └── Manage Users/
+│       ├── manage-users.spec.js      # Portal Users — structure, search, pagination, add user modal
+│       ├── add-user.spec.js          # Create Loan Officer, edit name, verify updated data
+│       ├── add-role.spec.js          # Add a second role to a user, verify in Role(s) column
+│       ├── reset-password.spec.js    # Reset Password icon — success toast smoke tests
+│       ├── deactivate-user.spec.js   # Deactivate User modal — cancel + full deactivation flow
+│       └── reactivate-user.spec.js   # Re-activate User modal — cancel + full deactivate→reactivate cycle
 │
 ├── pages/                        # Page Object Models
 │   ├── LoginPage.js
@@ -33,6 +41,10 @@ homebridge/
 │   │   ├── MloCertificationModal.js
 │   │   ├── LoanDetailPage.js
 │   │   └── ShadowBorrowerViewPage.js
+│   ├── Quick Pricer/
+│   │   └── QuickPricerPage.js
+│   └── Manage Users/
+│       └── ManageUsersPage.js
 │   └── The Work Number/
 │       └── TWNPage.js
 │

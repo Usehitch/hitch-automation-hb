@@ -10,6 +10,8 @@ import ActivePage from '../pages/My Loans/ActivePage';
 import MloCertificationModal from '../pages/My Loans/MloCertificationModal';
 import LoanDetailPage from '../pages/My Loans/LoanDetailPage';
 import ShadowBorrowerViewPage from '../pages/My Loans/ShadowBorrowerViewPage';
+import ManageUsersPage from '../pages/Manage Users/ManageUsersPage';
+import QuickPricerPage from '../pages/Quick Pricer/QuickPricerPage';
 
 export const test = base.extend({
     loginPage: async ({ page }, use) => {
@@ -54,6 +56,14 @@ export const test = base.extend({
 
     shadowBorrowerViewPage: async ({ page }, use) => {
         await use(new ShadowBorrowerViewPage(page));
+    },
+
+    manageUsersPage: async ({ page }, use) => {
+        await use(new ManageUsersPage(page));
+    },
+
+    quickPricerPage: async ({ page }, use) => {
+        await use(new QuickPricerPage(page));
     },
 });
 
