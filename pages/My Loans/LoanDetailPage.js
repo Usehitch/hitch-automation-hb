@@ -24,13 +24,13 @@ class LoanDetailPage {
         this.shadowViewContinueBtn    = this.shadowViewModal.getByRole('button', { name: /Continue/i });
 
         // -- Status pipeline --------------------------------------------------
-        this.preQualStatus   = this.page.getByText('Pre-Qual').first();
-        this.inProcessStatus = this.page.getByText('In Process').first();
-        this.closingStatus   = this.page.getByText('Closing').first();
-        // "Funded" also appears as a sidebar nav item (data-sidebar="menu-sub-button")
-        // which is hidden but comes first in DOM order — exclude sidebar elements
-        // so the locator resolves to the pipeline status bar item instead.
-        this.fundedStatus    = this.page.getByText("Funded").nth(1);
+        // Scoped to tracker items so sidebar nav entries (data-sidebar="menu-sub-button")
+        // with identical labels ("Funded", etc.) are never matched.
+        const trackerItem = () => this.page.locator('[data-testid="minimized-tracker-item"]');
+        this.preQualStatus   = trackerItem().getByText('Pre-Qual').first();
+        this.inProcessStatus = trackerItem().getByText('In Process').first();
+        this.closingStatus   = trackerItem().getByText('Closing').first();
+        this.fundedStatus    = trackerItem().getByText('Funded').first();
 
         // -- Main tabs --------------------------------------------------------
         this.applicationSummaryTab = this.page.getByRole('tab', { name: /Application Summary/i });
@@ -804,7 +804,7 @@ class LoanDetailPage {
             const newTabPromise = this.page.context().waitForEvent('page');
             await this.shadowViewContinueBtn.click();
             const shadowTab = await newTabPromise;
-            await shadowTab.waitForLoadState('networkidle');
+            await shadowTab.waitForLoadState('load');
             return shadowTab;
         });
     }

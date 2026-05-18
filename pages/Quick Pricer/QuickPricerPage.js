@@ -296,7 +296,11 @@ class QuickPricerPage {
         await test.step('Click Run Scenario', async () => {
             await expect(this.runScenarioBtn).toBeEnabled({ timeout: 10000 });
             await this.runScenarioBtn.click();
-            await this.page.waitForLoadState('networkidle');
+            // Button disables (spinner) while the API call runs, then re-enables when the
+            // quote data is ready. networkidle is unreliable here (live-chat iframes keep
+            // requests open), so we gate on the button's own disabled→enabled transition.
+            await expect(this.runScenarioBtn).toBeDisabled({ timeout: 5000 }).catch(() => {});
+            await expect(this.runScenarioBtn).toBeEnabled({ timeout: 120000 });
         });
     }
 

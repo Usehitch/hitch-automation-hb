@@ -32,7 +32,7 @@ class LoginPage {
 
     async loginUser(email, password, otp) {
         await this.submitCredentials(email, password);
-        await this.submitOtp(otp);
+        // await this.submitOtp(otp);
     };
     async clickGoToBrokerPortal() {
         await test.step('Click the go to broker portal', async () => {

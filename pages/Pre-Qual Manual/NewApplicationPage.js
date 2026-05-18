@@ -60,9 +60,11 @@ class NewApplicationPage {
         this.otherPurposeBtn = this.page.getByRole('button', { name: 'Other' });
 
         // -- Co-Borrower -------------------------------------------------------
-        // MUI card-style toggle (no button role) — clicking the text bubbles up to the card
-        this.coBorrowerYesBtn = this.page.getByText('I have a co-borrower who will apply with me');
-        this.coBorrowerNoBtn = this.page.getByText('I am applying by myself');
+        // Accordion header — collapsed by default; must be clicked to reveal Yes/No cards
+        this.coBorrowerAccordionHeader = this.page.getByText('Co-Borrower', { exact: true });
+
+        this.coBorrowerYesBtn = this.page.getByRole('button', { name: /I have a co-borrower/ });
+        this.coBorrowerNoBtn = this.page.getByRole('button', { name: /I am applying by myself/ });
 
         // Co-borrower confirmed data-testids (first two verified from error output)
         this.coBorrowerFirstNameInput = this.page.getByTestId('coborrowerFirstName');
@@ -160,7 +162,9 @@ class NewApplicationPage {
 
     async fillCoBorrowerDetails(coBorrower) {
         await test.step('Fill co-borrower details', async () => {
-            await this.coBorrowerYesBtn.click({ force: true });
+            await this.coBorrowerAccordionHeader.click();
+            await this.coBorrowerYesBtn.waitFor({ state: 'visible' });
+            await this.coBorrowerYesBtn.click();
 
             await this.coBorrowerFirstNameInput.waitFor({ state: 'visible' });
             await this.coBorrowerFirstNameInput.fill(coBorrower.firstName);

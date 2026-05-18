@@ -70,7 +70,7 @@ class MortgagesAndLiensPage {
 
                 // Wait for processing screen to appear then fully complete
                 await this.processingHeading.waitFor({ state: 'visible', timeout: 10000 });
-                await this.processingHeading.waitFor({ state: 'hidden', timeout: 60000 });
+                await this.processingHeading.waitFor({ state: 'hidden', timeout: 200000 });
             });
 
             // Confirm step 3 content loaded — stepper tab ("Offer Review") appears

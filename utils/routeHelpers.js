@@ -21,6 +21,6 @@ export async function withProcessAppRetry(page, fn) {
     try {
         await fn();
     } finally {
-        await page.unroute('**/processApplication**', handler);
+        await page.unroute('**/processApplication**', handler).catch(() => {});
     }
 }

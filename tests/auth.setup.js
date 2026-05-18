@@ -17,7 +17,7 @@ setup('authenticate', async ({ page, context, loginPage }) => {
     // Submit credentials first, then regenerate OTP just before the OTP page
     // needs it — avoids the code expiring during the login page load/network wait.
     await loginPage.submitCredentials(process.env.EMAIL, process.env.PASSWORD);
-    await loginPage.submitOtp(otpService.generateOTP());
+    // await loginPage.submitOtp(otpService.generateOTP());
     await expect(page).toHaveURL('/portal');
 
     await context.storageState({ path: authFile });

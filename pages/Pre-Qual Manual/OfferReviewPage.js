@@ -235,7 +235,7 @@ class OfferReviewPage {
             await this.nextBtn.scrollIntoViewIfNeeded();
             await this.nextBtn.click({ force: true });
 
-            // Staging can be slow processing the offer submission — wait up to 60 s.
+            // Staging can be slow processing the offer submission — wait up to 200 s (co-borrower flows run two credit pulls).
             // If still on Offer Review after 10 s, retry the click once (handles the
             // case where the first click fired before the button was fully ready).
             try {
@@ -245,7 +245,7 @@ class OfferReviewPage {
                 if (stillOnOfferReview) {
                     await this.nextBtn.click({ force: true });
                 }
-                await this.consentsHeading.waitFor({ state: 'visible', timeout: 50000 });
+                await this.consentsHeading.waitFor({ state: 'visible', timeout: 200000 });
             }
         });
     };
