@@ -41,8 +41,9 @@ export const twnApplicationData = {
     },
 
     expectedIncome: {
-        companyName:             'Enterprise One-Verifier Integrations Only', // TWN sandbox employer
-        totalAnnualCompensation: '$94,929',   // actual value returned by TWN sandbox for this SSN
-        startDate:               '04/05/1995', // start date populated by TWN sandbox record
+        companyName: 'Enterprise One-Verifier Integrations Only', // TWN sandbox employer
+        // totalAnnualCompensation: not asserted — TWN sandbox figures change periodically.
+        // verifyTwnPopulated() falls back to a non-empty check on the input field instead.
+        startDate:   '04/05/1995', // start date populated by TWN sandbox record
     },
 };

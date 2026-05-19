@@ -197,11 +197,17 @@ class TWNPage {
                 await expect(el).toBeVisible();
             }
 
+            // Compensation: if a specific value is provided verify its exact text;
+            // otherwise confirm the field was populated with *any* non-empty value.
+            // Specific values are fragile — TWN sandbox figures change periodically.
             if (inc?.totalAnnualCompensation) {
                 const el = this.page.getByText(inc.totalAnnualCompensation, { exact: false }).first();
                 await el.waitFor({ state: 'visible', timeout: 15000 });
                 await el.scrollIntoViewIfNeeded();
                 await expect(el).toBeVisible();
+            } else {
+                // Generic guard: TWN populated something in the compensation field
+                await expect(this.totalAnnualCompensationInput).not.toBeEmpty({ timeout: 15000 });
             }
 
             if (inc?.startDate) {
