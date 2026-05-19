@@ -324,14 +324,19 @@ class ActivePage {
 
     /**
      * Re-opens the modal (if closed), clicks Clear All Filters, and applies.
+     *
+     * Uses fresh locators at action-time to avoid "detached from DOM" errors:
+     * MUI re-renders the entire dialog content after "Clear All Filters" is
+     * clicked, which invalidates any element references captured before that
+     * click.  Re-querying via page.getByRole('dialog') each time ensures
+     * Playwright resolves against the live DOM tree.
      */
     async clearAllFilters() {
         await test.step('Clear all filters', async () => {
             const isOpen = await this.filterModal.isVisible();
             if (!isOpen) {
                 // Re-query with hasText so the locator matches both the default
-                // "Filter" label and any active-filter state like "Filter · 1" or
-                // "Filter (1)" where a badge span changes the accessible name.
+                // "Filter" label and any active-filter state like "Filter · 1".
                 const filterBtn = this.page
                     .getByRole('button')
                     .filter({ hasText: /Filter/i })
@@ -340,8 +345,31 @@ class ActivePage {
                 await filterBtn.click();
             }
             await expect(this.filterModalHeading).toBeVisible({ timeout: 10000 });
-            await this.clearAllFiltersBtn.click();
-            await this.applyFiltersBtn.click();
+
+            // Resolve the dialog fresh — do NOT use the pre-cached constructor
+            // references (this.clearAllFiltersBtn / this.applyFiltersBtn) because
+            // MUI swaps out the dialog's child nodes after the clear, making those
+            // references stale.
+            const dialog = this.page.getByRole('dialog');
+
+            // 1 — Clear filters.
+            //
+            // When the modal reopens with an active filter already set (e.g. a
+            // Company selection), MUI continuously reconciles the combobox state,
+            // re-rendering the dialog on each cycle and detaching buttons before
+            // Playwright's normal .click() can land.  Using .evaluate() fires the
+            // DOM click synchronously inside the browser — before React's next
+            // render cycle can unmount the node — bypassing the detach race.
+            const clearBtn = dialog.getByRole('button', { name: /Clear All Filters/i });
+            await clearBtn.waitFor({ state: 'visible', timeout: 10000 });
+            await clearBtn.evaluate(el => el.click());
+
+            // 2 — Wait for the dialog to finish re-rendering after the clear,
+            //     then fire the Apply button the same way.
+            const applyBtn = dialog.getByRole('button', { name: /Apply Filters/i });
+            await applyBtn.waitFor({ state: 'visible', timeout: 10000 });
+            await applyBtn.evaluate(el => el.click());
+
             await expect(this.filterModal).toBeHidden({ timeout: 10000 });
             await this.page.waitForLoadState('networkidle');
         });

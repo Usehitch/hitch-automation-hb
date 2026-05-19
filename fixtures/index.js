@@ -12,6 +12,7 @@ import LoanDetailPage from '../pages/My Loans/LoanDetailPage';
 import ShadowBorrowerViewPage from '../pages/My Loans/ShadowBorrowerViewPage';
 import ManageUsersPage from '../pages/Manage Users/ManageUsersPage';
 import QuickPricerPage from '../pages/Quick Pricer/QuickPricerPage';
+import CompaniesPage from '../pages/Companies/CompaniesPage';
 
 export const test = base.extend({
     loginPage: async ({ page }, use) => {
@@ -64,6 +65,10 @@ export const test = base.extend({
 
     quickPricerPage: async ({ page }, use) => {
         await use(new QuickPricerPage(page));
+    },
+
+    companiesPage: async ({ page }, use) => {
+        await use(new CompaniesPage(page));
     },
 });
 

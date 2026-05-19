@@ -19,6 +19,7 @@ homebridge/
 │   ├── econsent.spec.js          # E-Consent — co-borrower method consent document
 │   ├── twn-monitor.spec.js       # Vendor monitor — The Work Number income verification
 │   ├── quick-pricer.spec.js      # Quick Pricer — HELOC Rate Calculator structure, fill, run scenario, history
+│   ├── companies.spec.js         # Companies — structure, search, add modal, edit modal
 │   └── Manage Users/
 │       ├── manage-users.spec.js      # Portal Users — structure, search, pagination, add user modal
 │       ├── add-user.spec.js          # Create Loan Officer, edit name, verify updated data
@@ -43,6 +44,8 @@ homebridge/
 │   │   └── ShadowBorrowerViewPage.js
 │   ├── Quick Pricer/
 │   │   └── QuickPricerPage.js
+│   ├── Companies/
+│   │   └── CompaniesPage.js
 │   └── Manage Users/
 │       └── ManageUsersPage.js
 │   └── The Work Number/
@@ -51,7 +54,8 @@ homebridge/
 ├── data/                         # Test data
 │   ├── shared.js                 # Shared property + borrower constants
 │   ├── newApplication.js         # Broker portal application data (solo + co-borrower)
-│   └── twnApplication.js         # TWN borrower flow data
+│   ├── twnApplication.js         # TWN borrower flow data
+│   └── companiesData.js          # Companies — create + edit data with realistic fields
 │
 ├── fixtures/
 │   └── index.js                  # Extends Playwright test with all page object fixtures
@@ -108,26 +112,30 @@ npx playwright test tests/myloans.spec.js
 
 ## CI / GitHub Actions
 
+> **Before any workflow will pass, all required secrets must be configured.**
+> Go to **Settings → Secrets and variables → Actions → New repository secret** and add each one below.
+> Missing secrets cause an immediate, clearly-labelled failure in the "Validate required secrets" step rather than a cryptic URL error inside the test runner.
+
 ### `playwright.yml`
 Runs the full test suite on every push/PR to `main` or `master`. Uploads the HTML report as an artifact (retained 30 days).
 
-Requires these repository secrets:
+Required secrets:
 
 | Secret | Description |
 |---|---|
-| `BASE_URL` | Staging portal URL |
+| `BASE_URL` | Staging portal URL (e.g. `https://staging.usehitch.com`) |
 | `EMAIL` | Broker portal login email |
 | `PASSWORD` | Broker portal login password |
 | `OTP_SECRET` | Base32 TOTP secret for MFA |
 
 ### `twn-monitor.yml`
-Runs `twn-monitor.spec.js` every **30 minutes** (and on manual dispatch) to confirm The Work Number integration is live on staging. Sends a Slack alert on failure.
+Runs `twn-monitor.spec.js` every **30 minutes** (and on manual dispatch) to confirm The Work Number integration is live on staging. Sends a Slack alert on failure — the Slack step uses `continue-on-error: true`, so a missing webhook never masks the real test failure.
 
-Requires an additional secret:
+Required secrets (in addition to the four above):
 
 | Secret | Description |
 |---|---|
-| `SLACK_WEBHOOK_URL` | Incoming webhook for failure notifications |
+| `SLACK_WEBHOOK_URL` | Incoming webhook URL for failure notifications (optional — alert is skipped silently if not set) |
 
 
 ---

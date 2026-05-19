@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set up job
+        run: echo "Starting TWN monitor job"
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -25,6 +28,32 @@ jobs:
 
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
+
+      # -----------------------------------------------------------------------
+      # Validate that every required secret has been configured.
+      # If any are missing the job fails here with a clear diagnostic message
+      # instead of a cryptic "Cannot navigate to invalid URL" inside the test.
+      # Configure secrets at: Settings → Secrets and variables → Actions
+      # -----------------------------------------------------------------------
+      - name: Validate required secrets
+        run: |
+          missing=""
+          [ -z "$BASE_URL"   ] && missing="$missing BASE_URL"
+          [ -z "$EMAIL"      ] && missing="$missing EMAIL"
+          [ -z "$PASSWORD"   ] && missing="$missing PASSWORD"
+          [ -z "$OTP_SECRET" ] && missing="$missing OTP_SECRET"
+          if [ -n "$missing" ]; then
+            echo "❌ Missing required repository secrets:$missing"
+            echo ""
+            echo "Add them at: Settings → Secrets and variables → Actions → New repository secret"
+            exit 1
+          fi
+          echo "✅ All required secrets are present"
+        env:
+          BASE_URL:   ${{ secrets.BASE_URL }}
+          EMAIL:      ${{ secrets.EMAIL }}
+          PASSWORD:   ${{ secrets.PASSWORD }}
+          OTP_SECRET: ${{ secrets.OTP_SECRET }}
 
       - name: Run TWN monitor test
         id: twn_test
@@ -44,13 +73,17 @@ jobs:
           retention-days: 7
 
       # -----------------------------------------------------------------------
-      # Slack alert — only fires when the test step fails.
+      # Slack alert — fires when the test step fails.
       # Requires a repo/org secret named SLACK_WEBHOOK_URL.
       # Set it up at: Settings → Secrets → Actions → New repository secret
       # Webhook guide: https://api.slack.com/messaging/webhooks
+      #
+      # continue-on-error: true ensures a missing or invalid webhook never
+      # causes a second failure on top of the real test failure.
       # -----------------------------------------------------------------------
       - name: Notify Slack on failure
         if: failure()
+        continue-on-error: true
         uses: slackapi/slack-github-action@v1.27.0
         with:
           payload: |
