@@ -17,13 +17,41 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+
+    # -------------------------------------------------------------------------
+    # Fail fast with a readable message if any required secret is missing.
+    # Without this, a missing BASE_URL causes a cryptic "Cannot navigate to
+    # invalid URL" error deep inside auth.setup.js after wasting install time.
+    # Configure secrets at: Settings → Secrets and variables → Actions
+    # -------------------------------------------------------------------------
+    - name: Validate required secrets
+      run: |
+        missing=""
+        [ -z "$BASE_URL"   ] && missing="$missing BASE_URL"
+        [ -z "$EMAIL"      ] && missing="$missing EMAIL"
+        [ -z "$PASSWORD"   ] && missing="$missing PASSWORD"
+        [ -z "$OTP_SECRET" ] && missing="$missing OTP_SECRET"
+        if [ -n "$missing" ]; then
+          echo "❌ Missing required repository secrets:$missing"
+          echo ""
+          echo "Add them at: Settings → Secrets and variables → Actions → New repository secret"
+          exit 1
+        fi
+        echo "✅ All required secrets are present"
+      env:
+        BASE_URL:   ${{ secrets.BASE_URL }}
+        EMAIL:      ${{ secrets.EMAIL }}
+        PASSWORD:   ${{ secrets.PASSWORD }}
+        OTP_SECRET: ${{ secrets.OTP_SECRET }}
+
     - name: Run Playwright tests
       run: npx playwright test
       env:
-        BASE_URL: ${{ secrets.BASE_URL }}
-        EMAIL: ${{ secrets.EMAIL }}
-        PASSWORD: ${{ secrets.PASSWORD }}
+        BASE_URL:   ${{ secrets.BASE_URL }}
+        EMAIL:      ${{ secrets.EMAIL }}
+        PASSWORD:   ${{ secrets.PASSWORD }}
         OTP_SECRET: ${{ secrets.OTP_SECRET }}
+
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:

@@ -3,6 +3,17 @@ import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 dotenv.config();
 
+// Fail immediately with a readable message rather than a cryptic
+// "Cannot navigate to invalid URL" error inside auth.setup.js.
+if (!process.env.BASE_URL) {
+  throw new Error(
+    '\n\n❌  BASE_URL is not set.\n' +
+    '    • Local dev  : add BASE_URL=https://... to your .env file\n' +
+    '    • CI         : add BASE_URL as a repository secret\n' +
+    '                   (Settings → Secrets and variables → Actions)\n'
+  );
+}
+
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
