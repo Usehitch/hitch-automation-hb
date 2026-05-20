@@ -41,6 +41,16 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         storageState: '.playwright/.auth/user.json',
+        // viewport: null — use the actual window size instead of the fixed
+        // canvas inherited from devices['Desktop Chrome'] (e.g. 1280×720).
+        // deviceScaleFactor must be cleared too: Playwright throws
+        // '"deviceScaleFactor" option is not supported with null "viewport"'
+        // when the device preset's scale factor is left in place.
+        viewport: null,
+        deviceScaleFactor: undefined,
+        launchOptions: {
+          args: ['--start-maximized'],
+        },
       },
       dependencies: ['setup'],
     },

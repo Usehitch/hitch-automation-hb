@@ -20,6 +20,7 @@ homebridge/
 │   ├── twn-monitor.spec.js       # Vendor monitor — The Work Number income verification
 │   ├── quick-pricer.spec.js      # Quick Pricer — HELOC Rate Calculator structure, fill, run scenario, history
 │   ├── companies.spec.js         # Companies — structure, search, add modal, edit modal
+│   ├── company-branches.spec.js  # Company Branches — structure, search, add branch, edit branch
 │   └── Manage Users/
 │       ├── manage-users.spec.js      # Portal Users — structure, search, pagination, add user modal
 │       ├── add-user.spec.js          # Create Loan Officer, edit name, verify updated data
@@ -46,6 +47,8 @@ homebridge/
 │   │   └── QuickPricerPage.js
 │   ├── Companies/
 │   │   └── CompaniesPage.js
+│   ├── Company Branches/
+│   │   └── CompanyBranchesPage.js
 │   └── Manage Users/
 │       └── ManageUsersPage.js
 │   └── The Work Number/
@@ -55,7 +58,8 @@ homebridge/
 │   ├── shared.js                 # Shared property + borrower constants
 │   ├── newApplication.js         # Broker portal application data (solo + co-borrower)
 │   ├── twnApplication.js         # TWN borrower flow data
-│   └── companiesData.js          # Companies — create + edit data with realistic fields
+│   ├── companiesData.js          # Companies — create + edit data with realistic fields
+│   └── companyBranchesData.js    # Company Branches — create + edit data with realistic fields
 │
 ├── fixtures/
 │   └── index.js                  # Extends Playwright test with all page object fixtures

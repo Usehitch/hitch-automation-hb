@@ -13,6 +13,7 @@ import ShadowBorrowerViewPage from '../pages/My Loans/ShadowBorrowerViewPage';
 import ManageUsersPage from '../pages/Manage Users/ManageUsersPage';
 import QuickPricerPage from '../pages/Quick Pricer/QuickPricerPage';
 import CompaniesPage from '../pages/Companies/CompaniesPage';
+import CompanyBranchesPage from '../pages/Company Branches/CompanyBranchesPage';
 
 export const test = base.extend({
     loginPage: async ({ page }, use) => {
@@ -69,6 +70,10 @@ export const test = base.extend({
 
     companiesPage: async ({ page }, use) => {
         await use(new CompaniesPage(page));
+    },
+
+    companyBranchesPage: async ({ page }, use) => {
+        await use(new CompanyBranchesPage(page));
     },
 });
 

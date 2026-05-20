@@ -211,7 +211,7 @@ class CompaniesPage {
     }
 
     /**
-     * Returns the company name from the first data row.
+     * Returns the company name from the first data row (Name column, index 0).
      * @returns {Promise<string>}
      */
     async getFirstRowName() {
@@ -222,6 +222,25 @@ class CompaniesPage {
             .first();
         await nameCell.waitFor({ state: 'visible', timeout: 10000 });
         return (await nameCell.innerText()).trim();
+    }
+
+    /**
+     * Returns the NMLS value from the first data row (NMLS column, index 2).
+     *
+     * The portal search bar indexes NMLS explicitly ("Search by name, NMLS or
+     * TPO ID") so an NMLS value is a more reliable search term than a display
+     * name, which may not be in the search index.
+     *
+     * @returns {Promise<string>}
+     */
+    async getFirstRowNmls() {
+        const nmlsCell = this.page
+            .locator('tr, [role="row"]')
+            .nth(1)
+            .locator('td, [role="cell"]')
+            .nth(2); // 0=Name, 1=Phone, 2=NMLS
+        await nmlsCell.waitFor({ state: 'visible', timeout: 10000 });
+        return (await nmlsCell.innerText()).trim();
     }
 
     // -------------------------------------------------------------------------

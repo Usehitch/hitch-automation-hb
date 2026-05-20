@@ -50,10 +50,12 @@ class TWNPage {
         this.dobInput = this.page.getByLabel(/Date of Birth/i);
 
         // -- Income Sources (TWN auto-populates) -------------------------------
-        this.salaryCheckbox               = this.page.getByRole('checkbox', { name: /Salary or Hourly Wages/i });
-        this.companyNameInput             = this.page.getByLabel(/Company Name/i);
-        this.totalAnnualCompensationInput = this.page.getByLabel(/Annual Income/i);
-        this.startDateInput               = this.page.getByLabel(/Start Date/i);
+        this.salaryCheckbox   = this.page.getByRole('checkbox', { name: /Salary or Hourly Wages/i });
+        this.companyNameInput = this.page.getByLabel(/Company Name/i);
+        this.startDateInput   = this.page.getByLabel(/Start Date/i);
+        // Note: totalAnnualCompensation is rendered as read-only TEXT in the
+        // verified employer card (not as an <input>), so no input locator is defined.
+        // verifyTwnPopulated() checks it via getByText() instead.
 
         // -- Shared navigation -------------------------------------------------
         this.nextBtn = this.page.getByRole('button', { name: /^Next$/i }).first();
@@ -197,17 +199,26 @@ class TWNPage {
                 await expect(el).toBeVisible();
             }
 
-            // Compensation: if a specific value is provided verify its exact text;
-            // otherwise confirm the field was populated with *any* non-empty value.
-            // Specific values are fragile — TWN sandbox figures change periodically.
+            // Compensation: TWN renders the value as read-only text inside the
+            // employer card (not as an <input> field) — the card is uneditable
+            // because it is "verified through The Work Number and cannot be modified".
+            // Strategy:
+            //   • If a specific value is provided → assert that exact text is visible.
+            //   • Otherwise → assert the "Annual Income" label rendered AND that a
+            //     dollar-amount string ($N,NNN) appears anywhere on the page, which
+            //     confirms TWN populated a figure without hard-coding the amount.
             if (inc?.totalAnnualCompensation) {
                 const el = this.page.getByText(inc.totalAnnualCompensation, { exact: false }).first();
                 await el.waitFor({ state: 'visible', timeout: 15000 });
                 await el.scrollIntoViewIfNeeded();
                 await expect(el).toBeVisible();
             } else {
-                // Generic guard: TWN populated something in the compensation field
-                await expect(this.totalAnnualCompensationInput).not.toBeEmpty({ timeout: 15000 });
+                // Verify the "Annual Income" label is present (section rendered)
+                const label = this.page.getByText(/Annual Income/i).first();
+                await expect(label).toBeVisible({ timeout: 15000 });
+                // Verify a dollar amount is visible next to the label
+                const amount = this.page.locator('text=/\\$[0-9,]+/').first();
+                await expect(amount).toBeVisible({ timeout: 5000 });
             }
 
             if (inc?.startDate) {
