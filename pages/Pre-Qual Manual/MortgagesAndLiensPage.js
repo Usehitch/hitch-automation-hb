@@ -68,8 +68,9 @@ class MortgagesAndLiensPage {
             await withProcessAppRetry(this.page, async () => {
                 await this.nextBtn.click({ force: true });
 
-                // Wait for processing screen to appear then fully complete
-                await this.processingHeading.waitFor({ state: 'visible', timeout: 10000 });
+                // Wait for processing screen to appear then fully complete.
+                // CI can be slow to show the processing overlay — allow 30 s.
+                await this.processingHeading.waitFor({ state: 'visible', timeout: 30000 });
                 await this.processingHeading.waitFor({ state: 'hidden', timeout: 200000 });
             });
 

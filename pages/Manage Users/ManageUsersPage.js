@@ -155,7 +155,7 @@ class ManageUsersPage {
     async navigateToManageUsers() {
         await test.step('Navigate to Manage Users via sidebar', async () => {
             await this.manageUsersNav.click();
-            await this.page.waitForLoadState('networkidle');
+            await this.page.waitForLoadState('load');
             // Guard: confirm we actually landed on Portal Users, not another page
             await expect(this.pageHeading).toBeVisible({ timeout: 10000 });
         });
@@ -313,7 +313,7 @@ class ManageUsersPage {
         await test.step(`Search for "${query}"`, async () => {
             await this.searchInput.fill(query);
             await this.searchBtn.click();
-            await this.page.waitForLoadState('networkidle');
+            await this.page.waitForLoadState('load');
         });
     }
 
@@ -334,7 +334,7 @@ class ManageUsersPage {
             const hasInlineClear = await inlineClear.isVisible({ timeout: 1000 }).catch(() => false);
             if (hasInlineClear) {
                 await inlineClear.click();
-                await this.page.waitForLoadState('networkidle');
+                await this.page.waitForLoadState('load');
                 return;
             }
 
@@ -344,14 +344,14 @@ class ManageUsersPage {
             const hasEmptyStateClear = await emptyStateClear.isVisible({ timeout: 1000 }).catch(() => false);
             if (hasEmptyStateClear) {
                 await emptyStateClear.click();
-                await this.page.waitForLoadState('networkidle');
+                await this.page.waitForLoadState('load');
                 return;
             }
 
             // 3. Programmatic fallback
             await this.searchInput.clear();
             await this.searchBtn.click();
-            await this.page.waitForLoadState('networkidle');
+            await this.page.waitForLoadState('load');
         });
     }
 
@@ -565,7 +565,7 @@ class ManageUsersPage {
             await this.addUserCreateBtn.click();
             // Wait for modal to close — success dismisses it
             await expect(this.addUserModal).toBeHidden({ timeout: 15000 });
-            await this.page.waitForLoadState('networkidle');
+            await this.page.waitForLoadState('load');
         });
     }
 
@@ -666,7 +666,7 @@ class ManageUsersPage {
         await test.step('Save edited user', async () => {
             await this.editUserSaveBtn.click();
             await expect(this.editUserModal).toBeHidden({ timeout: 15000 });
-            await this.page.waitForLoadState('networkidle');
+            await this.page.waitForLoadState('load');
         });
     }
 
@@ -748,7 +748,7 @@ class ManageUsersPage {
         await test.step('Submit Add Role modal', async () => {
             await this.addRoleSubmitBtn.click();
             await expect(this.addRoleModal).toBeHidden({ timeout: 15000 });
-            await this.page.waitForLoadState('networkidle');
+            await this.page.waitForLoadState('load');
         });
     }
 
@@ -874,7 +874,7 @@ class ManageUsersPage {
                 ? ariaDeactivateBtn
                 : targetRow.locator('button').nth(2); // 3rd button = trash icon
 
-            await deactivateBtn.click();
+            await deactivateBtn.click({ force: true });
 
             // Wait for the confirmation modal
             await expect(this.deactivateUserModal).toBeVisible({ timeout: 10000 });
@@ -890,7 +890,7 @@ class ManageUsersPage {
         await test.step('Confirm deactivation', async () => {
             await this.deactivateUserConfirmBtn.click();
             await expect(this.deactivateUserModal).toBeHidden({ timeout: 15000 });
-            await this.page.waitForLoadState('networkidle');
+            await this.page.waitForLoadState('load');
         });
     }
 
@@ -966,7 +966,7 @@ class ManageUsersPage {
         await test.step('Confirm re-activation', async () => {
             await this.reactivateUserConfirmBtn.click();
             await expect(this.reactivateUserModal).toBeHidden({ timeout: 15000 });
-            await this.page.waitForLoadState('networkidle');
+            await this.page.waitForLoadState('load');
         });
     }
 

@@ -25,7 +25,7 @@ import { expect, test } from '../../fixtures';
 test.describe('Manage Users', () => {
     test.beforeEach(async ({ page, manageUsersPage }) => {
         await page.goto('/portal');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('load');
         await manageUsersPage.navigateToManageUsers();
     });
 
@@ -83,7 +83,7 @@ test.describe('Manage Users', () => {
         const btnToClick  = hasAriaNext ? arrowNext : nextBtn;
 
         await btnToClick.click();
-        await manageUsersPage.page.waitForLoadState('networkidle');
+        await manageUsersPage.page.waitForLoadState('load');
 
         // Counter should now read "11–20 of N" — just assert it changed
         const counterAfter = await manageUsersPage.paginationCounter.innerText();

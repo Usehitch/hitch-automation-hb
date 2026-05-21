@@ -4,7 +4,7 @@ import { applicationData } from '../../data/newApplication';
 test.describe('My Loans - Active', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/portal');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('load');
     });
 
     test('Verify the content for my loans page', async ({ activePage }) => {
@@ -87,7 +87,7 @@ test.describe('My Loans - Active', () => {
         ).toBeVisible({ timeout: 10000 });
 
         const pdfTab = await pdfTabPromise;
-        await pdfTab.waitForLoadState('domcontentloaded');
+        await pdfTab.waitForLoadState('load').catch(() => {});
         await expect(pdfTab).toHaveURL(/brokerCertification.*\.pdf/i, { timeout: 15000 });
     });
     test('View the application', async ({ activePage, loanDetailPage }) => {

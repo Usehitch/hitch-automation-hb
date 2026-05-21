@@ -22,7 +22,7 @@ import { SHARED } from '../data/shared';
 // ---------------------------------------------------------------------------
 async function openLoanDetail({ activePage, loanDetailPage }) {
     await activePage.page.goto('/portal');
-    await activePage.page.waitForLoadState('networkidle');
+    await activePage.page.waitForLoadState('load');
 
     // Search by "FirstName LastName" — the search box accepts name queries
     await activePage.search(`${SHARED.firstName} ${SHARED.lastName}`);
@@ -31,7 +31,7 @@ async function openLoanDetail({ activePage, loanDetailPage }) {
     const viewBtn = activePage.page.getByRole('button', { name: /^View$/i }).first();
     await expect(viewBtn).toBeVisible({ timeout: 15000 });
     await viewBtn.click();
-    await activePage.page.waitForLoadState('networkidle');
+    await activePage.page.waitForLoadState('load');
 
     await loanDetailPage.verifyPageLoaded();
 }

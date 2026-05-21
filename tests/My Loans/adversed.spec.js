@@ -19,7 +19,7 @@ import { applicationData } from '../../data/newApplication';
 test.describe('My Loans - Adversed', () => {
     test.beforeEach(async ({ page, activePage }) => {
         await page.goto('/portal');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('load');
         await activePage.navigateToAdversed();
     });
 
@@ -137,7 +137,7 @@ test.describe('My Loans - Adversed', () => {
         ).toBeVisible({ timeout: 10000 });
 
         const pdfTab = await pdfTabPromise;
-        await pdfTab.waitForLoadState('domcontentloaded');
+        await pdfTab.waitForLoadState('load').catch(() => {});
         await expect(pdfTab).toHaveURL(/brokerCertification.*\.pdf/i, { timeout: 15000 });
     });
 
@@ -151,7 +151,7 @@ test.describe('My Loans - Adversed', () => {
         const viewBtn = activePage.page.getByRole('button', { name: /^View$/i }).first();
         await expect(viewBtn).toBeVisible({ timeout: 10000 });
         await viewBtn.click();
-        await activePage.page.waitForLoadState('networkidle');
+        await activePage.page.waitForLoadState('load');
 
         // Verify Loan Detail page loaded correctly
         await loanDetailPage.verifyPageLoaded();

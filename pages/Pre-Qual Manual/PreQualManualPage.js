@@ -21,7 +21,7 @@ class PreQualManualPage {
     async clickStartPreQualManually() {
         await test.step('Click the start pre-qual manually button', async () => {
             await this.startPreQualManual_btn.click();
-            await this.page.waitForLoadState('networkidle');
+            await this.page.waitForLoadState('load');
             await expect(this.page).toHaveURL('/portal/new-application');
         });
     };

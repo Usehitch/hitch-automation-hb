@@ -256,7 +256,7 @@ class LoanDetailPage {
             const isExpanded = await coBorrowerDocLink.isVisible({ timeout: 2000 }).catch(() => false);
             if (!isExpanded) {
                 await this.eSignedMethodConsentItem.click();
-                await this.page.waitForLoadState('networkidle');
+                await this.page.waitForLoadState('load');
             }
 
             await coBorrowerDocLink.waitFor({ state: 'visible', timeout: 10000 });

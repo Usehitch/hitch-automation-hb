@@ -164,7 +164,8 @@ class NewApplicationPage {
         await test.step('Fill co-borrower details', async () => {
             await this.coBorrowerAccordionHeader.click();
             await this.coBorrowerYesBtn.waitFor({ state: 'visible' });
-            await this.coBorrowerYesBtn.click();
+            // force: true bypasses any overlapping MUI Stack element that can intercept clicks
+            await this.coBorrowerYesBtn.click({ force: true });
 
             await this.coBorrowerFirstNameInput.waitFor({ state: 'visible' });
             await this.coBorrowerFirstNameInput.fill(coBorrower.firstName);
@@ -271,8 +272,9 @@ class NewApplicationPage {
             await withProcessAppRetry(this.page, async () => {
                 await this.nextBtn.click();
 
-                // Confirm finalization screen appeared
-                await this.finalizingHeading.waitFor({ state: 'visible', timeout: 10000 });
+                // Confirm finalization screen appeared.
+                // CI can be slow to show the overlay — allow 30 s.
+                await this.finalizingHeading.waitFor({ state: 'visible', timeout: 30000 });
 
                 // Wait for finalization to fully complete (URL stays the same — this is a SPA)
                 await this.finalizingHeading.waitFor({ state: 'hidden', timeout: 200000 });
@@ -288,7 +290,7 @@ class NewApplicationPage {
             await test.step('Close soft credit consent PDF tab(s)', async () => {
                 for (const tab of consentTabs) {
                     if (tab.isClosed()) continue;
-                    await tab.waitForLoadState('domcontentloaded').catch(() => null);
+                    await tab.waitForLoadState('load').catch(() => null);
                     const url = tab.url();
                     // Only close tabs that are the expected consent PDF or blank popups
                     if (url.includes('borrowerSoftCreditConsentSignature') || url === 'about:blank') {

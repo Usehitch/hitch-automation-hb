@@ -4,7 +4,7 @@ import { applicationData, coBorrowerApplicationData } from '../data/newApplicati
 test.describe('Pre-Qual Manually', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/portal');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('load');
     });
     test('Create new application', async ({
         preQualManualPage,

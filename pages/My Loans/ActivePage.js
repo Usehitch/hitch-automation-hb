@@ -79,7 +79,7 @@ class ActivePage {
     async clickMyLoansNav() {
         await test.step('Click My Loans in sidebar navigation', async () => {
             await this.myLoansNavItem.click();
-            await this.page.waitForLoadState('networkidle');
+            await this.page.waitForLoadState('load');
         });
     }
 
@@ -87,7 +87,7 @@ class ActivePage {
         await test.step('Navigate to Adversed tab via sidebar', async () => {
             await this.clickMyLoansNav();
             await this.adversedNavItem.click();
-            await this.page.waitForLoadState('networkidle');
+            await this.page.waitForLoadState('load');
         });
     }
 
@@ -95,7 +95,7 @@ class ActivePage {
         await test.step('Navigate to Inactive tab via sidebar', async () => {
             await this.clickMyLoansNav();
             await this.inactiveNavItem.click();
-            await this.page.waitForLoadState('networkidle');
+            await this.page.waitForLoadState('load');
         });
     }
 
@@ -169,7 +169,7 @@ class ActivePage {
             }).first();
             const viewBtn = preQualRow.getByRole('button', { name: /^View$/i }).first();
             await viewBtn.click();
-            await this.page.waitForLoadState('networkidle');
+            await this.page.waitForLoadState('load');
         });
     }
 
@@ -182,7 +182,7 @@ class ActivePage {
     async search(query) {
         await test.step(`Search for "${query}"`, async () => {
             await this.searchInput.fill(query);
-            await this.page.waitForLoadState('networkidle');
+            await this.page.waitForLoadState('load');
         });
     }
 
@@ -192,7 +192,7 @@ class ActivePage {
     async clearSearch() {
         await test.step('Clear search', async () => {
             await this.searchInput.clear();
-            await this.page.waitForLoadState('networkidle');
+            await this.page.waitForLoadState('load');
         });
     }
 
@@ -316,9 +316,14 @@ class ActivePage {
      */
     async applyFilters() {
         await test.step('Apply filters', async () => {
-            await this.applyFiltersBtn.click();
+            // Re-resolve the button at click-time to avoid "detached from DOM" errors
+            // when MUI re-renders the dialog after a filter selection.
+            const dialog = this.page.getByRole('dialog');
+            const applyBtn = dialog.getByRole('button', { name: /Apply Filters/i });
+            await applyBtn.waitFor({ state: 'visible', timeout: 10000 });
+            await applyBtn.evaluate(el => el.click());
             await expect(this.filterModal).toBeHidden({ timeout: 10000 });
-            await this.page.waitForLoadState('networkidle');
+            await this.page.waitForLoadState('load');
         });
     }
 
@@ -371,7 +376,7 @@ class ActivePage {
             await applyBtn.evaluate(el => el.click());
 
             await expect(this.filterModal).toBeHidden({ timeout: 10000 });
-            await this.page.waitForLoadState('networkidle');
+            await this.page.waitForLoadState('load');
         });
     }
 }
