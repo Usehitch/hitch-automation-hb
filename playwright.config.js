@@ -16,10 +16,10 @@ if (!process.env.BASE_URL) {
 
 export default defineConfig({
   testDir: './tests',
-  fullyParallel: true,
+  fullyParallel: false,       // tests within a file run sequentially (safer for shared staging data)
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  retries: process.env.CI ? 1 : 0,   // 1 retry in CI (was 2) — saves ~1 run per failing test
+  workers: process.env.CI ? 2 : undefined, // 2 parallel workers in CI (was 1) — halves total time
   timeout: 180000, // 3 min — finalization involves real API calls (credit pull, employment verify)
   reporter: [['html', { open: 'never' }]],
   use: {
