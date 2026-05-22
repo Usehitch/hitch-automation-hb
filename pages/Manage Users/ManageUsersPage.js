@@ -15,7 +15,9 @@ class ManageUsersPage {
             .first();
 
         // -- Page heading and toolbar -----------------------------------------
-        this.pageHeading    = this.page.getByRole('heading', { name: /Portal Users/i });
+        // Scope to a real heading element (h1/h2) to avoid matching the document
+        // <title> / alert that can carry "Portal Users" text during the loading phase.
+        this.pageHeading    = this.page.locator('h1, h2').filter({ hasText: /Portal Users/i }).first();
         this.searchInput    = this.page.getByPlaceholder(/Search by name or email/i);
         this.searchBtn      = this.page.getByRole('button', { name: /^Search$/i });
         this.addNewUserBtn  = this.page.getByRole('button', { name: /Add New User/i });
@@ -154,10 +156,43 @@ class ManageUsersPage {
 
     async navigateToManageUsers() {
         await test.step('Navigate to Manage Users via sidebar', async () => {
+            // Capture URL before click so we can detect the SPA route change.
+            // beforeEach always starts at /portal (full page.goto), so the URL
+            // will change after clicking the sidebar link.
+            const urlBefore = this.page.url();
             await this.manageUsersNav.click();
-            await this.page.waitForLoadState('load');
-            // Guard: confirm we actually landed on Portal Users, not another page
-            await expect(this.pageHeading).toBeVisible({ timeout: 10000 });
+
+            // waitForLoadState('load') resolves immediately for in-app SPA
+            // navigation — wait for the URL to differ from the entry point instead,
+            // then give the React render a moment to commit the new route tree.
+            await this.page
+                .waitForFunction((before) => window.location.href !== before, urlBefore, {
+                    timeout: 10000,
+                })
+                .catch(() => {
+                    // URL unchanged (e.g. already on the manage-users route) — proceed;
+                    // the heading assertion below will catch any real navigation failure.
+                });
+
+            // Guard: confirm we actually landed on Portal Users, not another page.
+            // Use a generous timeout — CI can be slow to render after route changes.
+            await expect(this.pageHeading).toBeVisible({ timeout: 20000 });
+
+            // The user table is populated by a separate async API call that fires
+            // after the route renders.  Wait up to 10 s for the pagination counter
+            // ("1–10 of N") as a best-effort signal that the table is ready.
+            // This is a soft wait — if the counter doesn't appear in time we log a
+            // warning and proceed.  Individual test methods (verifyTableColumns,
+            // verifyTableHasRows, verifyFirstRowActionIcons) carry their own 15 s
+            // timeouts and will surface a clear error if the data never arrives.
+            await expect(this.paginationCounter)
+                .toBeVisible({ timeout: 10000 })
+                .catch(() => {
+                    console.warn(
+                        'navigateToManageUsers: pagination counter not visible after 10s — ' +
+                        'proceeding; individual assertions will wait for table data'
+                    );
+                });
         });
     }
 
@@ -181,16 +216,19 @@ class ManageUsersPage {
 
     async verifyTableColumns() {
         await test.step('Verify all table column headers are visible', async () => {
-            await expect(this.colName).toBeVisible();
-            await expect(this.colLocation).toBeVisible();
-            await expect(this.colRoles).toBeVisible();
-            await expect(this.colEmail).toBeVisible();
-            await expect(this.colPhone).toBeVisible();
-            await expect(this.colNmls).toBeVisible();
-            await expect(this.colLosUsername).toBeVisible();
-            await expect(this.colActive).toBeVisible();
-            await expect(this.colLastLogin).toBeVisible();
-            await expect(this.colActions).toBeVisible();
+            // Column headers are part of the table structure that renders with
+            // the initial route paint — but give them a generous timeout to
+            // handle slow API responses on CI.
+            await expect(this.colName).toBeVisible({ timeout: 15000 });
+            await expect(this.colLocation).toBeVisible({ timeout: 10000 });
+            await expect(this.colRoles).toBeVisible({ timeout: 10000 });
+            await expect(this.colEmail).toBeVisible({ timeout: 10000 });
+            await expect(this.colPhone).toBeVisible({ timeout: 10000 });
+            await expect(this.colNmls).toBeVisible({ timeout: 10000 });
+            await expect(this.colLosUsername).toBeVisible({ timeout: 10000 });
+            await expect(this.colActive).toBeVisible({ timeout: 10000 });
+            await expect(this.colLastLogin).toBeVisible({ timeout: 10000 });
+            await expect(this.colActions).toBeVisible({ timeout: 10000 });
         });
     }
 
@@ -210,14 +248,14 @@ class ManageUsersPage {
      */
     async verifyTableHasRows() {
         await test.step('Verify at least one user row is present', async () => {
-            // Each row has an edit (pencil) icon button — count must be ≥ 1
-            const editBtns = this.page.locator('[aria-label*="edit"], [title*="edit"], button svg')
-                .first();
-            // Fallback: any cell that contains an email address (@)
+            // Fallback: any cell that contains an email address (@).
+            // Allow 15 s — the user list API can be slow on CI and the pagination
+            // guard in navigateToManageUsers only confirms the counter appeared,
+            // not that every cell has finished rendering.
             const anyEmailCell = this.page.locator('td, [role="cell"]')
                 .filter({ hasText: /@/ })
                 .first();
-            const hasEmail = await anyEmailCell.isVisible({ timeout: 5000 }).catch(() => false);
+            const hasEmail = await anyEmailCell.isVisible({ timeout: 15000 }).catch(() => false);
             expect(hasEmail, 'Expected at least one user row with an email address').toBe(true);
         });
     }
@@ -231,11 +269,14 @@ class ManageUsersPage {
             // The Actions column contains SVG icon buttons; we assert by aria-label
             // or by counting buttons inside the last cell of the first row.
             // Fallback: just confirm at least 2 clickable elements exist in the row.
-            const actionButtons = this.page
+            // Wait up to 15 s for the first data row to be present — data rows are
+            // rendered after the API response, not immediately with the route paint.
+            const firstDataRow = this.page
                 .locator('tr, [role="row"]')
-                .nth(1) // nth(0) = header row, nth(1) = first data row
-                .locator('button, [role="button"]');
+                .nth(1); // nth(0) = header row, nth(1) = first data row
+            await firstDataRow.waitFor({ state: 'visible', timeout: 15000 });
 
+            const actionButtons = firstDataRow.locator('button, [role="button"]');
             const count = await actionButtons.count().catch(() => 0);
             expect(count, 'Expected ≥ 2 action icon buttons in the first row').toBeGreaterThanOrEqual(2);
         });

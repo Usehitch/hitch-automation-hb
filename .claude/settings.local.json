@@ -7,7 +7,8 @@
       "WebFetch(domain:linear.app)",
       "Bash(not exist *)",
       "Bash(Get-ChildItem \"D:\\\\Projects\\\\Automation\\\\Hitch-Playwright\\\\homebridge\" -Exclude node_modules)",
-      "Bash(Select-Object Name, PSIsContainer)"
+      "Bash(Select-Object Name, PSIsContainer)",
+      "Bash(xargs grep -l \"clickNext\\\\|withProcessAppRetry\")"
     ]
   }
 }

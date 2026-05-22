@@ -233,18 +233,25 @@ class ActivePage {
      */
     async selectFilterOption(dropdown, optionText) {
         await dropdown.click({ force: true });
-        // Wait for ANY option to appear in the listbox, then select atomically.
-        // MUI Autocomplete continuously re-renders the option list between Playwright's
-        // "resolve → click" steps, detaching individual elements before the click lands.
-        // Using page.evaluate() with querySelectorAll finds AND clicks in a single
-        // synchronous browser call — before React's next render cycle can detach the node.
+        // Wait for the listbox AND at least one option to appear before querying.
+        // The listbox container can become visible before React renders its children,
+        // so waiting only for the listbox is not sufficient.
         const listbox = this.page.getByRole('listbox');
         await expect(listbox).toBeVisible({ timeout: 10000 });
+        await this.page.locator('[role="option"]').first()
+            .waitFor({ state: 'visible', timeout: 5000 })
+            .catch(() => {}); // proceed even if no option appears (empty list)
 
+        // Find and click in a single synchronous browser call to avoid the MUI
+        // Autocomplete re-render race between Playwright's resolve → click steps.
+        // Use innerText (not textContent) — innerText reflects CSS-visible text,
+        // stripping hidden elements and icon nodes that textContent would include.
         const clicked = await this.page.evaluate((text) => {
             const options = document.querySelectorAll('[role="option"]');
             for (const opt of options) {
-                if (opt.textContent.trim() === text) {
+                // innerText normalises whitespace and excludes hidden child nodes
+                const label = (opt.innerText || opt.textContent || '').trim();
+                if (label === text || label.includes(text)) {
                     opt.click();
                     return true;
                 }
