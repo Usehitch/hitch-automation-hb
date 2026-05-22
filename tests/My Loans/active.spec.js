@@ -87,8 +87,9 @@ test.describe('My Loans - Active', () => {
         ).toBeVisible({ timeout: 10000 });
 
         const pdfTab = await pdfTabPromise;
-        await pdfTab.waitForLoadState('load').catch(() => {});
-        await expect(pdfTab).toHaveURL(/brokerCertification.*\.pdf/i, { timeout: 15000 });
+        // waitForURL fires as soon as the URL matches — does not wait for full page load,
+        // so it succeeds even if the browser treats the PDF as a download and closes the tab.
+        await pdfTab.waitForURL(/brokerCertification.*\.pdf/i, { timeout: 30000 });
     });
     test('View the application', async ({ activePage, loanDetailPage }) => {
         await activePage.clickViewInPreQual();

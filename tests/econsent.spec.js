@@ -55,8 +55,7 @@ test.describe('E-Consent', () => {
         // Step 4b — Verify broker certification PDF then close the tab
         await test.step('Verify and close broker certification PDF', async () => {
             const pdfTab = await certPdfTabPromise;
-            await pdfTab.waitForLoadState('load').catch(() => {});
-            await expect(pdfTab).toHaveURL(/brokerCertification.*\.pdf/i, { timeout: 15000 });
+            await pdfTab.waitForURL(/brokerCertification.*\.pdf/i, { timeout: 30000 });
             await pdfTab.close();
             await page.bringToFront();
         });

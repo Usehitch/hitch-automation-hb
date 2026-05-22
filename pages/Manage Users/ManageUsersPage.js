@@ -874,7 +874,9 @@ class ManageUsersPage {
                 ? ariaDeactivateBtn
                 : targetRow.locator('button').nth(2); // 3rd button = trash icon
 
-            await deactivateBtn.click({ force: true });
+            // evaluate(el.click()) fires a native DOM click that React's event delegation
+            // picks up reliably — bypasses any live-chat iframe that overlays the button.
+            await deactivateBtn.evaluate(el => el.click());
 
             // Wait for the confirmation modal
             await expect(this.deactivateUserModal).toBeVisible({ timeout: 10000 });

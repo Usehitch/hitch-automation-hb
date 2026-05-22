@@ -164,8 +164,10 @@ class NewApplicationPage {
         await test.step('Fill co-borrower details', async () => {
             await this.coBorrowerAccordionHeader.click();
             await this.coBorrowerYesBtn.waitFor({ state: 'visible' });
-            // force: true bypasses any overlapping MUI Stack element that can intercept clicks
-            await this.coBorrowerYesBtn.click({ force: true });
+            // evaluate(el.click()) fires a native DOM click that React's event delegation
+            // picks up reliably — force: true was bypassing actionability checks but
+            // not reliably triggering the React synthetic event handler.
+            await this.coBorrowerYesBtn.evaluate(el => el.click());
 
             await this.coBorrowerFirstNameInput.waitFor({ state: 'visible' });
             await this.coBorrowerFirstNameInput.fill(coBorrower.firstName);
