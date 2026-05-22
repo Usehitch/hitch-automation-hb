@@ -37,7 +37,7 @@ import { createBranchData, editBranchData } from '../data/companyBranchesData';
 test.describe('Company Branches (CRU)', () => {
     test.beforeEach(async ({ page, companyBranchesPage }) => {
         await page.goto('/portal');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('load');
         await companyBranchesPage.navigateToBranches();
     });
 

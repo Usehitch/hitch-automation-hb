@@ -952,7 +952,9 @@ class ManageUsersPage {
             // Same button position as deactivate — the portal toggles the modal
             // content based on the user's current active state.
             const reactivateBtn = targetRow.locator('button').nth(2);
-            await reactivateBtn.click();
+            // Use evaluate() — the live-chat iframe intercepts pointer events and
+            // causes a plain .click() to land on the overlay instead of the button.
+            await reactivateBtn.evaluate(el => el.click());
 
             // Wait for the Re-activate User dialog
             await expect(this.reactivateUserModal).toBeVisible({ timeout: 10000 });

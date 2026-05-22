@@ -162,14 +162,23 @@ class NewApplicationPage {
 
     async fillCoBorrowerDetails(coBorrower) {
         await test.step('Fill co-borrower details', async () => {
-            await this.coBorrowerAccordionHeader.click();
-            await this.coBorrowerYesBtn.waitFor({ state: 'visible' });
+            // On first attempt the accordion is collapsed — click to expand.
+            // On retry it may already be open; re-clicking would collapse it, so
+            // only click if the Yes button is not yet visible.
+            const alreadyOpen = await this.coBorrowerYesBtn
+                .isVisible({ timeout: 2000 })
+                .catch(() => false);
+            if (!alreadyOpen) {
+                await this.coBorrowerAccordionHeader.click();
+                await this.coBorrowerYesBtn.waitFor({ state: 'visible', timeout: 10000 });
+            }
+
             // evaluate(el.click()) fires a native DOM click that React's event delegation
             // picks up reliably — force: true was bypassing actionability checks but
             // not reliably triggering the React synthetic event handler.
             await this.coBorrowerYesBtn.evaluate(el => el.click());
 
-            await this.coBorrowerFirstNameInput.waitFor({ state: 'visible' });
+            await this.coBorrowerFirstNameInput.waitFor({ state: 'visible', timeout: 10000 });
             await this.coBorrowerFirstNameInput.fill(coBorrower.firstName);
             await this.coBorrowerFirstNameInput.press('Tab');
 
@@ -274,12 +283,20 @@ class NewApplicationPage {
             await withProcessAppRetry(this.page, async () => {
                 await this.nextBtn.click();
 
-                // Confirm finalization screen appeared.
-                // CI can be slow to show the overlay — allow 30 s.
-                await this.finalizingHeading.waitFor({ state: 'visible', timeout: 30000 });
+                // The "Finalizing pre-qualification" overlay may be skipped when the
+                // app processes faster than Playwright resolves the locator (especially
+                // on co-borrower flows or CI retries).  Wait up to 5 s for it; if it
+                // never appears proceed directly — mortgagesHeading waitFor below catches
+                // any true failure.
+                const appeared = await this.finalizingHeading
+                    .waitFor({ state: 'visible', timeout: 5000 })
+                    .then(() => true)
+                    .catch(() => false);
 
-                // Wait for finalization to fully complete (URL stays the same — this is a SPA)
-                await this.finalizingHeading.waitFor({ state: 'hidden', timeout: 200000 });
+                if (appeared) {
+                    // Wait for finalization to fully complete (URL stays the same — SPA)
+                    await this.finalizingHeading.waitFor({ state: 'hidden', timeout: 200000 });
+                }
             });
 
             // Confirm step 2 loaded

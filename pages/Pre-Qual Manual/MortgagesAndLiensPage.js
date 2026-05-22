@@ -68,16 +68,26 @@ class MortgagesAndLiensPage {
             await withProcessAppRetry(this.page, async () => {
                 await this.nextBtn.click({ force: true });
 
-                // Wait for processing screen to appear then fully complete.
-                // CI can be slow to show the processing overlay — allow 30 s.
-                await this.processingHeading.waitFor({ state: 'visible', timeout: 30000 });
-                await this.processingHeading.waitFor({ state: 'hidden', timeout: 200000 });
+                // The "Processing Application" overlay appears in most cases but may
+                // be skipped entirely if the app processes faster than Playwright
+                // resolves the locator (especially on co-borrower flows in CI).
+                // Wait up to 5 s for it to appear; if it never shows, skip the wait
+                // and proceed — the next waitFor('Pre-Qualification Summary') below
+                // will catch any true failures.
+                const appeared = await this.processingHeading
+                    .waitFor({ state: 'visible', timeout: 5000 })
+                    .then(() => true)
+                    .catch(() => false);
+
+                if (appeared) {
+                    await this.processingHeading.waitFor({ state: 'hidden', timeout: 200000 });
+                }
             });
 
             // Confirm step 3 content loaded — stepper tab ("Offer Review") appears
             // before the card heading; waiting for the heading guarantees data is ready.
             await this.page.getByText('Pre-Qualification Summary').first()
-                .waitFor({ state: 'visible', timeout: 30000 });
+                .waitFor({ state: 'visible', timeout: 60000 });
         });
     };
 };

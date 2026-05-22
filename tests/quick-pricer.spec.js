@@ -38,7 +38,7 @@ import { randomEmail } from '../utils/dataGenerator';
 test.describe('Quick Pricer — HELOC Rate Calculator', () => {
     test.beforeEach(async ({ page, quickPricerPage }) => {
         await page.goto('/portal');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('load');
         await quickPricerPage.navigateToQuickPricer();
     });
 

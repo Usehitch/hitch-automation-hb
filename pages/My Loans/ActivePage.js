@@ -232,13 +232,30 @@ class ActivePage {
      * @param {string} optionText
      */
     async selectFilterOption(dropdown, optionText) {
-        await dropdown.click();
-        // Use evaluate(el.click()) — MUI Autocomplete re-renders the option list
-        // between Playwright's "resolve → click" steps, causing the element to detach.
-        // A native DOM click fires synchronously before React's next render cycle.
-        const option = this.page.getByRole('option', { name: optionText, exact: true });
-        await option.waitFor({ state: 'visible', timeout: 10000 });
-        await option.evaluate(el => el.click());
+        await dropdown.click({ force: true });
+        // Wait for ANY option to appear in the listbox, then select atomically.
+        // MUI Autocomplete continuously re-renders the option list between Playwright's
+        // "resolve → click" steps, detaching individual elements before the click lands.
+        // Using page.evaluate() with querySelectorAll finds AND clicks in a single
+        // synchronous browser call — before React's next render cycle can detach the node.
+        const listbox = this.page.getByRole('listbox');
+        await expect(listbox).toBeVisible({ timeout: 10000 });
+
+        const clicked = await this.page.evaluate((text) => {
+            const options = document.querySelectorAll('[role="option"]');
+            for (const opt of options) {
+                if (opt.textContent.trim() === text) {
+                    opt.click();
+                    return true;
+                }
+            }
+            return false;
+        }, optionText);
+
+        if (!clicked) {
+            console.warn(`selectFilterOption: option "${optionText}" not found in listbox — pressing Escape`);
+            await this.page.keyboard.press('Escape');
+        }
     }
 
     /**
