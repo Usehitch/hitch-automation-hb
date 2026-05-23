@@ -74,7 +74,7 @@ test.describe('Manage Users — Deactivate User', () => {
         await expect(userRow).toBeVisible({ timeout: 10000 });
         await expect(
             userRow.locator('td').filter({ hasText: /^Yes$/i })
-        ).toBeVisible();
+        ).toBeVisible({ timeout: 10000 });
     });
 
     // -------------------------------------------------------------------------

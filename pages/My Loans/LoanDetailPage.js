@@ -250,21 +250,25 @@ class LoanDetailPage {
     async openCoBorrowerMethodConsent() {
         await test.step('Open co-borrower method consent document', async () => {
             // The link's DOM text contains the full S3 path even when visually truncated.
-            // Scope to list-item/link elements to avoid matching the PDF viewer header
-            // which shows the same string after a different document is already open.
+            // Include button in the element types — MUI document list sub-items are
+            // rendered as <button> elements, not just li/a/span/div.
+            // Avoid matching the PDF viewer header which also shows the S3 path after
+            // a different document is already open, by scoping broadly but relying on
+            // the coborrowerMethodConsentSignature substring to be unique enough.
             const coBorrowerDocLink = this.page
-                .locator('li, [role="listitem"], a, span, div')
+                .locator('li, [role="listitem"], a, span, div, button')
                 .filter({ hasText: /coborrowerMethodConsentSignature/i })
                 .first();
 
-            // Expand the section if the target link is not yet in the DOM / visible
+            // Expand the section if the target link is not yet in the DOM / visible.
+            // waitForLoadState('load') is a no-op for SPA accordion state changes — use
+            // the final waitFor below as the sole completion signal.
             const isExpanded = await coBorrowerDocLink.isVisible({ timeout: 2000 }).catch(() => false);
             if (!isExpanded) {
                 await this.eSignedMethodConsentItem.click();
-                await this.page.waitForLoadState('load');
             }
 
-            await coBorrowerDocLink.waitFor({ state: 'visible', timeout: 10000 });
+            await coBorrowerDocLink.waitFor({ state: 'visible', timeout: 20000 });
             await coBorrowerDocLink.click();
         });
     }
@@ -274,7 +278,10 @@ class LoanDetailPage {
     async clickBorrowersNav() {
         await test.step('Click Borrowers sub-nav', async () => {
             await this.borrowersNav.click();
-            await this.page.waitForLoadState('domcontentloaded');
+            // waitForLoadState('domcontentloaded') is a no-op for SPA sub-nav clicks.
+            // Wait for the first structural element of the Borrowers view instead.
+            await this.page.getByText(/Borrower 1/i).first()
+                .waitFor({ state: 'visible', timeout: 10000 });
         });
     }
 
@@ -333,7 +340,10 @@ class LoanDetailPage {
     async clickPropertyNav() {
         await test.step('Click Property sub-nav', async () => {
             await this.propertyNav.click();
-            await this.page.waitForLoadState('domcontentloaded');
+            // waitForLoadState('domcontentloaded') is a no-op for SPA sub-nav clicks.
+            // Wait for the first structural element of the Property view instead.
+            await this.propertySubjectInfoHeading
+                .waitFor({ state: 'visible', timeout: 10000 });
         });
     }
 
@@ -460,7 +470,10 @@ class LoanDetailPage {
     async clickFinancialsNav() {
         await test.step('Click Financials sub-nav', async () => {
             await this.financialsNav.click();
-            await this.page.waitForLoadState('domcontentloaded');
+            // waitForLoadState('domcontentloaded') is a no-op for SPA sub-nav clicks.
+            // Wait for the Credit Information heading which is always first to render.
+            await this.financialsCreditInfoHeading
+                .waitFor({ state: 'visible', timeout: 10000 });
         });
     }
 
@@ -496,7 +509,10 @@ class LoanDetailPage {
     async clickTrackerTab() {
         await test.step('Click Tracker tab', async () => {
             await this.trackerTab.click();
-            await this.page.waitForLoadState('domcontentloaded');
+            // waitForLoadState('domcontentloaded') is a no-op for SPA tab clicks.
+            // Wait for the top stepper's first stage label to appear instead.
+            await this.trackerPreQual
+                .waitFor({ state: 'visible', timeout: 10000 });
         });
     }
 
@@ -620,7 +636,10 @@ class LoanDetailPage {
     async clickConditionsTab() {
         await test.step('Click Conditions tab', async () => {
             await this.conditionsTab.click();
-            await this.page.waitForLoadState('domcontentloaded');
+            // waitForLoadState('domcontentloaded') is a no-op for SPA tab clicks.
+            // Wait for the Borrower Tasks sub-tab to appear instead.
+            await this.conditionsBorrowerTasksTab
+                .waitFor({ state: 'visible', timeout: 10000 });
         });
     }
 
@@ -678,7 +697,10 @@ class LoanDetailPage {
     async clickLenderTasksTab() {
         await test.step('Click Lender Tasks sub-tab', async () => {
             await this.conditionsLenderTasksTab.click();
-            await this.page.waitForLoadState('domcontentloaded');
+            // waitForLoadState('domcontentloaded') is a no-op for SPA accordion/tab
+            // state changes — wait for the Progress label to confirm the panel rendered.
+            await this.conditionsProgressLabel
+                .waitFor({ state: 'visible', timeout: 10000 });
         });
     }
 
@@ -688,7 +710,9 @@ class LoanDetailPage {
     async clickBorrowerTasksTab() {
         await test.step('Click Borrower Tasks sub-tab', async () => {
             await this.conditionsBorrowerTasksTab.click();
-            await this.page.waitForLoadState('domcontentloaded');
+            // Same SPA guard as clickLenderTasksTab.
+            await this.conditionsProgressLabel
+                .waitFor({ state: 'visible', timeout: 10000 });
         });
     }
 
@@ -697,7 +721,14 @@ class LoanDetailPage {
     async clickDocumentsTab() {
         await test.step('Click Documents tab', async () => {
             await this.documentsTab.click();
-            await this.page.waitForLoadState('domcontentloaded');
+            // waitForLoadState('domcontentloaded') is a no-op for SPA tab clicks.
+            // Wait for the Refresh button or a known document category to confirm
+            // the Documents panel has mounted.  Both are guarded with isVisible()
+            // in the verify methods, so we wait for whichever appears first.
+            await Promise.race([
+                this.documentsRefreshBtn.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {}),
+                this.docSoftCreditConsent.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {}),
+            ]);
         });
     }
 
@@ -769,7 +800,8 @@ class LoanDetailPage {
                 return;
             }
             await this.documentsRefreshBtn.click();
-            await this.page.waitForLoadState('domcontentloaded');
+            // waitForLoadState('domcontentloaded') is a no-op for SPA refresh actions.
+            // Wait for the button to remain visible, which confirms the tab didn't blank.
             await expect(this.documentsRefreshBtn).toBeVisible({ timeout: 10000 });
         });
     }

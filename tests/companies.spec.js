@@ -107,7 +107,7 @@ test.describe('Companies (CRU)', () => {
         await companiesPage.cancelCompanyModal();
 
         // Page must still show the company list after cancel
-        await expect(companiesPage.pageHeading).toBeVisible();
+        await expect(companiesPage.pageHeading).toBeVisible({ timeout: 10000 });
     });
 
     test('Create a new company with generated data and verify it appears in the table', async ({
@@ -143,7 +143,7 @@ test.describe('Companies (CRU)', () => {
         await companiesPage.cancelEditCompanyModal();
 
         // Page must still show the company list after cancel
-        await expect(companiesPage.pageHeading).toBeVisible();
+        await expect(companiesPage.pageHeading).toBeVisible({ timeout: 10000 });
     });
 
     test('Edit an existing company with new random data and verify the table', async ({

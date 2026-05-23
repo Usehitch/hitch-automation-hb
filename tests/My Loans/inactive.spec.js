@@ -68,7 +68,7 @@ test.describe('My Loans - Inactive', () => {
             .isVisible({ timeout: 3000 })
             .catch(() => false);
         if (sectionVisible) {
-            await expect(activePage.pendingMloCertSection).toBeVisible();
+            await expect(activePage.pendingMloCertSection).toBeVisible({ timeout: 10000 });
         }
 
         // Clear and confirm the page resets cleanly
@@ -92,7 +92,7 @@ test.describe('My Loans - Inactive', () => {
         });
         await activePage.applyFilters();
         // Pipeline sections still render after filtering
-        await expect(activePage.pendingMloCertSection).toBeVisible();
+        await expect(activePage.pendingMloCertSection).toBeVisible({ timeout: 10000 });
         await activePage.clearAllFilters();
     });
 

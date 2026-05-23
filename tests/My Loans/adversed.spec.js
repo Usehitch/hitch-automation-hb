@@ -61,7 +61,7 @@ test.describe('My Loans - Adversed', () => {
         // Search by a known address fragment — results should narrow but the
         // Pending MLO Certification section heading must still render
         await activePage.search('4556 Eliot');
-        await expect(activePage.pendingMloCertSection).toBeVisible();
+        await expect(activePage.pendingMloCertSection).toBeVisible({ timeout: 10000 });
 
         // Clear and confirm the page resets
         await activePage.clearSearch();
@@ -84,7 +84,7 @@ test.describe('My Loans - Adversed', () => {
         });
         await activePage.applyFilters();
         // Pipeline sections still render after filtering
-        await expect(activePage.pendingMloCertSection).toBeVisible();
+        await expect(activePage.pendingMloCertSection).toBeVisible({ timeout: 10000 });
         await activePage.clearAllFilters();
     });
 

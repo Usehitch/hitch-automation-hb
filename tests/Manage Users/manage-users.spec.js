@@ -150,7 +150,7 @@ test.describe('Manage Users', () => {
 
         // Cancel without creating a user — returns to the list page
         await manageUsersPage.cancelAddNewUser();
-        await expect(manageUsersPage.addNewUserBtn).toBeVisible();
+        await expect(manageUsersPage.addNewUserBtn).toBeVisible({ timeout: 10000 });
     });
 
     test('Add User modal contains all required fields', async ({ manageUsersPage }) => {

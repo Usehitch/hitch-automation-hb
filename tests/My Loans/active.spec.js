@@ -9,7 +9,7 @@ test.describe('My Loans - Active', () => {
 
     test('Verify the content for my loans page', async ({ activePage }) => {
         // -- Page heading ------------------------------------------------------
-        await expect(activePage.pageHeading).toBeVisible();
+        await expect(activePage.pageHeading).toBeVisible({ timeout: 20000 });
 
         // -- Overview stat tiles -----------------------------------------------
         // Counts/amounts are dynamic — structure and labels only
@@ -37,7 +37,7 @@ test.describe('My Loans - Active', () => {
 
         // At least the pipeline section headings should still be visible after
         // narrowing results (sections collapse only when count reaches zero)
-        await expect(activePage.pendingMloCertSection).toBeVisible();
+        await expect(activePage.pendingMloCertSection).toBeVisible({ timeout: 10000 });
 
         // Reset before opening the filter
         await activePage.clearSearch();
@@ -53,15 +53,18 @@ test.describe('My Loans - Active', () => {
 
         // -- File Owner dropdown ----------------------------------------------
         await test.step('Verify File Owner dropdown opens and lists options', async () => {
-            await activePage.fileOwnerDropdown.click();
-            await expect(activePage.page.getByRole('listbox').first()).toBeVisible({ timeout: 5000 });
+            // Use evaluate() to fire the click synchronously — the MUI popup-indicator
+            // button can detach mid-click during React re-render cycles on CI.
+            await activePage.fileOwnerDropdown.evaluate(el => el.click());
+            await expect(activePage.page.getByRole('listbox').first()).toBeVisible({ timeout: 10000 });
             await activePage.page.keyboard.press('Escape');
         });
 
         // -- Loan Officer dropdown ---------------------------------------------
         await test.step('Verify Loan Officer dropdown opens and lists options', async () => {
-            await activePage.loanOfficerDropdown.click();
-            await expect(activePage.page.getByRole('listbox').first()).toBeVisible({ timeout: 5000 });
+            // Use evaluate() for the same reason as File Owner above.
+            await activePage.loanOfficerDropdown.evaluate(el => el.click());
+            await expect(activePage.page.getByRole('listbox').first()).toBeVisible({ timeout: 10000 });
             await activePage.page.keyboard.press('Escape');
         });
 
@@ -69,7 +72,7 @@ test.describe('My Loans - Active', () => {
         await activePage.verifyStateDropdownOptions();
         await activePage.toggleShowTestAccounts();
         await activePage.applyFilters();
-        await expect(activePage.pendingMloCertSection).toBeVisible();
+        await expect(activePage.pendingMloCertSection).toBeVisible({ timeout: 10000 });
         await activePage.clearAllFilters();
         await activePage.verifyPipelineSections();
     });

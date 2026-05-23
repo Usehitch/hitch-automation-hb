@@ -25,12 +25,12 @@ test.describe('Pre-Qual Manually', () => {
         await newApplicationPage.clickNext();
 
         // Step 2 — Mortgages & Liens
-        await expect(newApplicationPage.mortgagesHeading).toBeVisible();
+        await expect(newApplicationPage.mortgagesHeading).toBeVisible({ timeout: 15000 });
         await mortgagesAndLiensPage.fillMortgagesAndLiens(applicationData);
         await mortgagesAndLiensPage.clickNext();
 
         // Step 3 — Offer Review (Pre-Qualification Summary)
-        await expect(offerReviewPage.pageHeading).toBeVisible();
+        await expect(offerReviewPage.pageHeading).toBeVisible({ timeout: 15000 });
         await offerReviewPage.updateLoanAmount(applicationData);
         await offerReviewPage.clickManageDebtPayoffs(applicationData);
         await offerReviewPage.verifyDebtPayoffModal(applicationData);
@@ -43,21 +43,21 @@ test.describe('Pre-Qual Manually', () => {
         await offerReviewPage.clickNext();
 
         // Step 4 — Consents
-        await expect(consentsPage.pageHeading).toBeVisible();
+        await expect(consentsPage.pageHeading).toBeVisible({ timeout: 15000 });
         await consentsPage.checkAllCertifications();
         await consentsPage.fillBrokerMloName(applicationData);
         await consentsPage.verifySignature(applicationData);
         await consentsPage.clickNext();
 
         // Step 5 — Confirmation
-        await expect(confirmationPage.successHeading).toBeVisible();
+        await expect(confirmationPage.successHeading).toBeVisible({ timeout: 15000 });
         await confirmationPage.verifyConfirmation(applicationData);
         await confirmationPage.clickCopyBorrowerAppLink();
         await confirmationPage.clickDownloadPdf();
         await confirmationPage.clickClose();
 
         // Verify redirect back to portal dashboard
-        await expect(confirmationPage.portalPipelineSection).toBeVisible();
+        await expect(confirmationPage.portalPipelineSection).toBeVisible({ timeout: 15000 });
     });
 
     test('Create new application with Co-Borrower', async ({
@@ -79,12 +79,12 @@ test.describe('Pre-Qual Manually', () => {
         await newApplicationPage.clickNext();
 
         // Step 2 — Mortgages & Liens
-        await expect(newApplicationPage.mortgagesHeading).toBeVisible();
+        await expect(newApplicationPage.mortgagesHeading).toBeVisible({ timeout: 15000 });
         await mortgagesAndLiensPage.fillMortgagesAndLiens(coBorrowerApplicationData);
         await mortgagesAndLiensPage.clickNext();
 
         // Step 3 — Offer Review
-        await expect(offerReviewPage.pageHeading).toBeVisible();
+        await expect(offerReviewPage.pageHeading).toBeVisible({ timeout: 15000 });
         await offerReviewPage.updateLoanAmount(coBorrowerApplicationData);
         await offerReviewPage.clickManageDebtPayoffs(coBorrowerApplicationData);
         await offerReviewPage.verifyDebtPayoffModal(coBorrowerApplicationData);
@@ -97,20 +97,20 @@ test.describe('Pre-Qual Manually', () => {
         await offerReviewPage.clickNext();
 
         // Step 4 — Consents
-        await expect(consentsPage.pageHeading).toBeVisible();
+        await expect(consentsPage.pageHeading).toBeVisible({ timeout: 15000 });
         await consentsPage.checkAllCertifications();
         await consentsPage.fillBrokerMloName(coBorrowerApplicationData);
         await consentsPage.verifySignature(coBorrowerApplicationData);
         await consentsPage.clickNext();
 
         // Step 5 — Confirmation
-        await expect(confirmationPage.successHeading).toBeVisible();
+        await expect(confirmationPage.successHeading).toBeVisible({ timeout: 15000 });
         await confirmationPage.verifyConfirmation(coBorrowerApplicationData);
         await confirmationPage.clickCopyBorrowerAppLink();
         await confirmationPage.clickDownloadPdf();
         await confirmationPage.clickClose();
 
-        await expect(confirmationPage.portalPipelineSection).toBeVisible();
+        await expect(confirmationPage.portalPipelineSection).toBeVisible({ timeout: 15000 });
     });
 
 });

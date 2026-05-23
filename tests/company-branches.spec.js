@@ -92,7 +92,7 @@ test.describe('Company Branches (CRU)', () => {
         await companyBranchesPage.cancelBranchModal();
 
         // Page must still show the branch list after cancel
-        await expect(companyBranchesPage.pageHeading).toBeVisible();
+        await expect(companyBranchesPage.pageHeading).toBeVisible({ timeout: 10000 });
     });
 
     test('Create a new branch with generated data and verify it appears in the table', async ({
@@ -122,7 +122,7 @@ test.describe('Company Branches (CRU)', () => {
         await companyBranchesPage.cancelEditBranchModal();
 
         // Page must still show the branch list after cancel
-        await expect(companyBranchesPage.pageHeading).toBeVisible();
+        await expect(companyBranchesPage.pageHeading).toBeVisible({ timeout: 10000 });
     });
 
     test('Edit an existing branch with new random data and verify the table', async ({

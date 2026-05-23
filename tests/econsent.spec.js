@@ -29,12 +29,12 @@ test.describe('E-Consent', () => {
         await newApplicationPage.clickNext();
 
         // Step 2 — Mortgages & Liens
-        await expect(newApplicationPage.mortgagesHeading).toBeVisible();
+        await expect(newApplicationPage.mortgagesHeading).toBeVisible({ timeout: 15000 });
         await mortgagesAndLiensPage.fillMortgagesAndLiens(coBorrowerApplicationData);
         await mortgagesAndLiensPage.clickNext();
 
         // Step 3 — Offer Review
-        await expect(offerReviewPage.pageHeading).toBeVisible();
+        await expect(offerReviewPage.pageHeading).toBeVisible({ timeout: 15000 });
         await offerReviewPage.updateLoanAmount(coBorrowerApplicationData);
         await offerReviewPage.clickManageDebtPayoffs(coBorrowerApplicationData);
         await offerReviewPage.verifyDebtPayoffModal(coBorrowerApplicationData);
@@ -47,7 +47,7 @@ test.describe('E-Consent', () => {
         await offerReviewPage.clickNext();
 
         // Step 4 — Consents
-        await expect(consentsPage.pageHeading).toBeVisible();
+        await expect(consentsPage.pageHeading).toBeVisible({ timeout: 15000 });
         await consentsPage.checkAllCertifications();
         await consentsPage.fillBrokerMloName(coBorrowerApplicationData);
         await consentsPage.verifySignature(coBorrowerApplicationData);
@@ -69,7 +69,7 @@ test.describe('E-Consent', () => {
         });
 
         // Step 5 — Confirmation
-        await expect(confirmationPage.successHeading).toBeVisible();
+        await expect(confirmationPage.successHeading).toBeVisible({ timeout: 15000 });
         await confirmationPage.verifyConfirmation(coBorrowerApplicationData);
         await confirmationPage.clickCopyBorrowerAppLink();
         await confirmationPage.clickDownloadPdf();

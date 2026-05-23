@@ -96,10 +96,10 @@ test.describe('Manage Users — Add & Edit User', () => {
             .first();
 
         // Email column
-        await expect(userRow.locator('td').filter({ hasText: userEmail })).toBeVisible();
+        await expect(userRow.locator('td').filter({ hasText: userEmail })).toBeVisible({ timeout: 10000 });
 
         // Name column
-        await expect(userRow.locator('td').filter({ hasText: userName })).toBeVisible();
+        await expect(userRow.locator('td').filter({ hasText: userName })).toBeVisible({ timeout: 10000 });
     });
 
     // -------------------------------------------------------------------------

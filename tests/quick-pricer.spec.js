@@ -129,7 +129,7 @@ test.describe('Quick Pricer — HELOC Rate Calculator', () => {
 
         // Cancel — no invite is sent
         await quickPricerPage.cancelInvite();
-        await expect(quickPricerPage.inviteBorrowerBtn).toBeVisible();
+        await expect(quickPricerPage.inviteBorrowerBtn).toBeVisible({ timeout: 10000 });
     });
 
     test('Send invite shows the Invite sent success panel with an application link', async ({

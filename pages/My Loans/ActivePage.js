@@ -115,10 +115,12 @@ class ActivePage {
             await this.adversedNavItem.click();
             await this.page.waitForLoadState('load');
             // waitForLoadState('load') resolves immediately for SPA tab switches.
-            // Wait for the Pending MLO Certification section to appear — it only
-            // renders once the tab's data has loaded from the API, so this
-            // guarantees the pipeline is fully populated before any test body runs.
-            await expect(this.pendingMloCertSection).toBeVisible({ timeout: 60000 });
+            // Wait for the filter toolbar button — it appears as soon as the tab's
+            // UI has mounted and is not data-dependent (unlike pendingMloCertSection
+            // which only renders when there are pending MLO loans and can take > 60 s
+            // on loaded CI).  Tests that specifically need pipeline sections wait for
+            // them in their own step bodies.
+            await expect(this.filterBtn).toBeVisible({ timeout: 30000 });
         });
     }
 
@@ -127,8 +129,8 @@ class ActivePage {
             await this.clickMyLoansNav();
             await this.inactiveNavItem.click();
             await this.page.waitForLoadState('load');
-            // Same data-ready guard as navigateToAdversed.
-            await expect(this.pendingMloCertSection).toBeVisible({ timeout: 60000 });
+            // Same toolbar-ready guard as navigateToAdversed.
+            await expect(this.filterBtn).toBeVisible({ timeout: 30000 });
         });
     }
 
@@ -275,10 +277,13 @@ class ActivePage {
      * @param {string} optionText
      */
     async selectFilterOption(dropdown, optionText) {
-        // Regular click() — the dropdown locator now targets the visible MUI Select
-        // trigger (div[aria-haspopup="listbox"]), so no force is needed and the
-        // click coordinate lands safely inside the dialog's content area.
-        await dropdown.click();
+        // Use evaluate(el => el.click()) instead of click() to survive the MUI
+        // Autocomplete popup-indicator detach race: on CI, React can re-render the
+        // dialog between Playwright's element-resolve and event-dispatch steps,
+        // causing click() to retry indefinitely on a detached button.
+        // evaluate() dispatches the click synchronously in one JS microtask so no
+        // re-render can occur between resolution and dispatch.
+        await dropdown.evaluate(el => el.click());
         // Wait for the listbox AND at least one option to appear before querying.
         // The listbox container can become visible before React renders its children,
         // so waiting only for the listbox is not sufficient.

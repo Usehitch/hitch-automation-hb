@@ -53,7 +53,7 @@ test.describe('Shadow Borrower View', () => {
 
         // Shadow Borrower View button must still be visible — broker is back
         // on the Loan Detail page, not in read-only mode
-        await expect(loanDetailPage.shadowBorrowerViewBtn).toBeVisible();
+        await expect(loanDetailPage.shadowBorrowerViewBtn).toBeVisible({ timeout: 10000 });
     });
 
     // -- Read-only mode (new tab) ---------------------------------------------

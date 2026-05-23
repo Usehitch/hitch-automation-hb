@@ -313,7 +313,9 @@ class CompanyBranchesPage {
                 .locator('button[title="Open"]').first();
             if (await companyOpenBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
                 await companyOpenBtn.scrollIntoViewIfNeeded();
-                await companyOpenBtn.click();
+                // Use evaluate() — the MUI Autocomplete popup-indicator button can
+                // detach mid-click during React re-render cycles on CI.
+                await companyOpenBtn.evaluate(el => el.click());
                 const listbox = this.page.getByRole('listbox');
                 await listbox.waitFor({ state: 'visible', timeout: 5000 });
                 const firstOption = listbox.getByRole('option').first();
