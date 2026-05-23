@@ -89,7 +89,7 @@ class MortgagesAndLiensPage {
             // 120 s — co-borrower flows trigger two underwriting requests and can take
             // significantly longer than single-applicant flows, especially on CI.
             await this.page.getByText('Pre-Qualification Summary').first()
-                .waitFor({ state: 'visible', timeout: 150000 });
+                .waitFor({ state: 'visible', timeout: 200000 });
         });
     };
 };

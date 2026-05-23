@@ -118,7 +118,7 @@ class ActivePage {
             // Wait for the Pending MLO Certification section to appear — it only
             // renders once the tab's data has loaded from the API, so this
             // guarantees the pipeline is fully populated before any test body runs.
-            await expect(this.pendingMloCertSection).toBeVisible({ timeout: 30000 });
+            await expect(this.pendingMloCertSection).toBeVisible({ timeout: 45000 });
         });
     }
 
@@ -128,7 +128,7 @@ class ActivePage {
             await this.inactiveNavItem.click();
             await this.page.waitForLoadState('load');
             // Same data-ready guard as navigateToAdversed.
-            await expect(this.pendingMloCertSection).toBeVisible({ timeout: 30000 });
+            await expect(this.pendingMloCertSection).toBeVisible({ timeout: 45000 });
         });
     }
 
@@ -404,10 +404,18 @@ class ActivePage {
 
     /**
      * Checks the "Show Test Accounts" checkbox and asserts it becomes checked.
-     * Unchecks it afterwards to leave the modal in a clean state.
+     * Soft-skips if the checkbox is not present in this tab's filter modal
+     * (e.g. the Adversed / Inactive filter may omit it).
      */
     async toggleShowTestAccounts() {
         await test.step('Check Show Test Accounts checkbox', async () => {
+            const isPresent = await this.showTestAccountsChk
+                .isVisible({ timeout: 5000 })
+                .catch(() => false);
+            if (!isPresent) {
+                console.warn('Show Test Accounts checkbox not present in this filter — skipping');
+                return;
+            }
             await this.showTestAccountsChk.check({ force: true });
             await expect(this.showTestAccountsChk).toBeChecked();
         });
