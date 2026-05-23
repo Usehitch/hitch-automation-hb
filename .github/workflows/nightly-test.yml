@@ -1,5 +1,7 @@
 name: Nightly Regression Tests
 on:
+  schedule:
+    - cron: '0 22 * * *'   # every day at 22:00 UTC (10 PM UTC)
   push:
     branches: [ main, master ]
   pull_request:
