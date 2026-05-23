@@ -227,8 +227,16 @@ class LoanDetailPage {
 
     async verifyESignedMethodConsent() {
         await test.step('Verify esigned_method_consent section is present with documents', async () => {
+            // eSignedMethodConsentItem uses .first() — it always resolves to
+            // esigned_method_consent1 (primary borrower).  The co-borrower's consent
+            // is a separate list entry named esigned_method_consent2; locate it
+            // independently rather than asserting .first() contains "2".
             await expect(this.eSignedMethodConsentItem).toBeVisible();
-            await expect(this.eSignedMethodConsentItem).toContainText('esigned_method_consent2');
+            const coBorrowerConsentItem = this.page
+                .locator('button')
+                .filter({ hasText: /esigned_method_consent2/i })
+                .first();
+            await expect(coBorrowerConsentItem).toBeVisible({ timeout: 10000 });
         });
     }
 

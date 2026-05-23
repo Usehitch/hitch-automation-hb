@@ -14,6 +14,10 @@ test.describe('Pre-Qual Manually', () => {
         consentsPage,
         confirmationPage,
     }) => {
+        // Extend timeout: finalization + offer-review consents each wait up to 200 s
+        // on CI (real credit-pull + underwriting API calls).  5 min > 2×200 s worst case.
+        test.setTimeout(300000);
+
         // Step 1 — Application Details
         await preQualManualPage.clickStartApp();
         await preQualManualPage.clickStartPreQualManually();
@@ -64,6 +68,10 @@ test.describe('Pre-Qual Manually', () => {
         consentsPage,
         confirmationPage,
     }) => {
+        // Co-borrower flows run two credit pulls — finalization, summary, and consents
+        // can each take up to ~200 s on CI.  5 min gives sufficient headroom.
+        test.setTimeout(300000);
+
         // Step 1 — Application Details (includes co-borrower section)
         await preQualManualPage.clickStartApp();
         await preQualManualPage.clickStartPreQualManually();

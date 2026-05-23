@@ -18,6 +18,10 @@ test.describe('E-Consent', () => {
         activePage,
         loanDetailPage,
     }) => {
+        // Co-borrower flow: finalization + summary + consents each wait up to ~200 s on CI.
+        // Additional loan-detail + document navigation adds ~30 s.  6 min covers the worst case.
+        test.setTimeout(360000);
+
         // Step 1 — Application Details (includes co-borrower section)
         await preQualManualPage.clickStartApp();
         await preQualManualPage.clickStartPreQualManually();
