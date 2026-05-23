@@ -150,7 +150,8 @@ class CompanyBranchesPage {
         await test.step(`Search for "${query}"`, async () => {
             await this.searchInput.fill(query);
             await this.searchBtn.click();
-            await this.page.waitForLoadState('networkidle');
+            // Drop networkidle — callers always follow with verifySearchResultContains
+            // which carries its own 10 s element-visibility timeout.
         });
     }
 
@@ -166,13 +167,14 @@ class CompanyBranchesPage {
 
     async clearSearch() {
         await test.step('Clear search and reload full branch list', async () => {
+            // Drop networkidle everywhere — callers follow with table assertions that
+            // carry their own element-visibility timeouts.
             const inlineClear = this.page
                 .locator('input[placeholder*="Search"] ~ button, input[placeholder*="Search"] + button')
                 .first();
             const hasInlineClear = await inlineClear.isVisible({ timeout: 1000 }).catch(() => false);
             if (hasInlineClear) {
                 await inlineClear.click();
-                await this.page.waitForLoadState('networkidle');
                 return;
             }
 
@@ -180,13 +182,11 @@ class CompanyBranchesPage {
             const hasEmptyState = await emptyStateClear.isVisible({ timeout: 1000 }).catch(() => false);
             if (hasEmptyState) {
                 await emptyStateClear.click();
-                await this.page.waitForLoadState('networkidle');
                 return;
             }
 
             await this.searchInput.clear();
             await this.searchBtn.click();
-            await this.page.waitForLoadState('networkidle');
         });
     }
 
@@ -367,8 +367,9 @@ class CompanyBranchesPage {
             // ── Submit ──────────────────────────────────────────────────────────
             await this.branchModalCreateBtn.scrollIntoViewIfNeeded();
             await this.branchModalCreateBtn.click();
+            // Modal hiding is the data-ready signal; verifyBranchInTable (called
+            // immediately after) re-searches the table which has its own wait.
             await expect(this.branchModal).toBeHidden({ timeout: 20000 });
-            await this.page.waitForLoadState('networkidle');
         });
     }
 
@@ -404,7 +405,7 @@ class CompanyBranchesPage {
                 .getByRole('button', { name: /^edit$/i })
                 .first();
             await firstEditBtn.click();
-            await this.page.waitForLoadState('networkidle');
+            // editBranchModal visibility is the ready signal — no networkidle needed
             await expect(this.editBranchModal).toBeVisible({ timeout: 10000 });
         });
     }
@@ -426,8 +427,8 @@ class CompanyBranchesPage {
     async submitEditBranch() {
         await test.step('Submit Edit Branch modal (UPDATE / SAVE)', async () => {
             await this.editBranchUpdateBtn.click();
+            // Modal hiding + downstream search assertion covers data-ready wait
             await expect(this.editBranchModal).toBeHidden({ timeout: 15000 });
-            await this.page.waitForLoadState('networkidle');
         });
     }
 

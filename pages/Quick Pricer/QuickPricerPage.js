@@ -214,7 +214,7 @@ class QuickPricerPage {
     async clickFillSampleData() {
         await test.step('Click Fill Sample Data', async () => {
             await this.fillSampleDataBtn.click();
-            await this.page.waitForLoadState('networkidle');
+            // Drop networkidle — the combobox non-empty check below is the ready signal
             // Wait for at least one dropdown to show a non-empty selected value
             await expect(
                 this.page.locator('.MuiSelect-select, [role="combobox"]').first()
@@ -362,8 +362,7 @@ class QuickPricerPage {
     async switchToHistoryTab() {
         await test.step('Switch to History tab', async () => {
             await this.historyTab.click();
-            await this.page.waitForLoadState('networkidle');
-            // Confirm the switch: the Calculator form (Property Details) hides
+            // Drop networkidle — propertyDetailsHeading hiding is the tab-switch signal
             await expect(this.propertyDetailsHeading).toBeHidden({ timeout: 10000 });
         });
     }

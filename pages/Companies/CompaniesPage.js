@@ -148,8 +148,10 @@ class CompaniesPage {
         await test.step('Navigate to Companies via sidebar', async () => {
             await expect(this.companiesNav).toBeVisible({ timeout: 15000 });
             await this.companiesNav.click();
-            await this.page.waitForLoadState('networkidle');
-            await expect(this.pageHeading).toBeVisible({ timeout: 15000 });
+            // waitForLoadState('networkidle') hangs indefinitely on CI for SPAs
+            // that maintain background connections.  Heading visibility is the
+            // reliable data-ready signal.
+            await expect(this.pageHeading).toBeVisible({ timeout: 20000 });
         });
     }
 
@@ -255,7 +257,8 @@ class CompaniesPage {
         await test.step(`Search for "${query}"`, async () => {
             await this.searchInput.fill(query);
             await this.searchBtn.click();
-            await this.page.waitForLoadState('networkidle');
+            // Drop networkidle — callers follow with verifySearchResultContains
+            // which carries its own 10 s element-visibility timeout.
         });
     }
 
@@ -279,6 +282,9 @@ class CompaniesPage {
      */
     async clearSearch() {
         await test.step('Clear search and reload full company list', async () => {
+            // Drop networkidle everywhere — callers follow with table assertions
+            // that carry their own element-visibility timeouts.
+
             // 1. Inline × icon (appears while the search box has text)
             const inlineClear = this.page
                 .locator('input[placeholder*="Search"] ~ button, input[placeholder*="Search"] + button')
@@ -286,7 +292,6 @@ class CompaniesPage {
             const hasInlineClear = await inlineClear.isVisible({ timeout: 1000 }).catch(() => false);
             if (hasInlineClear) {
                 await inlineClear.click();
-                await this.page.waitForLoadState('networkidle');
                 return;
             }
 
@@ -295,14 +300,12 @@ class CompaniesPage {
             const hasEmptyState = await emptyStateClear.isVisible({ timeout: 1000 }).catch(() => false);
             if (hasEmptyState) {
                 await emptyStateClear.click();
-                await this.page.waitForLoadState('networkidle');
                 return;
             }
 
             // 3. Programmatic fallback
             await this.searchInput.clear();
             await this.searchBtn.click();
-            await this.page.waitForLoadState('networkidle');
         });
     }
 
@@ -481,8 +484,8 @@ class CompaniesPage {
 
             // ── Submit ───────────────────────────────────────────────────────
             await this.companyModalCreateBtn.click();
+            // Modal hiding + downstream verifyCompanyInTable search covers the wait
             await expect(this.companyModal).toBeHidden({ timeout: 20000 });
-            await this.page.waitForLoadState('networkidle');
         });
     }
 
@@ -530,7 +533,7 @@ class CompaniesPage {
                 .getByRole('button', { name: /^edit$/i })
                 .first();
             await firstEditBtn.click();
-            await this.page.waitForLoadState('networkidle');
+            // editCompanyModal visibility is the ready signal — no networkidle needed
             await expect(this.editCompanyModal).toBeVisible({ timeout: 10000 });
         });
     }
@@ -552,7 +555,6 @@ class CompaniesPage {
             // Use accessible name "edit" — matches the button label from the snapshot.
             const editBtn = targetRow.getByRole('button', { name: /^edit$/i });
             await editBtn.click();
-            await this.page.waitForLoadState('networkidle');
             await expect(this.editCompanyModal).toBeVisible({ timeout: 10000 });
         });
     }
@@ -611,8 +613,8 @@ class CompaniesPage {
     async submitEditCompany() {
         await test.step('Submit Edit Company modal (UPDATE)', async () => {
             await this.editCompanyUpdateBtn.click();
+            // Modal hiding + downstream search assertion covers data-ready wait
             await expect(this.editCompanyModal).toBeHidden({ timeout: 15000 });
-            await this.page.waitForLoadState('networkidle');
         });
     }
 

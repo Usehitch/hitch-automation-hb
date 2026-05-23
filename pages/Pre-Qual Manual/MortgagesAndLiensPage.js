@@ -86,8 +86,10 @@ class MortgagesAndLiensPage {
 
             // Confirm step 3 content loaded — stepper tab ("Offer Review") appears
             // before the card heading; waiting for the heading guarantees data is ready.
+            // 120 s — co-borrower flows trigger two underwriting requests and can take
+            // significantly longer than single-applicant flows, especially on CI.
             await this.page.getByText('Pre-Qualification Summary').first()
-                .waitFor({ state: 'visible', timeout: 60000 });
+                .waitFor({ state: 'visible', timeout: 120000 });
         });
     };
 };
