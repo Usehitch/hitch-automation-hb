@@ -38,6 +38,10 @@ class PreQualManualPage {
      */
     async openShareableLinkInNewTab() {
         return await test.step('Open shareable app link in new tab', async () => {
+            // Wait for the portal dashboard to render the button before clicking.
+            // click({ force: true }) bypasses actionability but still needs the element
+            // in the DOM — without this guard, CI load can cause a silent 180 s wait.
+            await this.sharableAppLinkBtn.waitFor({ state: 'visible', timeout: 30000 });
             // Open the modal
             await this.sharableAppLinkBtn.click({ force: true });
             await this.page.getByRole('heading', { name: 'Start HELOC Loan Application' })

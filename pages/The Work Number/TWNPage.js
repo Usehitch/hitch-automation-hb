@@ -170,7 +170,7 @@ class TWNPage {
         await test.step('Fill credit check fields (TWN)', async () => {
             const cc = data.creditCheck;
 
-            await this.ssnInput.waitFor({ state: 'visible', timeout: 15000 });
+            await this.ssnInput.waitFor({ state: 'visible', timeout: 30000 });
             await this.ssnInput.fill(cc.ssn);
             await this.ssnInput.press('Tab');
 
