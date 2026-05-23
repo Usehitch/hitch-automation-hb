@@ -101,19 +101,19 @@ class QuickPricerPage {
             // Wait for the sidebar to be fully hydrated before clicking.
             await expect(this.quickPricerNav).toBeVisible({ timeout: 15000 });
             await this.quickPricerNav.click();
-            await this.page.waitForLoadState('networkidle');
-
-            // SPA client-side navigation may complete before networkidle fires,
-            // so the heading component may not have rendered yet.  If it is not
-            // visible within 5 s, click the nav item once more and try again.
+            // waitForLoadState('networkidle') hangs indefinitely on CI for SPAs
+            // that keep background polling/websocket connections alive.  Wait for
+            // the heading element instead — it only renders once the route has
+            // fully committed and the component tree is mounted.
+            // If the heading doesn't appear in 10 s, click the nav once more
+            // (handles the race where a stale session redirects mid-navigation).
             const headingFound = await this.pageHeading
-                .isVisible({ timeout: 5000 })
+                .isVisible({ timeout: 10000 })
                 .catch(() => false);
 
             if (!headingFound) {
                 await expect(this.quickPricerNav).toBeVisible({ timeout: 10000 });
                 await this.quickPricerNav.click();
-                await this.page.waitForLoadState('networkidle');
             }
 
             await expect(this.pageHeading).toBeVisible({ timeout: 15000 });

@@ -70,8 +70,10 @@ class CompanyBranchesPage {
         await test.step('Navigate to Company Branches via sidebar', async () => {
             await expect(this.branchesNav).toBeVisible({ timeout: 15000 });
             await this.branchesNav.click();
-            await this.page.waitForLoadState('networkidle');
-            await expect(this.pageHeading).toBeVisible({ timeout: 15000 });
+            // waitForLoadState('networkidle') hangs indefinitely on CI for SPAs
+            // that maintain background polling/websocket connections.  The page-
+            // heading visibility check below is the reliable data-ready signal.
+            await expect(this.pageHeading).toBeVisible({ timeout: 20000 });
         });
     }
 

@@ -175,8 +175,9 @@ class ManageUsersPage {
                 });
 
             // Guard: confirm we actually landed on Portal Users, not another page.
-            // Use a generous timeout — CI can be slow to render after route changes.
-            await expect(this.pageHeading).toBeVisible({ timeout: 20000 });
+            // 30 s — CI runners under heavy load (120+ test suite) can take >20 s
+            // to render the first heading after an SPA route change.
+            await expect(this.pageHeading).toBeVisible({ timeout: 30000 });
 
             // The user table is populated by a separate async API call that fires
             // after the route renders.  Wait up to 10 s for the pagination counter

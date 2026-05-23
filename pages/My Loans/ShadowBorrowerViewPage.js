@@ -61,7 +61,10 @@ class ShadowBorrowerViewPage {
      */
     async verifyReadOnlyBanner() {
         await test.step('Verify Shadow Borrower View read-only banner', async () => {
-            await expect(this.readOnlyBanner).toBeVisible({ timeout: 15000 });
+            // 30 s — the shadow view opens in a new tab; the new tab must complete
+            // a full page load and React hydration before the banner renders.
+            // 15 s was not enough on CI when the runner was under load.
+            await expect(this.readOnlyBanner).toBeVisible({ timeout: 30000 });
         });
     }
 
