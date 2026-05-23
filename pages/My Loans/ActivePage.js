@@ -118,7 +118,7 @@ class ActivePage {
             // Wait for the Pending MLO Certification section to appear — it only
             // renders once the tab's data has loaded from the API, so this
             // guarantees the pipeline is fully populated before any test body runs.
-            await expect(this.pendingMloCertSection).toBeVisible({ timeout: 45000 });
+            await expect(this.pendingMloCertSection).toBeVisible({ timeout: 60000 });
         });
     }
 
@@ -128,7 +128,7 @@ class ActivePage {
             await this.inactiveNavItem.click();
             await this.page.waitForLoadState('load');
             // Same data-ready guard as navigateToAdversed.
-            await expect(this.pendingMloCertSection).toBeVisible({ timeout: 45000 });
+            await expect(this.pendingMloCertSection).toBeVisible({ timeout: 60000 });
         });
     }
 

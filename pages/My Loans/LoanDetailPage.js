@@ -227,16 +227,13 @@ class LoanDetailPage {
 
     async verifyESignedMethodConsent() {
         await test.step('Verify esigned_method_consent section is present with documents', async () => {
-            // eSignedMethodConsentItem uses .first() — it always resolves to
-            // esigned_method_consent1 (primary borrower).  The co-borrower's consent
-            // is a separate list entry named esigned_method_consent2; locate it
-            // independently rather than asserting .first() contains "2".
-            await expect(this.eSignedMethodConsentItem).toBeVisible();
-            const coBorrowerConsentItem = this.page
-                .locator('button')
-                .filter({ hasText: /esigned_method_consent2/i })
-                .first();
-            await expect(coBorrowerConsentItem).toBeVisible({ timeout: 10000 });
+            // The Documents tab content loads asynchronously after the tab click;
+            // give it 20 s for the consent section button to appear in the DOM.
+            // The portal creates a single esigned_method_consent section (not separate
+            // per-applicant entries), so we verify the section header exists.
+            // The co-borrower document is verified inside the section by
+            // openCoBorrowerMethodConsent() which locates the coborrowerMethodConsentSignature link.
+            await expect(this.eSignedMethodConsentItem).toBeVisible({ timeout: 20000 });
         });
     }
 
