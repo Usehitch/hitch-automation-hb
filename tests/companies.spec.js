@@ -39,7 +39,7 @@ import { createCompanyData, editCompanyData } from '../data/companiesData';
 test.describe('Companies (CRU)', () => {
     test.beforeEach(async ({ page, companiesPage }) => {
         await page.goto('/portal');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('load');
         await companiesPage.navigateToCompanies();
     });
 

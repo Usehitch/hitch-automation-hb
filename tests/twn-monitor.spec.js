@@ -5,7 +5,7 @@ import TWNPage from '../pages/The Work Number/TWNPage.js';
 test.describe('The Work Number (TWN)', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/portal');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('load');
     });
     test('TWN populates borrower info via shareable link', async ({
         preQualManualPage,

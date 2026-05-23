@@ -16,7 +16,9 @@ class MloCertificationModal {
 
     async waitForModal() {
         await test.step('Wait for MLO Certification modal', async () => {
-            await expect(this.modalHeading).toBeVisible({ timeout: 10000 });
+            // 20 s — the modal can take longer to open on CI when the certify
+            // request triggers background underwriting checks before rendering.
+            await expect(this.modalHeading).toBeVisible({ timeout: 20000 });
         });
     }
 

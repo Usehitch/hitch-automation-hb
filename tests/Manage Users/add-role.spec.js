@@ -31,7 +31,7 @@ const randomPhone = () => String(Math.floor(2000000000 + Math.random() * 7999999
 test.describe('Manage Users — Add Role', () => {
     test.beforeEach(async ({ page, manageUsersPage }) => {
         await page.goto('/portal');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('load');
         await manageUsersPage.navigateToManageUsers();
     });
 

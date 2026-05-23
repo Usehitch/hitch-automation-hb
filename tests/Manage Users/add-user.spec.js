@@ -68,7 +68,7 @@ const userData = {
 test.describe('Manage Users — Add & Edit User', () => {
     test.beforeEach(async ({ page, manageUsersPage }) => {
         await page.goto('/portal');
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('load');
         await manageUsersPage.navigateToManageUsers();
     });
 

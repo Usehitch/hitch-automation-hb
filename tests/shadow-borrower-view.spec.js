@@ -24,7 +24,7 @@ import ShadowBorrowerViewPage from '../pages/My Loans/ShadowBorrowerViewPage';
 // ---------------------------------------------------------------------------
 async function openPreQualLoanDetail({ activePage, loanDetailPage }) {
     await activePage.page.goto('/portal');
-    await activePage.page.waitForLoadState('networkidle');
+    await activePage.page.waitForLoadState('load');
     await activePage.clickViewInPreQual();
     await loanDetailPage.verifyPageLoaded();
 }

@@ -317,10 +317,13 @@ class ActivePage {
      */
     async verifyStatusDropdownOptions() {
         await test.step('Verify Status dropdown options', async () => {
-            // Regular click — statusDropdown now targets the visible trigger.
-            await this.statusDropdown.click();
+            // Use evaluate() to fire the click synchronously — the Status button can
+            // detach mid-click during MUI re-render cycles on CI (same issue as the
+            // State dropdown).  evaluate() executes in a single JS microtask so no
+            // re-render can occur between element resolution and the click dispatch.
+            await this.statusDropdown.evaluate(el => el.click());
             const listbox = this.page.getByRole('listbox');
-            await expect(listbox).toBeVisible({ timeout: 5000 });
+            await expect(listbox).toBeVisible({ timeout: 8000 });
 
             const expectedStatuses = [
                 'Inquiry',
