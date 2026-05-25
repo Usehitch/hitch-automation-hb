@@ -152,9 +152,11 @@ class ActivePage {
         });
     }
 
-    async verifyPipelineSections() {
+    async verifyPipelineSections({ requirePendingMlo = true } = {}) {
         await test.step('Verify pipeline section headings', async () => {
-            await expect(this.pendingMloCertSection).toBeVisible();
+            if (requirePendingMlo) {
+                await expect(this.pendingMloCertSection).toBeVisible();
+            }
             await expect(this.preQualSection).toBeVisible();
             await expect(this.inProcessSection).toBeVisible();
             await expect(this.closingSection).toBeVisible();

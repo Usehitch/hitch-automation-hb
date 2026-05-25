@@ -34,8 +34,9 @@ test.describe('My Loans - Inactive', () => {
     });
 
     test('Inactive tab pipeline section headings are rendered', async ({ activePage }) => {
-        // Pending MLO Certification, Pre-Qual, In Process, Closing, Funded
-        await activePage.verifyPipelineSections();
+        // Pre-Qual, In Process, Closing, Funded are always present.
+        // Pending MLO Certification only shows when loans are in that state.
+        await activePage.verifyPipelineSections({ requirePendingMlo: false });
     });
 
     test('Pending MLO Certification table shows all columns and actions', async ({
@@ -73,7 +74,7 @@ test.describe('My Loans - Inactive', () => {
 
         // Clear and confirm the page resets cleanly
         await activePage.clearSearch();
-        await activePage.verifyPipelineSections();
+        await activePage.verifyPipelineSections({ requirePendingMlo: false });
     });
 
     // -------------------------------------------------------------------------
@@ -122,7 +123,7 @@ test.describe('My Loans - Inactive', () => {
         await activePage.selectFilterOption(activePage.companyDropdown, 'ABC Broker');
         await activePage.applyFilters();
         await activePage.clearAllFilters();
-        await activePage.verifyPipelineSections();
+        await activePage.verifyPipelineSections({ requirePendingMlo: false });
     });
 
     // -------------------------------------------------------------------------

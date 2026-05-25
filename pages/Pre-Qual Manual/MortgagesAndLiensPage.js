@@ -71,16 +71,17 @@ class MortgagesAndLiensPage {
                 // The "Processing Application" overlay appears in most cases but may
                 // be skipped entirely if the app processes faster than Playwright
                 // resolves the locator (especially on co-borrower flows in CI).
-                // Wait up to 5 s for it to appear; if it never shows, skip the wait
-                // and proceed — the next waitFor('Pre-Qualification Summary') below
-                // will catch any true failures.
+                // Wait up to 15 s for it to appear — co-borrower flows on CI can
+                // take several seconds before the overlay renders, and a 5 s window
+                // caused the spinner to be missed, leaving the 250 s summary wait
+                // to race against an untracked processing job.
                 const appeared = await this.processingHeading
-                    .waitFor({ state: 'visible', timeout: 5000 })
+                    .waitFor({ state: 'visible', timeout: 15000 })
                     .then(() => true)
                     .catch(() => false);
 
                 if (appeared) {
-                    await this.processingHeading.waitFor({ state: 'hidden', timeout: 200000 });
+                    await this.processingHeading.waitFor({ state: 'hidden', timeout: 240000 });
                 }
             });
 
