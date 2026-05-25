@@ -73,43 +73,31 @@ test.describe('My Loans - Adversed', () => {
     test('Filter modal opens and all fields are present', async ({ activePage }) => {
         await activePage.openFilter();
         await activePage.verifyFilterFields();
-        // Close without applying
-        await activePage.page.keyboard.press('Escape');
     });
 
-    test('Filter — Company dropdown opens and lists options', async ({ activePage }) => {
-        await activePage.openFilter();
-        await test.step('Select Company option from filter dropdown', async () => {
-            await activePage.selectFilterOption(activePage.companyDropdown, 'ABC Broker');
-        });
-        await activePage.applyFilters();
-        // Pipeline sections still render after filtering
-        await expect(activePage.pendingMloCertSection).toBeVisible({ timeout: 10000 });
-        await activePage.clearAllFilters();
-    });
-
-    test('Filter — Status dropdown lists all expected statuses', async ({ activePage }) => {
+    test('Filter — Status dropdown lists all expected statuses', async ({ page, activePage }) => {
+        await page.waitForTimeout(3000);
         await activePage.openFilter();
         await activePage.verifyStatusDropdownOptions();
-        await activePage.page.keyboard.press('Escape');
     });
 
-    test('Filter — State dropdown lists all expected states', async ({ activePage }) => {
+    test('Filter — State dropdown lists all expected states', async ({ page, activePage }) => {
+        await page.waitForTimeout(6000);
         await activePage.openFilter();
         await activePage.verifyStateDropdownOptions();
-        await activePage.page.keyboard.press('Escape');
     });
 
-    test('Filter — Show Test Accounts checkbox toggles correctly', async ({ activePage }) => {
+    test('Filter — Show Test Accounts checkbox toggles correctly', async ({ page, activePage }) => {
+        await page.waitForTimeout(3000);
         await activePage.openFilter();
         await activePage.toggleShowTestAccounts();
-        await activePage.page.keyboard.press('Escape');
     });
 
-    test('Filter — Clear All Filters resets and pipeline sections remain', async ({
+    test('Filter — Clear All Filters resets and pipeline sections remain', async ({ page,
         activePage,
     }) => {
         // Apply a filter first, then clear — guards against a blank-page regression
+        await page.waitForTimeout(3000);
         await activePage.openFilter();
         await activePage.selectFilterOption(activePage.companyDropdown, 'ABC Broker');
         await activePage.applyFilters();

@@ -80,21 +80,22 @@ class ActivePage {
         //
         // Each dropdown is resolved by finding the FormControl <div> that also
         // contains the matching label — unique per field, order-independent.
+        // Each dropdown is pinned to the INNERMOST ancestor div (.last()) that
+        // contains that field's label — this is the MuiFormControl-root wrapping
+        // only that specific Autocomplete.  Using .first() or .nth(n) selects
+        // progressively-outer ancestors (e.g. MuiDialogContent-root) that span
+        // the whole dialog and contain all five Open buttons, which causes
+        // evaluate() to throw a strict-mode violation.
         this.companyDropdown     = this.filterModal
-            .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /^Company$/i }) })
-            .getByRole('button', { name: /open/i }).first();
+            .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /^Company$/i }) }).last();
         this.fileOwnerDropdown   = this.filterModal
-            .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /File Owner/i }) })
-            .getByRole('button', { name: /open/i }).first();
+            .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /File Owner/i }) }).last();
         this.loanOfficerDropdown = this.filterModal
-            .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /Loan Officer/i }) })
-            .getByRole('button', { name: /open/i }).first();
+            .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /Loan Officer/i }) }).last();
         this.statusDropdown      = this.filterModal
-            .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /^Status$/i }) })
-            .getByRole('button', { name: /open/i }).first();
+            .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /^Status$/i }) }).last();
         this.stateDropdown       = this.filterModal
-            .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /^State$/i }) })
-            .getByRole('button', { name: /open/i }).first();
+            .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /^State$/i }) }).last();
 
         // Checkbox and action buttons inside the modal
         this.showTestAccountsChk = this.filterModal.getByRole('checkbox', { name: /Show Test Accounts/i });
@@ -247,10 +248,17 @@ class ActivePage {
 
     /**
      * Opens the Filter modal and confirms its heading is visible.
+     *
+     * Uses waitFor + evaluate() rather than a plain click() to match the rest of
+     * the MUI button interactions in this file.  waitFor guarantees the button is
+     * attached and visible before we act; evaluate() dispatches the DOM click
+     * synchronously inside the browser so no MUI re-render cycle can detach the
+     * node between Playwright's element-resolve and event-dispatch steps.
      */
     async openFilter() {
         await test.step('Open Filter modal', async () => {
-            await this.filterBtn.click();
+            await this.filterBtn.waitFor({ state: 'visible', timeout: 15000 });
+            await this.filterBtn.evaluate(el => el.click());
             await expect(this.filterModalHeading).toBeVisible({ timeout: 10000 });
         });
     }
@@ -273,36 +281,61 @@ class ActivePage {
     }
 
     /**
-     * Selects an option from a filter dropdown by opening it and clicking the
-     * matching list item. Works for any MUI Select inside the modal.
-     * @param {import('@playwright/test').Locator} dropdown
-     * @param {string} optionText
+     * Selects an option from a filter dropdown by opening it, typing to filter,
+     * and clicking the matching list item.  Works for any MUI Autocomplete
+     * inside the modal (Company, File Owner, Loan Officer, Status, State).
+     *
+     * Flow:
+     *  1. Click the popup-indicator button to open the dropdown.
+     *  2. Fill the active combobox input — after the popup opens MUI sets
+     *     aria-expanded="true" on the associated <input role="combobox">,
+     *     which uniquely identifies it.  We target this attribute directly
+     *     with fill() instead of page.keyboard.type() so we never accidentally
+     *     type into the page-level search bar (which holds focus by default
+     *     and would reload the loan list on every keystroke).
+     *  3. Wait for the filtered option to appear in the listbox.
+     *  4. Click the option synchronously (evaluate) to beat MUI re-render cycles.
+     *     The modal stays open; Apply Filters must be clicked separately.
+     *
+     * @param {import('@playwright/test').Locator} dropdown  The "Open" button locator
+     * @param {string} optionText  Exact or partial label of the option to select
      */
     async selectFilterOption(dropdown, optionText) {
-        // Use evaluate(el => el.click()) instead of click() to survive the MUI
-        // Autocomplete popup-indicator detach race: on CI, React can re-render the
-        // dialog between Playwright's element-resolve and event-dispatch steps,
-        // causing click() to retry indefinitely on a detached button.
-        // evaluate() dispatches the click synchronously in one JS microtask so no
-        // re-render can occur between resolution and dispatch.
-        await dropdown.evaluate(el => el.click());
-        // Wait for the listbox AND at least one option to appear before querying.
-        // The listbox container can become visible before React renders its children,
-        // so waiting only for the listbox is not sufficient.
+        // Step 1 — open the MUI Autocomplete popup.
+        // The dropdown locator is already scoped to the innermost MuiFormControl-root
+        // that wraps only this specific field (set via .last() in the constructor),
+        // so getByRole('button') finds exactly one Open button — the correct one.
+        // evaluate() fires synchronously so no re-render can detach the button.
+        await dropdown.getByRole('button', { name: /open/i }).evaluate(el => el.click());
+
+        // Confirm the listbox is open before typing.
         const listbox = this.page.getByRole('listbox');
         await expect(listbox).toBeVisible({ timeout: 10000 });
-        await this.page.locator('[role="option"]').first()
-            .waitFor({ state: 'visible', timeout: 5000 })
-            .catch(() => {}); // proceed even if no option appears (empty list)
 
-        // Find and click in a single synchronous browser call to avoid the MUI
-        // Autocomplete re-render race between Playwright's resolve → click steps.
-        // Use innerText (not textContent) — innerText reflects CSS-visible text,
-        // stripping hidden elements and icon nodes that textContent would include.
+        // Step 2 — fill the active combobox input to filter options.
+        // page.keyboard.type() targets whichever element holds focus at that
+        // moment — after evaluate() that is often the page search bar, not the
+        // combobox, causing a loan-list reload on every keystroke.
+        // aria-expanded="true" is set by MUI on the open combobox input only,
+        // so this locator is always unique and never matches the search bar.
+        const activeCombobox = this.page.locator('input[role="combobox"][aria-expanded="true"]');
+        await activeCombobox.waitFor({ state: 'visible', timeout: 5000 });
+        await activeCombobox.fill(optionText);
+
+        // Step 3 — wait for the filtered option to appear in the listbox.
+        // After fill() MUI re-renders the listbox with matching rows only.
+        await listbox.getByRole('option', { name: optionText, exact: false })
+            .first()
+            .waitFor({ state: 'visible', timeout: 8000 })
+            .catch(() => {}); // let step 4 emit the warning if still absent
+
+        // Step 4 — click the matching option in one synchronous browser call.
+        // evaluate() prevents a MUI re-render from detaching the node between
+        // Playwright's resolve and the event dispatch.  The filter modal remains
+        // open after this click — applyFilters() must be called to submit.
         const clicked = await this.page.evaluate((text) => {
             const options = document.querySelectorAll('[role="option"]');
             for (const opt of options) {
-                // innerText normalises whitespace and excludes hidden child nodes
                 const label = (opt.innerText || opt.textContent || '').trim();
                 if (label === text || label.includes(text)) {
                     opt.click();
@@ -324,11 +357,17 @@ class ActivePage {
      */
     async verifyStatusDropdownOptions() {
         await test.step('Verify Status dropdown options', async () => {
-            // Use evaluate() to fire the click synchronously — the Status button can
-            // detach mid-click during MUI re-render cycles on CI (same issue as the
-            // State dropdown).  evaluate() executes in a single JS microtask so no
-            // re-render can occur between element resolution and the click dispatch.
-            await this.statusDropdown.evaluate(el => el.click());
+            // Guard: confirm the "Filter Applications By:" modal is open and fully
+            // rendered before we interact with any dropdown inside it.  Without this,
+            // a slow MUI animation or a mis-fired click-away on the filter button
+            // could leave the modal closed and silently dispatch evaluate() on a
+            // detached element.
+            await expect(this.filterModalHeading).toBeVisible({ timeout: 10000 });
+
+            // statusDropdown is already scoped to the innermost MuiFormControl-root
+            // for Status only (constructor uses .last()), so getByRole finds exactly
+            // one Open button.  evaluate() fires synchronously to beat re-renders.
+            await this.statusDropdown.getByRole('button', { name: /open/i }).evaluate(el => el.click());
             const listbox = this.page.getByRole('listbox');
             await expect(listbox).toBeVisible({ timeout: 8000 });
 
@@ -362,12 +401,10 @@ class ActivePage {
      */
     async verifyStateDropdownOptions() {
         await test.step('Verify State dropdown options', async () => {
-            // Use evaluate() to fire the click synchronously inside the browser.
-            // The State dropdown button sits near the dialog bottom edge and can be
-            // detached mid-click by MUI's rapid re-render cycles on CI.  evaluate()
-            // executes in a single JS microtask — no re-render can occur between
-            // Playwright resolving the element and the click being dispatched.
-            await this.stateDropdown.evaluate(el => el.click());
+            // stateDropdown is already scoped to the innermost MuiFormControl-root
+            // for State only (constructor uses .last()), so getByRole finds exactly
+            // one Open button.  evaluate() fires synchronously to beat re-renders.
+            await this.stateDropdown.getByRole('button', { name: /open/i }).evaluate(el => el.click());
             const listbox = this.page.getByRole('listbox');
             await expect(listbox).toBeVisible({ timeout: 8000 });
 
@@ -430,15 +467,29 @@ class ActivePage {
 
     /**
      * Clicks Apply Filters and waits for the modal to close and the list to reload.
+     *
+     * Re-resolves the button at action-time so MUI re-renders triggered by a prior
+     * filter selection cannot leave a stale reference.  waitFor ensures the button
+     * is visible and attached before we act; evaluate() dispatches the DOM click
+     * synchronously so no further re-render can detach the node between Playwright's
+     * resolve and event-dispatch steps.
      */
     async applyFilters() {
         await test.step('Apply filters', async () => {
-            // Re-resolve the button at click-time to avoid "detached from DOM" errors
-            // when MUI re-renders the dialog after a filter selection.
             const dialog = this.page.getByRole('dialog');
             const applyBtn = dialog.getByRole('button', { name: /Apply Filters/i });
+
+            // Wait for the button to be fully mounted before clicking.
+            // After a filter selection MUI re-renders the dialog content, which can
+            // briefly detach the button from the DOM.  waitFor blocks until it is
+            // visible and attached again.
             await applyBtn.waitFor({ state: 'visible', timeout: 10000 });
+
+            // Synchronous browser-side click — no re-render can occur between
+            // Playwright's element-resolve and the DOM event dispatch.
             await applyBtn.evaluate(el => el.click());
+
+            // Confirm the modal closed and the underlying list has reloaded.
             await expect(this.filterModal).toBeHidden({ timeout: 10000 });
             await this.page.waitForLoadState('load');
         });
@@ -457,8 +508,6 @@ class ActivePage {
         await test.step('Clear all filters', async () => {
             const isOpen = await this.filterModal.isVisible();
             if (!isOpen) {
-                // Re-query with hasText so the locator matches both the default
-                // "Filter" label and any active-filter state like "Filter · 1".
                 const filterBtn = this.page
                     .getByRole('button')
                     .filter({ hasText: /Filter/i })
@@ -468,26 +517,11 @@ class ActivePage {
             }
             await expect(this.filterModalHeading).toBeVisible({ timeout: 10000 });
 
-            // Resolve the dialog fresh — do NOT use the pre-cached constructor
-            // references (this.clearAllFiltersBtn / this.applyFiltersBtn) because
-            // MUI swaps out the dialog's child nodes after the clear, making those
-            // references stale.
             const dialog = this.page.getByRole('dialog');
-
-            // 1 — Clear filters.
-            //
-            // When the modal reopens with an active filter already set (e.g. a
-            // Company selection), MUI continuously reconciles the combobox state,
-            // re-rendering the dialog on each cycle and detaching buttons before
-            // Playwright's normal .click() can land.  Using .evaluate() fires the
-            // DOM click synchronously inside the browser — before React's next
-            // render cycle can unmount the node — bypassing the detach race.
             const clearBtn = dialog.getByRole('button', { name: /Clear All Filters/i });
             await clearBtn.waitFor({ state: 'visible', timeout: 10000 });
             await clearBtn.evaluate(el => el.click());
 
-            // 2 — Wait for the dialog to finish re-rendering after the clear,
-            //     then fire the Apply button the same way.
             const applyBtn = dialog.getByRole('button', { name: /Apply Filters/i });
             await applyBtn.waitFor({ state: 'visible', timeout: 10000 });
             await applyBtn.evaluate(el => el.click());

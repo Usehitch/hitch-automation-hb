@@ -8,7 +8,8 @@
       "Bash(not exist *)",
       "Bash(Get-ChildItem \"D:\\\\Projects\\\\Automation\\\\Hitch-Playwright\\\\homebridge\" -Exclude node_modules)",
       "Bash(Select-Object Name, PSIsContainer)",
-      "Bash(xargs grep -l \"clickNext\\\\|withProcessAppRetry\")"
+      "Bash(xargs grep -l \"clickNext\\\\|withProcessAppRetry\")",
+      "Bash(grep -n \"companyDropdown\\\\|fileOwnerDropdown\\\\|loanOfficerDropdown\\\\|statusDropdown\\\\|stateDropdown\\\\|getByRole\\('button', { name: /open/i }\\)\" \"D:/Projects/Automation/Hitch-Playwright/homebridge/pages/My Loans/ActivePage.js\")"
     ]
   }
 }
