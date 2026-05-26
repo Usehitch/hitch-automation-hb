@@ -299,8 +299,11 @@ class NewApplicationPage {
                 }
             });
 
-            // Confirm step 2 loaded
-            await this.mortgagesHeading.waitFor({ state: 'visible', timeout: 15000 });
+            // Confirm step 2 loaded.
+            // 60 s — on CI, the Finalizing overlay may hide quickly but the
+            // Mortgages & Liens page still takes many seconds to hydrate its data
+            // (especially on co-borrower flows where two credit pulls are in flight).
+            await this.mortgagesHeading.waitFor({ state: 'visible', timeout: 60000 });
 
             // Brief buffer so any late-opening tabs (e.g. co-borrower consent) are captured
             await this.page.waitForTimeout(1500);

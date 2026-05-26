@@ -230,7 +230,15 @@ class ActivePage {
     async search(query) {
         await test.step(`Search for "${query}"`, async () => {
             await this.searchInput.fill(query);
-            await this.page.waitForLoadState('load');
+            // waitForLoadState('load') resolves instantly on a SPA because the
+            // 'load' event already fired on initial page load.  waitForLoadState
+            // 'networkidle' waits until there are no in-flight requests for 500 ms,
+            // which covers the debounce + API round-trip on CI machines.
+            // The catch() makes it non-fatal if the page has long-polling requests
+            // that never reach idle within the timeout.
+            // 20 s — search involves a debounce + API round-trip on CI machines.
+            // The catch() makes it non-fatal if long-polling requests prevent idle.
+            await this.page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
         });
     }
 
@@ -240,7 +248,7 @@ class ActivePage {
     async clearSearch() {
         await test.step('Clear search', async () => {
             await this.searchInput.clear();
-            await this.page.waitForLoadState('load');
+            await this.page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
         });
     }
 
@@ -249,34 +257,43 @@ class ActivePage {
     /**
      * Opens the Filter modal and confirms its heading is visible.
      *
-     * Uses waitFor + evaluate() rather than a plain click() to match the rest of
-     * the MUI button interactions in this file.  waitFor guarantees the button is
-     * attached and visible before we act; evaluate() dispatches the DOM click
-     * synchronously inside the browser so no MUI re-render cycle can detach the
-     * node between Playwright's element-resolve and event-dispatch steps.
+     * Idempotent — if the modal is already open the click is skipped entirely.
+     * Clicking the Filter button while the dialog is visible triggers MUI's
+     * click-away handler (the button is behind the backdrop) and closes the modal
+     * instead of opening it, which is a frequent source of CI flakiness when
+     * openFilter() is called twice in the same test.
+     *
+     * Uses waitFor + evaluate() for the button click so no MUI re-render cycle
+     * can detach the node between Playwright's element-resolve and event-dispatch.
      */
     async openFilter() {
         await test.step('Open Filter modal', async () => {
-            await this.filterBtn.waitFor({ state: 'visible', timeout: 15000 });
-            await this.filterBtn.evaluate(el => el.click());
+            // Skip the button click when the modal is already visible to avoid
+            // triggering MUI's click-away handler on CI.
+            const alreadyOpen = await this.filterModal.isVisible().catch(() => false);
+            if (!alreadyOpen) {
+                await this.filterBtn.waitFor({ state: 'visible', timeout: 15000 });
+                await this.filterBtn.evaluate(el => el.click());
+            }
             await expect(this.filterModalHeading).toBeVisible({ timeout: 10000 });
         });
     }
 
     /**
      * Asserts all five filter dropdowns and the Show Test Accounts checkbox are
-     * rendered inside the modal.
+     * rendered inside the modal.  Explicit 10 s timeouts guard against CI slowness
+     * where the MUI dialog animation hasn't finished painting by the default 5 s.
      */
     async verifyFilterFields() {
         await test.step('Verify filter modal fields', async () => {
-            await expect(this.companyDropdown).toBeVisible();
-            await expect(this.fileOwnerDropdown).toBeVisible();
-            await expect(this.loanOfficerDropdown).toBeVisible();
-            await expect(this.statusDropdown).toBeVisible();
-            await expect(this.stateDropdown).toBeVisible();
-            await expect(this.showTestAccountsChk).toBeVisible();
-            await expect(this.clearAllFiltersBtn).toBeVisible();
-            await expect(this.applyFiltersBtn).toBeVisible();
+            await expect(this.companyDropdown).toBeVisible({ timeout: 10000 });
+            await expect(this.fileOwnerDropdown).toBeVisible({ timeout: 10000 });
+            await expect(this.loanOfficerDropdown).toBeVisible({ timeout: 10000 });
+            await expect(this.statusDropdown).toBeVisible({ timeout: 10000 });
+            await expect(this.stateDropdown).toBeVisible({ timeout: 10000 });
+            await expect(this.showTestAccountsChk).toBeVisible({ timeout: 10000 });
+            await expect(this.clearAllFiltersBtn).toBeVisible({ timeout: 10000 });
+            await expect(this.applyFiltersBtn).toBeVisible({ timeout: 10000 });
         });
     }
 
@@ -305,25 +322,51 @@ class ActivePage {
         // The dropdown locator is already scoped to the innermost MuiFormControl-root
         // that wraps only this specific field (set via .last() in the constructor),
         // so getByRole('button') finds exactly one Open button — the correct one.
-        // evaluate() fires synchronously so no re-render can detach the button.
-        await dropdown.getByRole('button', { name: /open/i }).evaluate(el => el.click());
+        // waitFor ensures the button is attached before we act; evaluate() fires
+        // synchronously so no re-render can detach it between resolve and dispatch.
+        const openBtn = dropdown.getByRole('button', { name: /open/i });
+        await openBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await openBtn.evaluate(el => el.click());
 
         // Confirm the listbox is open before typing.
         const listbox = this.page.getByRole('listbox');
         await expect(listbox).toBeVisible({ timeout: 10000 });
 
-        // Step 2 — fill the active combobox input to filter options.
-        // page.keyboard.type() targets whichever element holds focus at that
-        // moment — after evaluate() that is often the page search bar, not the
-        // combobox, causing a loan-list reload on every keystroke.
-        // aria-expanded="true" is set by MUI on the open combobox input only,
-        // so this locator is always unique and never matches the search bar.
-        const activeCombobox = this.page.locator('input[role="combobox"][aria-expanded="true"]');
-        await activeCombobox.waitFor({ state: 'visible', timeout: 5000 });
-        await activeCombobox.fill(optionText);
+        // Step 2 — filter the combobox options by typing the option text.
+        //
+        // Root cause of the CI flake: after evaluate() clicks the Open button,
+        // MUI re-renders the entire Autocomplete component tree (to set
+        // aria-expanded, update the popup portal, etc.).  The re-render detaches
+        // the original <input role="combobox"> node from the DOM.  Playwright's
+        // fill() retries finding the element on each detach, but if MUI re-renders
+        // again in response to the focus/blur events that fill() dispatches during
+        // its pre-action check, the element is re-detached on every retry and the
+        // test eventually times out.
+        //
+        // Fix: use page.evaluate() to set the input value synchronously inside the
+        // browser.  There is no Playwright pre-action check cycle, so no detach
+        // window exists.  We target the currently-open combobox via its unique
+        // aria-expanded="true" attribute and trigger React's synthetic onChange
+        // through the native HTMLInputElement value setter (the standard React
+        // testing pattern for controlled inputs).
+        await this.page.evaluate((text) => {
+            const input = document.querySelector(
+                'input[role="combobox"][aria-expanded="true"]'
+            );
+            if (!input) return;
+            // React controlled inputs ignore direct .value = x assignments, but
+            // respect the native property setter + a bubbling input event.
+            const nativeSetter = Object.getOwnPropertyDescriptor(
+                window.HTMLInputElement.prototype, 'value'
+            ).set;
+            nativeSetter.call(input, text);
+            input.dispatchEvent(new Event('input',  { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        }, optionText);
 
         // Step 3 — wait for the filtered option to appear in the listbox.
-        // After fill() MUI re-renders the listbox with matching rows only.
+        // After the synthetic input event MUI re-renders the listbox with only
+        // matching rows.
         await listbox.getByRole('option', { name: optionText, exact: false })
             .first()
             .waitFor({ state: 'visible', timeout: 8000 })

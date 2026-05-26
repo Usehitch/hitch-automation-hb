@@ -89,8 +89,11 @@ test.describe('My Loans - Inactive', () => {
         await activePage.verifyFilterFields();
         
         // -- Phase 2: apply a Company filter and verify the pipeline reacts ------
+        // The modal is still open from Phase 1 — no need to re-open it.
+        // Calling openFilter() while the dialog is already visible triggers MUI's
+        // click-away handler (the Filter button is behind the backdrop) and closes
+        // the modal on CI, making the subsequent selectFilterOption fail.
         await test.step('Select Company option from filter dropdown', async () => {
-            await activePage.openFilter();
             await activePage.selectFilterOption(activePage.companyDropdown, 'ABC Broker');
             await activePage.applyFilters();
         });

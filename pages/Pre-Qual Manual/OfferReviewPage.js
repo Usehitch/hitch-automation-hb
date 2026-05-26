@@ -95,7 +95,9 @@ class OfferReviewPage {
             if (!data.offerReview?.debtPayoff?.manage) return;
 
             await this.manageDebtPayoffsBtn.click({ force: true });
-            await this.debtPayoffModalHeading.waitFor({ state: 'visible', timeout: 10000 });
+            // 30 s — the debt payoff modal fetches debt data asynchronously
+            // before rendering its heading; CI latency can push this past 10 s.
+            await this.debtPayoffModalHeading.waitFor({ state: 'visible', timeout: 30000 });
         });
     };
 
