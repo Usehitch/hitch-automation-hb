@@ -53,17 +53,24 @@ test.describe('My Loans - Active', () => {
 
         // -- File Owner dropdown ----------------------------------------------
         await test.step('Verify File Owner dropdown opens and lists options', async () => {
-            // Use evaluate() to fire the click synchronously — the MUI popup-indicator
-            // button can detach mid-click during React re-render cycles on CI.
-            await activePage.fileOwnerDropdown.evaluate(el => el.click());
+            // fileOwnerDropdown resolves to the MuiFormControl-root container div.
+            // We must target the Open button inside it — clicking the container
+            // div itself has no effect.  evaluate() fires synchronously so no
+            // MUI re-render can detach the button between resolve and dispatch.
+            await activePage.fileOwnerDropdown
+                .getByRole('button', { name: /open/i })
+                .evaluate(el => el.click());
             await expect(activePage.page.getByRole('listbox').first()).toBeVisible({ timeout: 10000 });
             await activePage.page.keyboard.press('Escape');
         });
 
         // -- Loan Officer dropdown ---------------------------------------------
         await test.step('Verify Loan Officer dropdown opens and lists options', async () => {
-            // Use evaluate() for the same reason as File Owner above.
-            await activePage.loanOfficerDropdown.evaluate(el => el.click());
+            // Same pattern as File Owner — drill to the Open button inside the
+            // MuiFormControl-root container before clicking.
+            await activePage.loanOfficerDropdown
+                .getByRole('button', { name: /open/i })
+                .evaluate(el => el.click());
             await expect(activePage.page.getByRole('listbox').first()).toBeVisible({ timeout: 10000 });
             await activePage.page.keyboard.press('Escape');
         });

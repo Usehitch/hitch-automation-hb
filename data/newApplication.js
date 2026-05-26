@@ -21,7 +21,7 @@ export const applicationData = {
         firstName:    SHARED.firstName,
         lastName:     SHARED.lastName,
         email:        randomEmail(),
-        ssn:          '000121897',           // Test SSN — Method Fi sandbox
+        ssn:          '999603333',           // Test SSN — Method Fi sandbox
         dateOfBirth:  '01/15/1985',
         phoneNumber:  SHARED.phoneNumber,
         incomeSources: ['Salary or hourly wages'], // one or more: 'Salary or hourly wages' | 'Self Employed' | 'Benefits Income' | 'Rental Income' | 'Other'
@@ -74,7 +74,7 @@ export const coBorrowerApplicationData = {
         firstName:    'Amy',
         lastName:     'America',
         email:        randomEmail(),
-        ssn:          '799005144',   // Method Fi sandbox test SSN for co-borrower
+        ssn:          '500-22-2000',   // Method Fi sandbox test SSN for co-borrower
         dateOfBirth:  '05/10/1978',
         phoneNumber:  '5121231114',
     },
