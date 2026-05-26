@@ -6,9 +6,13 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
+permissions:
+  contents: write
+
 jobs:
   test:
-    timeout-minutes: 200
+    timeout-minutes: 300
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -60,3 +64,12 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
+
+    - name: Deploy report to gh-pages
+      uses: peaceiris/actions-gh-pages@v4
+      if: ${{ !cancelled() }}
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: playwright-report/
+        destination_dir: reports/${{ github.run_id }}
+        keep_files: true
