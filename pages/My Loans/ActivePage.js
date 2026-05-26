@@ -318,55 +318,45 @@ class ActivePage {
      * @param {string} optionText  Exact or partial label of the option to select
      */
     async selectFilterOption(dropdown, optionText) {
-        // Step 1 — open the MUI Autocomplete popup.
-        // The dropdown locator is already scoped to the innermost MuiFormControl-root
-        // that wraps only this specific field (set via .last() in the constructor),
-        // so getByRole('button') finds exactly one Open button — the correct one.
-        // waitFor ensures the button is attached before we act; evaluate() fires
-        // synchronously so no re-render can detach it between resolve and dispatch.
-        const openBtn = dropdown.getByRole('button', { name: /open/i });
-        await openBtn.waitFor({ state: 'visible', timeout: 10000 });
-        await openBtn.evaluate(el => el.click());
+        // Step 1 — open the MUI Autocomplete popup by clicking the combobox input.
+        //
+        // We click the <input role="combobox"> directly (via synchronous DOM
+        // evaluate) rather than the popup-indicator Open button.  Clicking the
+        // Open button triggers a MUI state update that re-renders the entire
+        // Autocomplete tree, often replacing the <input> DOM node before the next
+        // Playwright action can interact with it.  Clicking the input itself causes
+        // a shallower re-render (only aria-expanded changes) that typically keeps
+        // the same DOM node in place.
+        //
+        // evaluate(el => el.click()) is used instead of Playwright's coordinate-
+        // based click() because the input's computed width can be as small as 30px;
+        // for fields near the dialog edge the bounding-box centre could land on the
+        // MUI backdrop, which triggers click-away and closes the modal.  A direct
+        // DOM click() has no coordinates and cannot miss the element.
+        const combobox = dropdown.locator('input[role="combobox"]');
+        await combobox.waitFor({ state: 'visible', timeout: 10000 });
+        await combobox.evaluate(el => el.click());
 
         // Confirm the listbox is open before typing.
         const listbox = this.page.getByRole('listbox');
         await expect(listbox).toBeVisible({ timeout: 10000 });
 
-        // Step 2 — filter the combobox options by typing the option text.
+        // Step 2 — type character-by-character to filter the options.
         //
-        // Root cause of the CI flake: after evaluate() clicks the Open button,
-        // MUI re-renders the entire Autocomplete component tree (to set
-        // aria-expanded, update the popup portal, etc.).  The re-render detaches
-        // the original <input role="combobox"> node from the DOM.  Playwright's
-        // fill() retries finding the element on each detach, but if MUI re-renders
-        // again in response to the focus/blur events that fill() dispatches during
-        // its pre-action check, the element is re-detached on every retry and the
-        // test eventually times out.
+        // pressSequentially() fires individual keydown → keypress → input → keyup
+        // DOM events for each character.  React's event-delegation system (attached
+        // at the document / app-root level) receives each event in order and updates
+        // the Autocomplete's internal state, causing MUI to re-render the listbox
+        // with only matching rows.
         //
-        // Fix: use page.evaluate() to set the input value synchronously inside the
-        // browser.  There is no Playwright pre-action check cycle, so no detach
-        // window exists.  We target the currently-open combobox via its unique
-        // aria-expanded="true" attribute and trigger React's synthetic onChange
-        // through the native HTMLInputElement value setter (the standard React
-        // testing pattern for controlled inputs).
-        await this.page.evaluate((text) => {
-            const input = document.querySelector(
-                'input[role="combobox"][aria-expanded="true"]'
-            );
-            if (!input) return;
-            // React controlled inputs ignore direct .value = x assignments, but
-            // respect the native property setter + a bubbling input event.
-            const nativeSetter = Object.getOwnPropertyDescriptor(
-                window.HTMLInputElement.prototype, 'value'
-            ).set;
-            nativeSetter.call(input, text);
-            input.dispatchEvent(new Event('input',  { bubbles: true }));
-            input.dispatchEvent(new Event('change', { bubbles: true }));
-        }, optionText);
+        // fill() is deliberately avoided here: it internally selects all existing
+        // text (triple-click or Ctrl+A) before typing, which can trigger a MUI
+        // re-render that detaches the input between Playwright's element-resolve and
+        // the subsequent event dispatch — leading to a continuous detach-retry cycle
+        // that eventually exhausts the action timeout.
+        await combobox.pressSequentially(optionText, { delay: 50 });
 
         // Step 3 — wait for the filtered option to appear in the listbox.
-        // After the synthetic input event MUI re-renders the listbox with only
-        // matching rows.
         await listbox.getByRole('option', { name: optionText, exact: false })
             .first()
             .waitFor({ state: 'visible', timeout: 8000 })
@@ -389,8 +379,15 @@ class ActivePage {
         }, optionText);
 
         if (!clicked) {
-            console.warn(`selectFilterOption: option "${optionText}" not found in listbox — pressing Escape`);
-            await this.page.keyboard.press('Escape');
+            console.warn(`selectFilterOption: option "${optionText}" not found in listbox`);
+            // Only press Escape if the listbox popup is still open.
+            // If the listbox has already closed (e.g. MUI closed it on no-match),
+            // pressing Escape would close the filter MODAL instead of the dropdown,
+            // causing the subsequent applyFilters() call to fail.
+            const listboxStillOpen = await listbox.isVisible().catch(() => false);
+            if (listboxStillOpen) {
+                await this.page.keyboard.press('Escape');
+            }
         }
     }
 
