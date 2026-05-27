@@ -6,7 +6,7 @@ class ActivePage {
 
         // -- Sidebar navigation -----------------------------------------------
         // data-sidebar="menu-button" targets the collapsible My Loans nav button
-        this.myLoansNavItem  = this.page.getByRole('button', {name: 'My Loans'})
+        this.myLoansNavItem = this.page.getByRole('button', { name: 'My Loans' })
         // data-sidebar="menu-sub-button" targets sub-items revealed after My Loans
         // is expanded (Active, Adversed, Inactive, Funded)
         this.adversedNavItem = this.page
@@ -23,32 +23,32 @@ class ActivePage {
 
         // -- Overview stat tiles (top summary bar) -----------------------------
         // Counts/amounts are dynamic — we assert the labels only.
-        this.overviewSection   = this.page.getByText('Overview');
-        this.myLoansTile       = this.page.getByText('My Loans').first();
-        this.preQualTile       = this.page.getByText('Pre-Qual').first();
-        this.inProcessTile     = this.page.getByText('In Process').first();
-        this.closingTile       = this.page.getByText('Closing').first();
-        this.fundedTile        = this.page.getByText('Funded').first();
+        this.overviewSection = this.page.getByText('Overview');
+        this.myLoansTile = this.page.getByText('My Loans').first();
+        this.preQualTile = this.page.getByText('Pre-Qual').first();
+        this.inProcessTile = this.page.getByText('In Process').first();
+        this.closingTile = this.page.getByText('Closing').first();
+        this.fundedTile = this.page.getByText('Funded').first();
 
         // -- Toolbar -----------------------------------------------------------
         this.searchInput = this.page.getByPlaceholder(/Search by email, name, full address or loan number/i);
-        this.filterBtn   = this.page.getByRole('button').filter({ hasText: /Filter/i }).first();
+        this.filterBtn = this.page.getByRole('button').filter({ hasText: /Filter/i }).first();
 
         // -- Pipeline section headings -----------------------------------------
         // Pre-Qual / In Process / Closing / Funded also appear in the overview
         // tiles, so nth(1) targets the pipeline section rows specifically.
         this.pendingMloCertSection = this.page.getByText('Pending MLO Certification').first();
-        this.preQualSection        = this.page.getByText('Pre-Qual').nth(1);
-        this.inProcessSection      = this.page.getByText('In Process').nth(1);
-        this.closingSection        = this.page.getByText('Closing').nth(1);
-        this.fundedSection         = this.page.getByText('Funded').nth(1);
+        this.preQualSection = this.page.getByText('Pre-Qual').nth(1);
+        this.inProcessSection = this.page.getByText('In Process').nth(1);
+        this.closingSection = this.page.getByText('Closing').nth(1);
+        this.fundedSection = this.page.getByText('Funded').nth(1);
 
         // -- Pending MLO Certification table columns ---------------------------
         // "LO Assistant" is unique to this section only
-        this.pendingMloApplicantCol   = this.page.getByText('Applicant').first();
-        this.pendingMloAddressCol     = this.page.getByText('Property Address').first();
-        this.pendingMloLoanAmountCol  = this.page.getByText('Loan Amount').first();
-        this.pendingMloStatusCol      = this.page.getByText('Status').first();
+        this.pendingMloApplicantCol = this.page.getByText('Applicant').first();
+        this.pendingMloAddressCol = this.page.getByText('Property Address').first();
+        this.pendingMloLoanAmountCol = this.page.getByText('Loan Amount').first();
+        this.pendingMloStatusCol = this.page.getByText('Status').first();
         this.pendingMloLoAssistantCol = this.page.getByText('LO Assistant'); // unique to Pending MLO Cert
         this.pendingMloTimeInStageCol = this.page.getByText('Time in Stage').first();
 
@@ -57,10 +57,17 @@ class ActivePage {
 
         // -- Action buttons ----------------------------------------------------
         this.certifyBtn = this.page.getByRole('button', { name: /Certify/i }).first();
-        this.viewBtn    = this.page.getByRole('button', { name: /^View$/i }).first();
+        this.viewBtn = this.page.getByRole('button', { name: /^View$/i }).first();
 
         // -- Filter modal ------------------------------------------------------
-        this.filterModal        = this.page.getByRole('dialog');
+        // Scope to the specific dialog that contains the filter heading so that
+        // live-chat widgets or other dialogs with role="dialog" (visible in the
+        // bottom-right corner of the portal) are never accidentally matched.
+        // When the filter modal is closed this locator matches 0 elements, giving
+        // clear failures instead of silently binding to the wrong element.
+        this.filterModal = this.page.locator('[role="dialog"]').filter({
+            has: this.page.getByText('Filter Applications By:', { exact: true }),
+        });
         this.filterModalHeading = this.filterModal.getByText('Filter Applications By:');
 
         // Dropdowns — scoped inside the dialog.
@@ -86,21 +93,21 @@ class ActivePage {
         // progressively-outer ancestors (e.g. MuiDialogContent-root) that span
         // the whole dialog and contain all five Open buttons, which causes
         // evaluate() to throw a strict-mode violation.
-        this.companyDropdown     = this.filterModal
+        this.companyDropdown = this.filterModal
             .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /^Company$/i }) }).last();
-        this.fileOwnerDropdown   = this.filterModal
+        this.fileOwnerDropdown = this.filterModal
             .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /File Owner/i }) }).last();
         this.loanOfficerDropdown = this.filterModal
             .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /Loan Officer/i }) }).last();
-        this.statusDropdown      = this.filterModal
+        this.statusDropdown = this.filterModal
             .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /^Status$/i }) }).last();
-        this.stateDropdown       = this.filterModal
+        this.stateDropdown = this.filterModal
             .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /^State$/i }) }).last();
 
         // Checkbox and action buttons inside the modal
         this.showTestAccountsChk = this.filterModal.getByRole('checkbox', { name: /Show Test Accounts/i });
-        this.clearAllFiltersBtn  = this.filterModal.getByRole('button', { name: /Clear All Filters/i });
-        this.applyFiltersBtn     = this.filterModal.getByRole('button', { name: /Apply Filters/i });
+        this.clearAllFiltersBtn = this.filterModal.getByRole('button', { name: /Clear All Filters/i });
+        this.applyFiltersBtn = this.filterModal.getByRole('button', { name: /Apply Filters/i });
     }
 
     async clickMyLoansNav() {
@@ -202,7 +209,7 @@ class ActivePage {
      */
     async clickCertify() {
         await test.step('Click Certify on first pending MLO loan', async () => {
-            await this.certifyBtn.click();
+            await this.certifyBtn.click({ force: true });
         });
     }
 
@@ -238,7 +245,7 @@ class ActivePage {
             // that never reach idle within the timeout.
             // 20 s — search involves a debounce + API round-trip on CI machines.
             // The catch() makes it non-fatal if long-polling requests prevent idle.
-            await this.page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+            await this.page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => { });
         });
     }
 
@@ -248,7 +255,7 @@ class ActivePage {
     async clearSearch() {
         await test.step('Clear search', async () => {
             await this.searchInput.clear();
-            await this.page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+            await this.page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => { });
         });
     }
 
@@ -318,57 +325,46 @@ class ActivePage {
      * @param {string} optionText  Exact or partial label of the option to select
      */
     async selectFilterOption(dropdown, optionText) {
-        // Step 1 — open the MUI Autocomplete popup by clicking the combobox input.
+        // Step 1 — open the MUI Autocomplete popup.
         //
-        // We click the <input role="combobox"> directly (via synchronous DOM
-        // evaluate) rather than the popup-indicator Open button.  Clicking the
-        // Open button triggers a MUI state update that re-renders the entire
-        // Autocomplete tree, often replacing the <input> DOM node before the next
-        // Playwright action can interact with it.  Clicking the input itself causes
-        // a shallower re-render (only aria-expanded changes) that typically keeps
-        // the same DOM node in place.
+        // `dropdown` is a container div (MuiFormControl-root) — use getByRole to
+        // find the single "Open" button inside it.
         //
-        // evaluate(el => el.click()) is used instead of Playwright's coordinate-
-        // based click() because the input's computed width can be as small as 30px;
-        // for fields near the dialog edge the bounding-box centre could land on the
-        // MUI backdrop, which triggers click-away and closes the modal.  A direct
-        // DOM click() has no coordinates and cannot miss the element.
-        const combobox = dropdown.locator('input[role="combobox"]');
-        await combobox.waitFor({ state: 'visible', timeout: 10000 });
-        await combobox.evaluate(el => el.click());
+        // IMPORTANT: MUI Autocomplete's popup-indicator button uses onMouseDown
+        // (not onClick) to open the popup — this prevents the focused input from
+        // blurring before the listbox renders.  el.click() only dispatches a
+        // `click` DOM event; it does NOT dispatch `mousedown`.  We therefore
+        // dispatch `mousedown` explicitly, which triggers MUI's handler.
+        //
+        // evaluate() is still used (instead of Playwright's click()) so the
+        // entire dispatch happens in one synchronous JS microtask — preventing
+        // the MUI re-render race that detaches the button between Playwright's
+        // element-resolve and its coordinate-based event dispatch.
+        const openBtn = dropdown.getByRole('button', { name: /open/i });
+        await openBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await openBtn.evaluate(el =>
+            el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }))
+        );
 
-        // Confirm the listbox is open before typing.
+        // Step 2 — confirm the listbox is open and wait for options to populate.
+        //
+        // The listbox container can become visible before React renders its
+        // children, so we wait for at least one [role="option"] before scanning.
         const listbox = this.page.getByRole('listbox');
         await expect(listbox).toBeVisible({ timeout: 10000 });
+        await this.page.locator('[role="option"]').first()
+            .waitFor({ state: 'visible', timeout: 5000 })
+            .catch(() => { }); // proceed even if no options appear (empty list)
 
-        // Step 2 — type character-by-character to filter the options.
+        // Step 3 — click the matching option in one synchronous browser call.
         //
-        // pressSequentially() fires individual keydown → keypress → input → keyup
-        // DOM events for each character.  React's event-delegation system (attached
-        // at the document / app-root level) receives each event in order and updates
-        // the Autocomplete's internal state, causing MUI to re-render the listbox
-        // with only matching rows.
-        //
-        // fill() is deliberately avoided here: it internally selects all existing
-        // text (triple-click or Ctrl+A) before typing, which can trigger a MUI
-        // re-render that detaches the input between Playwright's element-resolve and
-        // the subsequent event dispatch — leading to a continuous detach-retry cycle
-        // that eventually exhausts the action timeout.
-        await combobox.pressSequentially(optionText, { delay: 50 });
-
-        // Step 3 — wait for the filtered option to appear in the listbox.
-        await listbox.getByRole('option', { name: optionText, exact: false })
-            .first()
-            .waitFor({ state: 'visible', timeout: 8000 })
-            .catch(() => {}); // let step 4 emit the warning if still absent
-
-        // Step 4 — click the matching option in one synchronous browser call.
-        // evaluate() prevents a MUI re-render from detaching the node between
-        // Playwright's resolve and the event dispatch.  The filter modal remains
-        // open after this click — applyFilters() must be called to submit.
+        // page.evaluate() dispatches the click inside the browser process — no
+        // round-trip between Playwright and the renderer, so no MUI re-render can
+        // detach the option node between resolution and dispatch.
         const clicked = await this.page.evaluate((text) => {
             const options = document.querySelectorAll('[role="option"]');
             for (const opt of options) {
+                // innerText reflects CSS-visible text, excluding hidden child nodes
                 const label = (opt.innerText || opt.textContent || '').trim();
                 if (label === text || label.includes(text)) {
                     opt.click();
@@ -379,11 +375,9 @@ class ActivePage {
         }, optionText);
 
         if (!clicked) {
-            console.warn(`selectFilterOption: option "${optionText}" not found in listbox`);
-            // Only press Escape if the listbox popup is still open.
-            // If the listbox has already closed (e.g. MUI closed it on no-match),
-            // pressing Escape would close the filter MODAL instead of the dropdown,
-            // causing the subsequent applyFilters() call to fail.
+            console.warn(`selectFilterOption: option "${optionText}" not found in listbox — pressing Escape`);
+            // Only press Escape if the popup is still open — if MUI already closed
+            // it, Escape would close the filter modal and break applyFilters().
             const listboxStillOpen = await listbox.isVisible().catch(() => false);
             if (listboxStillOpen) {
                 await this.page.keyboard.press('Escape');
@@ -406,8 +400,11 @@ class ActivePage {
 
             // statusDropdown is already scoped to the innermost MuiFormControl-root
             // for Status only (constructor uses .last()), so getByRole finds exactly
-            // one Open button.  evaluate() fires synchronously to beat re-renders.
-            await this.statusDropdown.getByRole('button', { name: /open/i }).evaluate(el => el.click());
+            // one Open button.  Dispatch mousedown (not click) — MUI Autocomplete
+            // listens on onMouseDown for the popup toggle, not onClick.
+            await this.statusDropdown.getByRole('button', { name: /open/i }).evaluate(el =>
+                el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }))
+            );
             const listbox = this.page.getByRole('listbox');
             await expect(listbox).toBeVisible({ timeout: 8000 });
 
@@ -443,8 +440,11 @@ class ActivePage {
         await test.step('Verify State dropdown options', async () => {
             // stateDropdown is already scoped to the innermost MuiFormControl-root
             // for State only (constructor uses .last()), so getByRole finds exactly
-            // one Open button.  evaluate() fires synchronously to beat re-renders.
-            await this.stateDropdown.getByRole('button', { name: /open/i }).evaluate(el => el.click());
+            // one Open button.  Dispatch mousedown (not click) — same reason as
+            // selectFilterOption: MUI uses onMouseDown for the popup toggle.
+            await this.stateDropdown.getByRole('button', { name: /open/i }).evaluate(el =>
+                el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }))
+            );
             const listbox = this.page.getByRole('listbox');
             await expect(listbox).toBeVisible({ timeout: 8000 });
 
@@ -453,7 +453,7 @@ class ActivePage {
             // children, so this prevents false "option not found" failures on CI.
             await this.page.locator('[role="option"]').first()
                 .waitFor({ state: 'visible', timeout: 8000 })
-                .catch(() => {});
+                .catch(() => { });
 
             const expectedStates = [
                 'Colorado',
@@ -516,7 +516,9 @@ class ActivePage {
      */
     async applyFilters() {
         await test.step('Apply filters', async () => {
-            const dialog = this.page.getByRole('dialog');
+            // Use the scoped filterModal (not getByRole('dialog')) so the chat widget
+            // or any other ambient dialog is never matched by accident.
+            const dialog = this.filterModal;
             const applyBtn = dialog.getByRole('button', { name: /Apply Filters/i });
 
             // Wait for the button to be fully mounted before clicking.
@@ -557,7 +559,8 @@ class ActivePage {
             }
             await expect(this.filterModalHeading).toBeVisible({ timeout: 10000 });
 
-            const dialog = this.page.getByRole('dialog');
+            // Use the scoped filterModal so the chat widget is never matched.
+            const dialog = this.filterModal;
             const clearBtn = dialog.getByRole('button', { name: /Clear All Filters/i });
             await clearBtn.waitFor({ state: 'visible', timeout: 10000 });
             await clearBtn.evaluate(el => el.click());

@@ -121,34 +121,18 @@ test.describe('My Loans - Adversed', () => {
         activePage,
         mloCertificationModal,
     }) => {
-        // Skip gracefully if the Adversed pipeline has no pending MLO rows
-        const hasCertify = await activePage.certifyBtn.isVisible({ timeout: 10000 }).catch(() => false);
-        if (!hasCertify) {
-            test.skip(true, 'No Certify button in Adversed pipeline — no adversed MLO loans in staging');
-            return;
-        }
-        try {
-            await activePage.clickCertify();
-            await mloCertificationModal.waitForModal();
-            await mloCertificationModal.checkAllCertifications();
-            await mloCertificationModal.fillBrokerMloName(applicationData.consent.brokerMloName);
+        await activePage.clickCertify();
+        await mloCertificationModal.waitForModal();
+        await mloCertificationModal.checkAllCertifications();
+        await mloCertificationModal.fillBrokerMloName(applicationData.consent.brokerMloName);
 
-            await mloCertificationModal.submit();
+        await mloCertificationModal.submit();
 
-            // Verify the success toast — PDF opens in a new tab but CI serves it as a
-            // download (tab navigates to ":"), so we skip asserting the PDF URL.
-            await expect(
-                activePage.page.getByText(/Certification completed successfully/i)
-            ).toBeVisible({ timeout: 10000 });
-        } catch (err) {
-            // A prior test timing out can leave the browser context in a closing state.
-            // Treat "page/context/browser closed" as a non-fatal skip rather than a failure.
-            if (/closed/i.test(err.message)) {
-                test.skip(true, `Adversed certify skipped — browser context closed unexpectedly: ${err.message}`);
-                return;
-            }
-            throw err;
-        }
+        // Verify the success toast — the PDF opens in a new tab but CI serves it as
+        // a download (tab navigates to ":"), so we skip asserting the PDF URL.
+        await expect(
+            activePage.page.getByText(/Certification completed successfully/i)
+        ).toBeVisible({ timeout: 10000 });
     });
 
     // -------------------------------------------------------------------------

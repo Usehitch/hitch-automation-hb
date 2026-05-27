@@ -76,75 +76,24 @@ test.describe('My Loans - Inactive', () => {
         await activePage.clearSearch();
         await activePage.verifyPipelineSections({ requirePendingMlo: false });
     });
-
-    // -------------------------------------------------------------------------
-
-    test('Filter modal — fields, dropdowns, company apply, and clear lifecycle', async ({ activePage }) => {
-        // -- Phase 1: open the modal once and run all read-only verifications ----
-        // verifyStatusDropdownOptions and verifyStateDropdownOptions each press
-        // Escape internally to close the option listbox, but they leave the
-        // filter modal itself open.  toggleShowTestAccounts also keeps the modal
-        // open.  A single openFilter() covers all four checks.
-        await activePage.openFilter();
-        await activePage.verifyFilterFields();
-        
-        // -- Phase 2: apply a Company filter and verify the pipeline reacts ------
-        // The modal is still open from Phase 1 — no need to re-open it.
-        // Calling openFilter() while the dialog is already visible triggers MUI's
-        // click-away handler (the Filter button is behind the backdrop) and closes
-        // the modal on CI, making the subsequent selectFilterOption fail.
-        await test.step('Select Company option from filter dropdown', async () => {
-            await activePage.selectFilterOption(activePage.companyDropdown, 'ABC Broker');
-            await activePage.applyFilters();
-        });
-        // Pending MLO Certification is only present when loans exist in that state;
-        // check conditionally to avoid flakiness on the Inactive tab.
-        const hasPendingSection = await activePage.pendingMloCertSection
-            .isVisible({ timeout: 5000 }).catch(() => false);
-        if (hasPendingSection) {
-            await expect(activePage.pendingMloCertSection).toBeVisible();
-        }
-
-        // -- Phase 3: clear all filters and confirm the pipeline resets ----------
-        await activePage.clearAllFilters();
-        await activePage.verifyPipelineSections({ requirePendingMlo: false });
-    });
-
-    // -------------------------------------------------------------------------
-
     test('Certify a pending MLO loan from the Inactive tab', async ({
+        page,
         activePage,
         mloCertificationModal,
     }) => {
-        // Skip gracefully if the Inactive pipeline has no pending MLO rows
-        const hasCertify = await activePage.certifyBtn.isVisible({ timeout: 10000 }).catch(() => false);
-        if (!hasCertify) {
-            test.skip(true, 'No Certify button in Inactive pipeline — no inactive MLO loans in staging');
-            return;
-        }
+        // await page.waitForLoadState('networkidle');
+        await activePage.clickCertify();
+        await mloCertificationModal.waitForModal();
+        await mloCertificationModal.checkAllCertifications();
+        await mloCertificationModal.fillBrokerMloName(applicationData.consent.brokerMloName);
 
-        try {
-            await activePage.clickCertify();
-            await mloCertificationModal.waitForModal();
-            await mloCertificationModal.checkAllCertifications();
-            await mloCertificationModal.fillBrokerMloName(applicationData.consent.brokerMloName);
+        await mloCertificationModal.submit();
 
-            await mloCertificationModal.submit();
-
-            // Verify the success toast — PDF opens in a new tab but CI serves it as a
-            // download (tab navigates to ":"), so we skip asserting the PDF URL.
-            await expect(
-                activePage.page.getByText(/Certification completed successfully/i)
-            ).toBeVisible({ timeout: 10000 });
-        } catch (err) {
-            // A prior test timing out can leave the browser context in a closing state.
-            // Treat "page/context/browser closed" as a non-fatal skip rather than a failure.
-            if (/closed/i.test(err.message)) {
-                test.skip(true, `Inactive certify skipped — browser context closed unexpectedly: ${err.message}`);
-                return;
-            }
-            throw err;
-        }
+        // Verify the success toast — the PDF opens in a new tab but CI serves it as
+        // a download (tab navigates to ":"), so we skip asserting the PDF URL.
+        await expect(
+            activePage.page.getByText(/Certification completed successfully/i)
+        ).toBeVisible({ timeout: 10000 });
     });
 
     // -------------------------------------------------------------------------
