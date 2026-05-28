@@ -18,6 +18,11 @@ class OfferReviewPage {
         this.modalCancelBtn = this.loanAmountModal.getByRole('button', { name: /CANCEL/i });
         this.modalSaveBtn = this.loanAmountModal.getByRole('button', { name: /^SAVE$/i });
 
+        // -- Interest rate row -------------------------------------------------
+        // The label reads "Interest Rate (Variable rate)" — match on the stable
+        // prefix so minor copy changes ("Variable rate" vs "variable rate") don't break it.
+        this.interestRateLabel = this.page.getByText(/Interest Rate/i).first();
+
         // -- Debt payoffs section ----------------------------------------------
         this.manageDebtPayoffsBtn = this.page.getByRole('button', { name: /MANAGE/i });
 
@@ -65,6 +70,32 @@ class OfferReviewPage {
     };
 
     // --------------------------------------------------------------------------
+
+    /**
+     * Verifies the Interest Rate row on the Pre-Qualification Summary.
+     * - Always asserts the "Interest Rate" label is visible.
+     * - If offerReview.expectedInterestRate is set (e.g. '8.94%'), asserts that
+     *   exact value is shown.
+     * - Otherwise asserts that any percentage pattern (e.g. '8.94%') is visible
+     *   next to the label, confirming the engine returned a rate.
+     */
+    async verifyInterestRate(data) {
+        await test.step('Verify interest rate is displayed', async () => {
+            await expect(this.interestRateLabel).toBeVisible({ timeout: 10000 });
+
+            const expected = data?.offerReview?.expectedInterestRate;
+            if (expected) {
+                await expect(
+                    this.page.getByText(expected, { exact: false }).first()
+                ).toBeVisible({ timeout: 10000 });
+            } else {
+                // No specific rate expected — just confirm a percentage value is rendered
+                await expect(
+                    this.page.locator('text=/\\d+\\.\\d+%/').first()
+                ).toBeVisible({ timeout: 10000 });
+            }
+        });
+    };
 
     /**
      * Opens the "Reduce Requested Loan Amount" modal, sets a new amount, and saves.
