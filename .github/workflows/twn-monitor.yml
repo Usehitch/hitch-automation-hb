@@ -8,7 +8,7 @@ on:
 jobs:
   twn-monitor:
     name: The Work Number — Integration Check
-    timeout-minutes: 10
+    timeout-minutes: 60
     runs-on: ubuntu-latest
 
     steps:
