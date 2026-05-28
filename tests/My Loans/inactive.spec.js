@@ -77,11 +77,9 @@ test.describe('My Loans - Inactive', () => {
         await activePage.verifyPipelineSections({ requirePendingMlo: false });
     });
     test('Certify a pending MLO loan from the Inactive tab', async ({
-        page,
         activePage,
         mloCertificationModal,
     }) => {
-        // await page.waitForLoadState('networkidle');
         await activePage.clickCertify();
         await mloCertificationModal.waitForModal();
         await mloCertificationModal.checkAllCertifications();

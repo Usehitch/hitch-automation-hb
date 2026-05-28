@@ -6,6 +6,7 @@ export const SHARED = {
     // -- Property ----------------------------------------------------------
     street:         '4556 Eliot St',
     city:           'Denver',
+    county:         'Denver',   // Denver County, CO
     state:          'Colorado',
     zip:            '80211',
     isListed:       false,        // not listed for sale

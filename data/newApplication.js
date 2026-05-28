@@ -7,7 +7,7 @@ export const applicationData = {
             street:  SHARED.street,
             unit:    '',               // optional
             city:    SHARED.city,
-            county:  '',               // optional
+            county:  SHARED.county,
             state:   SHARED.state,
             zip:     SHARED.zip,
         },
@@ -46,8 +46,9 @@ export const applicationData = {
         requestedLoanAmount: '100000',
     },
     offerReview: {
-        changeLoanAmount: false,  // true = open CHANGE modal and set newLoanAmount below
-        newLoanAmount:    '50000',
+        changeLoanAmount:     false,  // true = open CHANGE modal and set newLoanAmount below
+        newLoanAmount:        '50000',
+        expectedInterestRate: null,   // e.g. '8.94%' — null = assert any % is shown (dynamic)
         debtPayoff: {
             manage:             true,  // true = click MANAGE to open the payoff modal
             expectedDti:        null,  // dynamic — skip exact DTI assertion

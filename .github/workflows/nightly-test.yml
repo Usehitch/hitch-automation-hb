@@ -21,8 +21,28 @@ jobs:
         node-version: lts/*
     - name: Install dependencies
       run: npm ci
-    - name: Install Playwright Browsers
+
+    # -------------------------------------------------------------------------
+    # Cache Playwright's Chromium binary (~170 MB) keyed on the lockfile.
+    # On a cache hit the 170 MB download is skipped entirely — only the system
+    # library dependencies (already present on ubuntu-latest) are installed.
+    # Cache is invalidated automatically when package-lock.json changes (i.e.
+    # when the Playwright version is bumped).
+    # -------------------------------------------------------------------------
+    - name: Cache Playwright Chromium binary
+      id: playwright-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-chromium-${{ hashFiles('package-lock.json') }}
+
+    - name: Install Playwright Chromium + system deps (cache miss)
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
       run: npx playwright install chromium --with-deps
+
+    - name: Install Playwright system deps only (cache hit)
+      if: steps.playwright-cache.outputs.cache-hit == 'true'
+      run: npx playwright install-deps chromium
 
     # -------------------------------------------------------------------------
     # Fail fast with a readable message if any required secret is missing.

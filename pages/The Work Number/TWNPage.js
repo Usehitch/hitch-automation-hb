@@ -20,6 +20,7 @@ class TWNPage {
         // -- Tell us about your property ---------------------------------------
         this.addressInput        = this.page.getByLabel(/Address/i).first();
         this.cityInput           = this.page.getByLabel(/City/i);
+        this.countyInput         = this.page.getByLabel(/County/i);
         this.stateInput          = this.page.getByRole('combobox', { name: /State/i });
         this.zipInput            = this.page.getByLabel(/Zip/i);
         // Property Status radios — scoped to their radiogroup
@@ -106,6 +107,11 @@ class TWNPage {
 
             await this.cityInput.fill(p.city);
             await this.cityInput.press('Tab');
+
+            if (p.county) {
+                await this.countyInput.fill(p.county);
+                await this.countyInput.press('Tab');
+            }
 
             // State is MUI Autocomplete — fill then click the matching option
             await this.stateInput.fill(p.state);

@@ -16,8 +16,11 @@ class MortgagesAndLiensPage {
         });
 
         // -- Fields -------------------------------------------------------
-        this.annualHoaFeeInput       = this.page.getByLabel(/Annual HOA Fee/);
-        this.requestedLoanAmountInput = this.page.getByLabel(/Requested Loan Amount/);
+        // The portal label reads "Monthly HOA Fee" (not "Annual") — use a
+        // broad regex so the locator survives future label copy changes.
+        this.monthlyHoaFeeInput       = this.page.getByLabel(/HOA Fee/i);
+        this.annualHoaFeeInput        = this.monthlyHoaFeeInput; // backwards-compat alias
+        this.requestedLoanAmountInput = this.page.getByLabel(/Requested Loan Amount/i);
 
         // -- Processing screen (appears after Next click) -----------------
         this.processingHeading = this.page.getByText('Processing Application').first();
@@ -53,12 +56,18 @@ class MortgagesAndLiensPage {
             }
 
             if (m.annualHoaFee) {
-                await this.annualHoaFeeInput.clear();
-                await this.annualHoaFeeInput.fill(m.annualHoaFee);
-                await this.annualHoaFeeInput.press('Tab');
+                // Triple-click selects the entire pre-filled currency value ($0)
+                // before replacing it — plain clear() may leave the "$" symbol
+                // behind in MUI currency inputs, producing "$" + typed value.
+                await this.monthlyHoaFeeInput.click({ clickCount: 3 });
+                await this.monthlyHoaFeeInput.fill(m.annualHoaFee);
+                await this.monthlyHoaFeeInput.press('Tab');
             }
 
-            await this.requestedLoanAmountInput.clear();
+            // Fill Requested Loan Amount — required field (asterisk in label).
+            // The field defaults to "$0"; triple-click selects the whole formatted
+            // value so fill() replaces it cleanly instead of appending to it.
+            await this.requestedLoanAmountInput.click({ clickCount: 3 });
             await this.requestedLoanAmountInput.fill(m.requestedLoanAmount);
             await this.requestedLoanAmountInput.press('Tab');
         });

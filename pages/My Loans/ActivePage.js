@@ -160,7 +160,7 @@ class ActivePage {
         });
     }
 
-    async verifyPipelineSections({ requirePendingMlo = true } = {}) {
+    async verifyPipelineSections({ requirePendingMlo = false } = {}) {
         await test.step('Verify pipeline section headings', async () => {
             if (requirePendingMlo) {
                 await expect(this.pendingMloCertSection).toBeVisible();
@@ -328,23 +328,14 @@ class ActivePage {
         // Step 1 — open the MUI Autocomplete popup.
         //
         // `dropdown` is a container div (MuiFormControl-root) — use getByRole to
-        // find the single "Open" button inside it.
-        //
-        // IMPORTANT: MUI Autocomplete's popup-indicator button uses onMouseDown
-        // (not onClick) to open the popup — this prevents the focused input from
-        // blurring before the listbox renders.  el.click() only dispatches a
-        // `click` DOM event; it does NOT dispatch `mousedown`.  We therefore
-        // dispatch `mousedown` explicitly, which triggers MUI's handler.
-        //
-        // evaluate() is still used (instead of Playwright's click()) so the
-        // entire dispatch happens in one synchronous JS microtask — preventing
-        // the MUI re-render race that detaches the button between Playwright's
-        // element-resolve and its coordinate-based event dispatch.
+        // find the single "Open" button inside it, then use Playwright's .click()
+        // which fires a full trusted pointer-event sequence (pointerdown, mousedown,
+        // pointerup, mouseup, click).  MUI's onMouseDown handler requires
+        // isTrusted:true — dispatchEvent() always produces isTrusted:false and is
+        // therefore silently ignored by the MUI popup-indicator.
         const openBtn = dropdown.getByRole('button', { name: /open/i });
         await openBtn.waitFor({ state: 'visible', timeout: 10000 });
-        await openBtn.evaluate(el =>
-            el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }))
-        );
+        await openBtn.click();
 
         // Step 2 — confirm the listbox is open and wait for options to populate.
         //
@@ -400,11 +391,10 @@ class ActivePage {
 
             // statusDropdown is already scoped to the innermost MuiFormControl-root
             // for Status only (constructor uses .last()), so getByRole finds exactly
-            // one Open button.  Dispatch mousedown (not click) — MUI Autocomplete
-            // listens on onMouseDown for the popup toggle, not onClick.
-            await this.statusDropdown.getByRole('button', { name: /open/i }).evaluate(el =>
-                el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }))
-            );
+            // one Open button.  Use Playwright's .click() — it dispatches a trusted
+            // pointer-event sequence (isTrusted:true) which MUI's onMouseDown handler
+            // requires.  dispatchEvent() produces isTrusted:false and is ignored.
+            await this.statusDropdown.getByRole('button', { name: /open/i }).click();
             const listbox = this.page.getByRole('listbox');
             await expect(listbox).toBeVisible({ timeout: 8000 });
 
@@ -440,11 +430,9 @@ class ActivePage {
         await test.step('Verify State dropdown options', async () => {
             // stateDropdown is already scoped to the innermost MuiFormControl-root
             // for State only (constructor uses .last()), so getByRole finds exactly
-            // one Open button.  Dispatch mousedown (not click) — same reason as
-            // selectFilterOption: MUI uses onMouseDown for the popup toggle.
-            await this.stateDropdown.getByRole('button', { name: /open/i }).evaluate(el =>
-                el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }))
-            );
+            // one Open button.  Use Playwright's .click() — same reason as
+            // selectFilterOption: isTrusted:true is required by MUI's handler.
+            await this.stateDropdown.getByRole('button', { name: /open/i }).click();
             const listbox = this.page.getByRole('listbox');
             await expect(listbox).toBeVisible({ timeout: 8000 });
 

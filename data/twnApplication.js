@@ -18,6 +18,7 @@ export const twnApplicationData = {
     property: {
         address:        SHARED.street,
         city:           SHARED.city,
+        county:         SHARED.county,
         state:          SHARED.state,
         zip:            SHARED.zip,
         isListed:       SHARED.isListed,       // No — not listed for sale
