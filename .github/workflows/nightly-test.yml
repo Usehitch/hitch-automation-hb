@@ -36,12 +36,13 @@ jobs:
         path: ~/.cache/ms-playwright
         key: playwright-chromium-${{ hashFiles('package-lock.json') }}
 
-    - name: Install Playwright Chromium + system deps (cache miss)
+    - name: Install Playwright Chromium binary (cache miss) 
       if: steps.playwright-cache.outputs.cache-hit != 'true'
-      run: npx playwright install chromium --with-deps
+      timeout-minutes: 15
+      run: npx playwright install chromium
 
-    - name: Install Playwright system deps only (cache hit)
-      if: steps.playwright-cache.outputs.cache-hit == 'true'
+    - name: Install Playwright system deps
+      timeout-minutes: 15
       run: npx playwright install-deps chromium
 
     # -------------------------------------------------------------------------
