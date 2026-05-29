@@ -38,7 +38,6 @@ jobs:
 
     - name: Install Playwright Chromium binary (cache miss) 
       if: steps.playwright-cache.outputs.cache-hit != 'true'
-      timeout-minutes: 15
       run: npx playwright install chromium
 
     - name: Install Playwright system deps
