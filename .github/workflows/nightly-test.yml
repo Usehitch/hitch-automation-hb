@@ -1,7 +1,7 @@
 name: Nightly Regression Tests
 on:
   schedule:
-    - cron: '0 22 * * *'   # every day at 22:00 UTC (10 PM UTC)
+    - cron: '0 22 * * *' # every day at 22:00 UTC (10 PM UTC)
   push:
     branches: [ main, master ]
   pull_request:
@@ -12,84 +12,67 @@ permissions:
 
 jobs:
   test:
-    timeout-minutes: 500
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
-    - name: Install dependencies
-      run: npm ci
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm ci
 
-    # -------------------------------------------------------------------------
-    # Cache Playwright's Chromium binary (~170 MB) keyed on the lockfile.
-    # On a cache hit the 170 MB download is skipped entirely — only the system
-    # library dependencies (already present on ubuntu-latest) are installed.
-    # Cache is invalidated automatically when package-lock.json changes (i.e.
-    # when the Playwright version is bumped).
-    # -------------------------------------------------------------------------
-    - name: Cache Playwright Chromium binary
-      id: playwright-cache
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/ms-playwright
-        key: playwright-chromium-${{ hashFiles('package-lock.json') }}
+      # -------------------------------------------------------------------------
+      # Install Playwright Chromium binary + all required system dependencies
+      # in a single step using --with-deps flag. This avoids the separate
+      # cache/install-deps steps and prevents the job from hanging.
+      # -------------------------------------------------------------------------
+      - name: Install Playwright Chromium with system deps
+        run: npx playwright install chromium --with-deps
 
-    - name: Install Playwright Chromium binary (cache miss) 
-      if: steps.playwright-cache.outputs.cache-hit != 'true'
-      run: npx playwright install chromium
+      # -------------------------------------------------------------------------
+      # Fail fast with a readable message if any required secret is missing.
+      # -------------------------------------------------------------------------
+      - name: Validate required secrets
+        run: |
+          missing=""
+          [ -z "$BASE_URL" ] && missing="$missing BASE_URL"
+          [ -z "$EMAIL" ] && missing="$missing EMAIL"
+          [ -z "$PASSWORD" ] && missing="$missing PASSWORD"
+          [ -z "$OTP_SECRET" ] && missing="$missing OTP_SECRET"
+          if [ -n "$missing" ]; then
+            echo "❌ Missing required repository secrets:$missing"
+            echo ""
+            echo "Add them at: Settings → Secrets and variables → Actions → New repository secret"
+            exit 1
+          fi
+          echo "✅ All required secrets are present"
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          OTP_SECRET: ${{ secrets.OTP_SECRET }}
 
-    - name: Install Playwright system deps
-      timeout-minutes: 15
-      run: npx playwright install-deps chromium
+      - name: Run Playwright tests
+        run: npx playwright test
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          OTP_SECRET: ${{ secrets.OTP_SECRET }}
 
-    # -------------------------------------------------------------------------
-    # Fail fast with a readable message if any required secret is missing.
-    # Without this, a missing BASE_URL causes a cryptic "Cannot navigate to
-    # invalid URL" error deep inside auth.setup.js after wasting install time.
-    # Configure secrets at: Settings → Secrets and variables → Actions
-    # -------------------------------------------------------------------------
-    - name: Validate required secrets
-      run: |
-        missing=""
-        [ -z "$BASE_URL"   ] && missing="$missing BASE_URL"
-        [ -z "$EMAIL"      ] && missing="$missing EMAIL"
-        [ -z "$PASSWORD"   ] && missing="$missing PASSWORD"
-        [ -z "$OTP_SECRET" ] && missing="$missing OTP_SECRET"
-        if [ -n "$missing" ]; then
-          echo "❌ Missing required repository secrets:$missing"
-          echo ""
-          echo "Add them at: Settings → Secrets and variables → Actions → New repository secret"
-          exit 1
-        fi
-        echo "✅ All required secrets are present"
-      env:
-        BASE_URL:   ${{ secrets.BASE_URL }}
-        EMAIL:      ${{ secrets.EMAIL }}
-        PASSWORD:   ${{ secrets.PASSWORD }}
-        OTP_SECRET: ${{ secrets.OTP_SECRET }}
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
 
-    - name: Run Playwright tests
-      run: npx playwright test
-      env:
-        BASE_URL:   ${{ secrets.BASE_URL }}
-        EMAIL:      ${{ secrets.EMAIL }}
-        PASSWORD:   ${{ secrets.PASSWORD }}
-        OTP_SECRET: ${{ secrets.OTP_SECRET }}
-
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
-
-    - name: Deploy report to gh-pages
-      uses: peaceiris/actions-gh-pages@v4
-      if: ${{ !cancelled() }}
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: playwright-report/
-        destination_dir: reports/${{ github.run_id }}
-        keep_files: true
+      - name: Deploy report to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: ${{ !cancelled() }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: playwright-report/
+          destination_dir: reports/${{ github.run_id }}
+          keep_files: true
