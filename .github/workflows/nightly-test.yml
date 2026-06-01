@@ -16,22 +16,37 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+          cache: 'npm'          # ← built-in npm cache (caches ~/.npm)
+
       - name: Install dependencies
         run: npm ci
 
-      # -------------------------------------------------------------------------
-      # Install Playwright Chromium binary + all required system dependencies
-      # in a single step using --with-deps flag. This avoids the separate
-      # cache/install-deps steps and prevents the job from hanging.
-      # -------------------------------------------------------------------------
+      # Cache the Playwright browser binary (~170 MB).
+      # Key is tied to the Playwright version in package-lock.json —
+      # cache auto-invalidates when you upgrade Playwright.
+      - name: Cache Playwright Chromium binary
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Install Playwright Chromium with system deps
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install chromium --with-deps
 
+      # When the binary is restored from cache, still install OS-level
+      # system libraries (fast — no download, just apt packages).
+      - name: Install Playwright system deps only (cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
       # -------------------------------------------------------------------------
-      # Fail fast with a readable message if any required secret is missing.
+      # Fail fast if any required secret is missing.
       # -------------------------------------------------------------------------
       - name: Validate required secrets
         run: |
@@ -42,7 +57,6 @@ jobs:
           [ -z "$OTP_SECRET" ] && missing="$missing OTP_SECRET"
           if [ -n "$missing" ]; then
             echo "❌ Missing required repository secrets:$missing"
-            echo ""
             echo "Add them at: Settings → Secrets and variables → Actions → New repository secret"
             exit 1
           fi
