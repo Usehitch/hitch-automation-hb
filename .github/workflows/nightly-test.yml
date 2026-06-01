@@ -82,7 +82,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         if: ${{ !cancelled() }}
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.HB_TOKEN }}
           publish_dir: playwright-report/
           destination_dir: reports/${{ github.run_id }}
           keep_files: true
