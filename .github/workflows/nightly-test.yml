@@ -4,9 +4,9 @@ on:
   schedule:
     - cron: '0 22 * * *'
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: [main, master]
+    branches: [main]
 
 permissions:
   contents: write
@@ -21,6 +21,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      # -----------------------------
+      # Slack: Main branch push alert
+      # -----------------------------
+      - name: Slack Alert - Main Branch Push
+        if: github.event_name == 'push' && github.ref_name == 'main'
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{
+            \"channel\": \"#automation-alerts\",
+            \"text\": \"📌 *Main Branch Updated*\n\n📦 Repository: ${{ github.repository }}\n🌿 Branch: ${{ github.ref_name }}\n👤 Actor: ${{ github.actor }}\n🔗 Commit: https://github.com/${{ github.repository }}/commit/${{ github.sha }}\"
+          }" \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - uses: actions/setup-node@v4
         with:
@@ -39,7 +52,7 @@ jobs:
           [ -z "$OTP_SECRET" ] && missing="$missing OTP_SECRET"
 
           if [ -n "$missing" ]; then
-            echo "❌ Missing required repository secrets:$missing"
+            echo "❌ Missing required secrets:$missing"
             exit 1
           fi
 
@@ -73,3 +86,37 @@ jobs:
           publish_dir: playwright-report/
           destination_dir: reports/${{ github.run_id }}
           keep_files: true
+
+      # -----------------------------
+      # Slack: Success (with report links)
+      # -----------------------------
+      - name: Slack Alert - Test Success
+        if: success()
+        run: |
+          RUN_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/${{ github.run_id }}/"
+          LATEST_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/latest/"
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{
+            \"channel\": \"#automation-alerts\",
+            \"text\": \"✅ *Nightly Regression Passed*\n\n📦 Repo: ${{ github.repository }}\n🌿 Branch: ${{ github.ref_name }}\n\n📊 Reports:\n🔹 Run: ${RUN_REPORT}\n🔹 Latest: ${LATEST_REPORT}\n\n🔍 GitHub Run: ${RUN_URL}\"
+          }" \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # -----------------------------
+      # Slack: Failure (with report links)
+      # -----------------------------
+      - name: Slack Alert - Test Failed
+        if: failure()
+        run: |
+          RUN_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/${{ github.run_id }}/"
+          LATEST_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/latest/"
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{
+            \"channel\": \"#automation-alerts\",
+            \"text\": \"❌ *Nightly Regression Failed*\n\n📦 Repo: ${{ github.repository }}\n🌿 Branch: ${{ github.ref_name }}\n\n📊 Reports:\n🔹 Run: ${RUN_REPORT}\n🔹 Latest: ${LATEST_REPORT}\n\n🔍 Logs: ${RUN_URL}\"
+          }" \
+          ${{ secrets.SLACK_WEBHOOK_URL }}

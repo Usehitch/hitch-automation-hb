@@ -2,8 +2,8 @@ name: TWN Vendor Monitor
 
 on:
   schedule:
-    - cron: '*/30 * * * *'   # every 30 minutes
-  workflow_dispatch:           # allow manual trigger from GitHub UI
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
 
 jobs:
   twn-monitor:
@@ -11,10 +11,10 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Set up job
-        run: echo "Starting TWN monitor job"
+    container:
+      image: mcr.microsoft.com/playwright:v1.59.1-jammy
 
+    steps:
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -22,67 +22,49 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      # -----------------------------------------------------------------------
-      # Cache Playwright's Chromium binary (~170 MB) keyed on the lockfile.
-      # On a cache hit the 170 MB download is skipped entirely — only the system
-      # library dependencies (already present on ubuntu-latest) are installed.
-      # Cache is invalidated automatically when package-lock.json changes (i.e.
-      # when the Playwright version is bumped).
-      # -----------------------------------------------------------------------
-      - name: Cache Playwright Chromium binary
-        id: playwright-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-chromium-${{ hashFiles('package-lock.json') }}
-
-      - name: Install Playwright Chromium + system deps (cache miss)
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install chromium --with-deps
-
-      - name: Install Playwright system deps only (cache hit)
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
-
-      # -----------------------------------------------------------------------
-      # Validate that every required secret has been configured.
-      # If any are missing the job fails here with a clear diagnostic message
-      # instead of a cryptic "Cannot navigate to invalid URL" inside the test.
-      # Configure secrets at: Settings → Secrets and variables → Actions
-      # -----------------------------------------------------------------------
+      # -----------------------------
+      # Validate secrets early
+      # -----------------------------
       - name: Validate required secrets
         run: |
           missing=""
-          [ -z "$BASE_URL"   ] && missing="$missing BASE_URL"
-          [ -z "$EMAIL"      ] && missing="$missing EMAIL"
-          [ -z "$PASSWORD"   ] && missing="$missing PASSWORD"
+          [ -z "$BASE_URL" ] && missing="$missing BASE_URL"
+          [ -z "$EMAIL" ] && missing="$missing EMAIL"
+          [ -z "$PASSWORD" ] && missing="$missing PASSWORD"
           [ -z "$OTP_SECRET" ] && missing="$missing OTP_SECRET"
+
           if [ -n "$missing" ]; then
-            echo "❌ Missing required repository secrets:$missing"
-            echo ""
-            echo "Add them at: Settings → Secrets and variables → Actions → New repository secret"
+            echo "❌ Missing required secrets:$missing"
             exit 1
           fi
+
           echo "✅ All required secrets are present"
         env:
-          BASE_URL:   ${{ secrets.BASE_URL }}
-          EMAIL:      ${{ secrets.EMAIL }}
-          PASSWORD:   ${{ secrets.PASSWORD }}
+          BASE_URL: ${{ secrets.BASE_URL }}
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
           OTP_SECRET: ${{ secrets.OTP_SECRET }}
 
+      # -----------------------------
+      # Run TWN monitor
+      # -----------------------------
       - name: Run TWN monitor test
         id: twn_test
         run: npx playwright test tests/twn-monitor.spec.js --reporter=list
         env:
-          BASE_URL:   ${{ secrets.BASE_URL }}
-          EMAIL:      ${{ secrets.EMAIL }}
-          PASSWORD:   ${{ secrets.PASSWORD }}
+          BASE_URL: ${{ secrets.BASE_URL }}
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
           OTP_SECRET: ${{ secrets.OTP_SECRET }}
 
+      # -----------------------------
+      # Upload report
+      # -----------------------------
       - name: Upload test report
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
@@ -91,15 +73,9 @@ jobs:
           path: playwright-report/
           retention-days: 7
 
-      # -----------------------------------------------------------------------
-      # Slack alert — fires when the test step fails.
-      # Requires a repo/org secret named SLACK_WEBHOOK_URL.
-      # Set it up at: Settings → Secrets → Actions → New repository secret
-      # Webhook guide: https://api.slack.com/messaging/webhooks
-      #
-      # continue-on-error: true ensures a missing or invalid webhook never
-      # causes a second failure on top of the real test failure.
-      # -----------------------------------------------------------------------
+      # -----------------------------
+      # Slack Failure Alert (WITH LINKS)
+      # -----------------------------
       - name: Notify Slack on failure
         if: failure()
         continue-on-error: true
@@ -107,17 +83,17 @@ jobs:
         with:
           payload: |
             {
-              "text": "🚨 *TWN Integration Alert* — The Work Number check failed on staging.",
+              "text": "🚨 TWN Integration Failed",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "🚨 *TWN Integration Alert*\n\nThe Work Number income verification is *not working* on staging. Automated employer-data population may be broken.\n\n*Run:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View details>\n*Triggered:* `${{ github.event_name }}`\n*Time:* ${{ github.run_started_at }}"
+                    "text": "🚨 *TWN Integration Alert*\n\nThe Work Number integration check FAILED.\n\n📦 *Repo:* ${{ github.repository }}\n🌿 *Event:* ${{ github.event_name }}\n\n📊 *Reports:*\n🔹 Run: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/${{ github.run_id }}/\n🔹 Latest: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/latest/\n\n🔍 *GitHub Run:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Open Logs>"
                   }
                 }
               ]
             }
         env:
-          SLACK_WEBHOOK_URL:  ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
