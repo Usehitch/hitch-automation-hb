@@ -89,6 +89,6 @@ test.describe('E-Consent', () => {
         await loanDetailPage.clickDocumentsTab();
         await loanDetailPage.verifyESignedMethodConsent();
         await loanDetailPage.openCoBorrowerMethodConsent();
-        await loanDetailPage.verifyCoBorrowerConsentDoc();
+        await loanDetailPage.verifyCoBorrowerConsentDoc(); 
     });
 });
