@@ -394,7 +394,10 @@ class ActivePage {
             // one Open button.  Use Playwright's .click() — it dispatches a trusted
             // pointer-event sequence (isTrusted:true) which MUI's onMouseDown handler
             // requires.  dispatchEvent() produces isTrusted:false and is ignored.
-            await this.statusDropdown.getByRole('button', { name: /open/i }).click();
+            const statusOpenBtn = this.statusDropdown.getByRole('button', { name: /open/i });
+            await statusOpenBtn.waitFor({ state: 'visible', timeout: 10000 });
+            await statusOpenBtn.scrollIntoViewIfNeeded();
+            await statusOpenBtn.click();
             const listbox = this.page.getByRole('listbox');
             await expect(listbox).toBeVisible({ timeout: 8000 });
 

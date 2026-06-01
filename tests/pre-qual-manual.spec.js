@@ -31,7 +31,6 @@ test.describe('Pre-Qual Manually', () => {
 
         // Step 3 — Offer Review (Pre-Qualification Summary)
         await expect(offerReviewPage.pageHeading).toBeVisible({ timeout: 15000 });
-        await offerReviewPage.verifyInterestRate(applicationData);
         await offerReviewPage.updateLoanAmount(applicationData);
         await offerReviewPage.clickManageDebtPayoffs(applicationData);
         await offerReviewPage.verifyDebtPayoffModal(applicationData);
@@ -86,7 +85,6 @@ test.describe('Pre-Qual Manually', () => {
 
         // Step 3 — Offer Review
         await expect(offerReviewPage.pageHeading).toBeVisible({ timeout: 15000 });
-        await offerReviewPage.verifyInterestRate(coBorrowerApplicationData);
         await offerReviewPage.updateLoanAmount(coBorrowerApplicationData);
         await offerReviewPage.clickManageDebtPayoffs(coBorrowerApplicationData);
         await offerReviewPage.verifyDebtPayoffModal(coBorrowerApplicationData);

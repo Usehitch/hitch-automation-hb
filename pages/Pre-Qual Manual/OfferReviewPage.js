@@ -22,7 +22,7 @@ class OfferReviewPage {
         this.manageDebtPayoffsBtn = this.page.getByRole('button', { name: /MANAGE/i });
 
         // -- "Select the accounts to payoff" modal ----------------------------
-        this.debtPayoffModal = this.page.getByRole('dialog');
+        this.debtPayoffModal = this.page.getByRole('dialog'); 
         this.debtPayoffModalHeading = this.debtPayoffModal.getByText('Select the accounts to payoff');
         this.debtPayoffDtiSection = this.debtPayoffModal.getByText('DTI After Proposed Payoff').first();
         this.debtPayoffCheckboxes = this.debtPayoffModal.getByRole('checkbox');

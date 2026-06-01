@@ -76,6 +76,11 @@ test.describe('E-Consent', () => {
         await confirmationPage.clickClose();
 
         // Step 6 — My Loans: find the newly created loan by applicant email
+        // Close any PDF tabs opened by clickDownloadPdf before navigating.
+        for (const extraPage of page.context().pages()) {
+            if (extraPage !== page) await extraPage.close().catch(() => {});
+        }
+        await page.bringToFront();
         await activePage.search(coBorrowerApplicationData.applicant.email);
         await activePage.viewBtn.click();
         await loanDetailPage.verifyPageLoaded();
