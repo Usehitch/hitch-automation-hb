@@ -1,11 +1,12 @@
 name: Nightly Regression Tests
+
 on:
   schedule:
-    - cron: '0 22 * * *' # every day at 22:00 UTC (10 PM UTC)
+    - cron: '0 22 * * *'
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
 
 permissions:
   contents: write
@@ -14,40 +15,21 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+
+    container:
+      image: mcr.microsoft.com/playwright:v1.54.1-jammy
+
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: 'npm'          # ← built-in npm cache (caches ~/.npm)
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      # Cache the Playwright browser binary (~170 MB).
-      # Key is tied to the Playwright version in package-lock.json —
-      # cache auto-invalidates when you upgrade Playwright.
-      - name: Cache Playwright Chromium binary
-        id: playwright-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-
-      - name: Install Playwright Chromium with system deps
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install chromium --with-deps
-
-      # When the binary is restored from cache, still install OS-level
-      # system libraries (fast — no download, just apt packages).
-      - name: Install Playwright system deps only (cache hit)
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
-
-      # -------------------------------------------------------------------------
-      # Fail fast if any required secret is missing.
-      # -------------------------------------------------------------------------
       - name: Validate required secrets
         run: |
           missing=""
@@ -55,11 +37,12 @@ jobs:
           [ -z "$EMAIL" ] && missing="$missing EMAIL"
           [ -z "$PASSWORD" ] && missing="$missing PASSWORD"
           [ -z "$OTP_SECRET" ] && missing="$missing OTP_SECRET"
+
           if [ -n "$missing" ]; then
             echo "❌ Missing required repository secrets:$missing"
-            echo "Add them at: Settings → Secrets and variables → Actions → New repository secret"
             exit 1
           fi
+
           echo "✅ All required secrets are present"
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
