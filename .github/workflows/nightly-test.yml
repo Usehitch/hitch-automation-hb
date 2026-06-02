@@ -80,6 +80,13 @@ jobs:
           OTP_SECRET: ${{ secrets.OTP_SECRET }}
 
       # -----------------------------
+      # Install jq
+      # -----------------------------
+      - name: Install jq
+        if: always()
+        run: apt-get update -qq && apt-get install -y -qq jq
+
+      # -----------------------------
       # Extract Test Statistics
       # -----------------------------
       - name: Extract test results
