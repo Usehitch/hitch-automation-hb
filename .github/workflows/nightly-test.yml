@@ -43,6 +43,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # -----------------------------
+      # Validate Secrets
+      # -----------------------------
       - name: Validate required secrets
         run: |
           missing=""
@@ -63,7 +66,12 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
           OTP_SECRET: ${{ secrets.OTP_SECRET }}
 
+      # -----------------------------
+      # Run Playwright Tests
+      # -----------------------------
       - name: Run Playwright tests
+        id: playwright
+        continue-on-error: true
         run: npx playwright test
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
@@ -71,16 +79,55 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
           OTP_SECRET: ${{ secrets.OTP_SECRET }}
 
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
+      # -----------------------------
+      # Extract Test Statistics
+      # -----------------------------
+      - name: Extract test results
+        if: always()
+        run: |
+          PASSED=$(jq '.stats.expected // 0' test-results.json)
+          FAILED=$(jq '.stats.unexpected // 0' test-results.json)
+          SKIPPED=$(jq '.stats.skipped // 0' test-results.json)
+
+          echo "PASSED=$PASSED" >> $GITHUB_ENV
+          echo "FAILED=$FAILED" >> $GITHUB_ENV
+          echo "SKIPPED=$SKIPPED" >> $GITHUB_ENV
+
+      # -----------------------------
+      # Extract Failed Test Names
+      # -----------------------------
+      - name: Extract failed tests
+        if: always()
+        run: |
+          FAILED_TESTS=$(jq -r '
+            .suites[]?.specs[]? |
+            select(any(.tests[]?.results[]?; .status=="failed")) |
+            .title
+          ' test-results.json)
+
+          {
+            echo "FAILED_TESTS<<EOF"
+            echo "${FAILED_TESTS:-None}"
+            echo "EOF"
+          } >> $GITHUB_ENV
+
+      # -----------------------------
+      # Upload Playwright Report
+      # -----------------------------
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
 
+      # -----------------------------
+      # Deploy Report to GitHub Pages
+      # -----------------------------
       - name: Deploy report to gh-pages
         uses: peaceiris/actions-gh-pages@v4
-        if: ${{ !cancelled() }}
+        if: always()
         with:
           github_token: ${{ secrets.HB_TOKEN }}
           publish_dir: playwright-report/
@@ -88,35 +135,42 @@ jobs:
           keep_files: true
 
       # -----------------------------
-      # Slack: Success (with report links)
+      # Slack Success Alert
       # -----------------------------
       - name: Slack Alert - Test Success
-        if: success()
+        if: env.FAILED == '0'
         run: |
           RUN_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/${{ github.run_id }}/"
-          LATEST_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/latest/"
           RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
           curl -X POST -H 'Content-type: application/json' \
           --data "{
             \"channel\": \"#automation-alerts\",
-            \"text\": \"✅ *Nightly Regression Passed*\n\n📦 Repo: ${{ github.repository }}\n🌿 Branch: ${{ github.ref_name }}\n\n📊 Reports:\n🔹 Run: ${RUN_REPORT}\n🔹 Latest: ${LATEST_REPORT}\n\n🔍 GitHub Run: ${RUN_URL}\"
+            \"text\": \"✅ *Nightly Regression Passed*\n\n📦 Repo: ${{ github.repository }}\n🌿 Branch: ${{ github.ref_name }}\n\n📈 Results:\n✅ Passed: ${PASSED}\n⏭️ Skipped: ${SKIPPED}\n❌ Failed: ${FAILED}\n\n📊 Report:\n${RUN_REPORT}\n\n🔍 GitHub Run:\n${RUN_URL}\"
           }" \
           ${{ secrets.SLACK_WEBHOOK_URL }}
 
       # -----------------------------
-      # Slack: Failure (with report links)
+      # Slack Failure Alert
       # -----------------------------
       - name: Slack Alert - Test Failed
-        if: failure()
+        if: env.FAILED != '0'
         run: |
           RUN_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/${{ github.run_id }}/"
-          LATEST_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/latest/"
           RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
           curl -X POST -H 'Content-type: application/json' \
           --data "{
             \"channel\": \"#automation-alerts\",
-            \"text\": \"❌ *Nightly Regression Failed*\n\n📦 Repo: ${{ github.repository }}\n🌿 Branch: ${{ github.ref_name }}\n\n📊 Reports:\n🔹 Run: ${RUN_REPORT}\n🔹 Latest: ${LATEST_REPORT}\n\n🔍 Logs: ${RUN_URL}\"
+            \"text\": \"❌ *Nightly Regression Failed*\n\n📦 Repo: ${{ github.repository }}\n🌿 Branch: ${{ github.ref_name }}\n\n📈 Results:\n✅ Passed: ${PASSED}\n⏭️ Skipped: ${SKIPPED}\n❌ Failed: ${FAILED}\n\n🚨 Failed Tests:\n${FAILED_TESTS}\n\n📊 Report:\n${RUN_REPORT}\n\n🔍 Logs:\n${RUN_URL}\"
           }" \
           ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # -----------------------------
+      # Mark Workflow Failed
+      # -----------------------------
+      - name: Fail workflow if tests failed
+        if: env.FAILED != '0'
+        run: |
+          echo "One or more tests failed."
+          exit 1
