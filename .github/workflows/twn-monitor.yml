@@ -121,3 +121,48 @@ jobs:
             \"text\": \"🚨 *TWN Integration Check Failed*\n\n📦 Repo: ${{ github.repository }}\n🌿 Event: ${{ github.event_name }}\n\n📊 Report:\n🔹 ${RUN_REPORT}\n\n🔍 Logs: ${RUN_URL}\"
           }" \
           ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # -----------------------------------------------------------------------
+      # Email alert — production outage only (TWN failure).
+      # Fires when the integration check fails; does NOT send on success.
+      #
+      # Required secrets (Settings → Secrets and variables → Actions):
+      #   SMTP_SERVER    — e.g. smtp.office365.com
+      #   SMTP_PORT      — e.g. 587
+      #   SMTP_USERNAME  — sending address (e.g. alerts@homebridge.com)
+      #   SMTP_PASSWORD  — app password / service account password
+      #
+      # continue-on-error: true so a bad SMTP config never masks the real failure.
+      # -----------------------------------------------------------------------
+      - name: Email Alert - TWN Production Outage
+        if: failure()
+        continue-on-error: true
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port:    ${{ secrets.SMTP_PORT }}
+          username:       ${{ secrets.SMTP_USERNAME }}
+          password:       ${{ secrets.SMTP_PASSWORD }}
+          to:             HELIX_Notification@homebridge.com
+          from:           ${{ secrets.SMTP_USERNAME }}
+          subject:        "🚨 [PRODUCTION OUTAGE] TWN Integration Check Failed — ${{ github.run_id }}"
+          body: |
+            The Work Number (TWN) income verification integration has FAILED on production.
+
+            Automated employer-data population may be broken for new loan applications.
+
+            ──────────────────────────────────────
+            Repository : ${{ github.repository }}
+            Triggered  : ${{ github.event_name }}
+            Run ID     : ${{ github.run_id }}
+            ──────────────────────────────────────
+
+            Test Report:
+            https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/twn-monitor/${{ github.run_id }}/
+
+            GitHub Actions Run:
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            ──────────────────────────────────────
+            This alert is sent only on failure.
+            No action needed if the next scheduled run passes.

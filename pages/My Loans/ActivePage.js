@@ -177,7 +177,7 @@ class ActivePage {
             await expect(this.pendingMloApplicantCol).toBeVisible();
             await expect(this.pendingMloAddressCol).toBeVisible();
             await expect(this.pendingMloLoanAmountCol).toBeVisible();
-            await expect(this.pendingMloStatusCol).toBeVisible();
+            await expect(this.pendingMloStatusCol).toBeVisible({ timeout: 30000 });
             await expect(this.pendingMloLoAssistantCol).toBeVisible();
             await expect(this.pendingMloTimeInStageCol).toBeVisible();
             await expect(this.certifyBtn).toBeVisible();
@@ -206,10 +206,20 @@ class ActivePage {
 
     /**
      * Clicks the first Certify button in the Pending MLO Certification section.
+     *
+     * Why waitFor + scrollIntoViewIfNeeded instead of click({ force: true })?
+     * force: true bypasses Playwright's actionability checks but does NOT wait
+     * for the element to appear in the DOM.  The Pending MLO Certification section
+     * loads asynchronously after the page shell renders — if click fires before
+     * the section mounts the button simply does not exist yet and the click is a
+     * no-op.  Waiting for visibility ensures the button is present and painted
+     * before we attempt to interact with it.
      */
     async clickCertify() {
         await test.step('Click Certify on first pending MLO loan', async () => {
-            await this.certifyBtn.click({ force: true });
+            await this.certifyBtn.waitFor({ state: 'visible', timeout: 20000 });
+            await this.certifyBtn.scrollIntoViewIfNeeded();
+            await this.certifyBtn.click();
         });
     }
 
@@ -325,6 +335,15 @@ class ActivePage {
      * @param {string} optionText  Exact or partial label of the option to select
      */
     async selectFilterOption(dropdown, optionText) {
+        // Guard — confirm the filter modal is still open before touching any
+        // dropdown inside it.  Pressing Escape on a state/status listbox that has
+        // already auto-closed propagates to the MUI Dialog and closes the modal.
+        // When that race fires, re-open the modal so the rest of the step works.
+        const modalOpen = await this.filterModal.isVisible({ timeout: 3000 }).catch(() => false);
+        if (!modalOpen) {
+            await this.openFilter();
+        }
+
         // Step 1 — open the MUI Autocomplete popup.
         //
         // `dropdown` is a container div (MuiFormControl-root) — use getByRole to
@@ -422,6 +441,11 @@ class ActivePage {
                 });
             }
             await this.page.keyboard.press('Escape');
+            // Confirm the listbox closed — not the modal.  If the listbox had
+            // already auto-closed before Escape fired, the key propagates to the
+            // MUI Dialog and closes it instead.  Waiting here ensures Escape was
+            // consumed by the popup before the next step touches the modal.
+            await listbox.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
         });
     }
 
@@ -474,6 +498,9 @@ class ActivePage {
                 });
             }
             await this.page.keyboard.press('Escape');
+            // Same guard as Status: wait for the listbox to confirm it closed
+            // so Escape is not left to propagate to the filter modal.
+            await listbox.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
         });
     }
 
@@ -522,9 +549,14 @@ class ActivePage {
             // Playwright's element-resolve and the DOM event dispatch.
             await applyBtn.evaluate(el => el.click());
 
-            // Confirm the modal closed and the underlying list has reloaded.
+            // Confirm the modal closed.
             await expect(this.filterModal).toBeHidden({ timeout: 10000 });
-            await this.page.waitForLoadState('load');
+
+            // waitForLoadState('load') is a no-op on SPAs — the page never hard-
+            // navigates; the pipeline refreshes via background API calls instead.
+            // Wait for an always-present pipeline section to confirm the filtered
+            // data has rendered before the caller proceeds.
+            await this.preQualSection.waitFor({ state: 'visible', timeout: 15000 });
         });
     }
 
@@ -561,7 +593,11 @@ class ActivePage {
             await applyBtn.evaluate(el => el.click());
 
             await expect(this.filterModal).toBeHidden({ timeout: 10000 });
-            await this.page.waitForLoadState('load');
+
+            // Same SPA reasoning as applyFilters — wait for the pipeline to
+            // confirm the unfiltered data has rendered before the caller checks
+            // section headings.
+            await this.preQualSection.waitFor({ state: 'visible', timeout: 15000 });
         });
     }
 }

@@ -91,7 +91,7 @@ test.describe('My Loans - Inactive', () => {
         // a download (tab navigates to ":"), so we skip asserting the PDF URL.
         await expect(
             activePage.page.getByText(/Certification completed successfully/i)
-        ).toBeVisible({ timeout: 10000 });
+        ).toBeVisible({ timeout: 20000 });
     });
 
     // -------------------------------------------------------------------------

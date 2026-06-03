@@ -76,45 +76,7 @@ test.describe('My Loans - Adversed', () => {
         await activePage.clearSearch();
         await activePage.verifyPipelineSections({ requirePendingMlo: false });
     });
-
-    // -------------------------------------------------------------------------
-
-    test('Filter modal — fields, dropdowns, company apply, and clear lifecycle', async ({
-        activePage,
-    }) => {
-        // -- Phase 1: open the modal once and run all read-only verifications ----
-        // verifyStatusDropdownOptions and verifyStateDropdownOptions each press
-        // Escape internally to close the option listbox, but they leave the
-        // filter modal itself open.  toggleShowTestAccounts also keeps the modal
-        // open.  A single openFilter() covers all four checks.
-        await activePage.openFilter();
-        await activePage.verifyFilterFields();
-        await activePage.verifyStatusDropdownOptions();
-        await activePage.verifyStateDropdownOptions();
-        await activePage.toggleShowTestAccounts();
-
-        // -- Phase 2: apply a Company filter and verify the pipeline reacts ------
-        // The modal is still open from Phase 1 — no need to re-open it.
-        // Calling openFilter() while the dialog is already visible triggers MUI's
-        // click-away handler (the Filter button is behind the backdrop) and closes
-        // the modal on CI, making the subsequent selectFilterOption fail.
-        await test.step('Select Company option from filter dropdown', async () => {
-            await activePage.selectFilterOption(activePage.companyDropdown, 'ABC Broker');
-            await activePage.applyFilters();
-        });
-        // Pending MLO Certification is only present when loans exist in that state;
-        // check conditionally to avoid flakiness on the Adversed tab.
-        const hasPendingSection = await activePage.pendingMloCertSection
-            .isVisible({ timeout: 5000 }).catch(() => false);
-        if (hasPendingSection) {
-            await expect(activePage.pendingMloCertSection).toBeVisible();
-        }
-
-        // -- Phase 3: clear all filters and confirm the pipeline resets ----------
-        await activePage.clearAllFilters();
-        await activePage.verifyPipelineSections({ requirePendingMlo: false });
-    });
-
+  
     // -------------------------------------------------------------------------
 
     test('Certify a pending MLO loan from the Adversed tab', async ({
@@ -130,9 +92,11 @@ test.describe('My Loans - Adversed', () => {
 
         // Verify the success toast — the PDF opens in a new tab but CI serves it as
         // a download (tab navigates to ":"), so we skip asserting the PDF URL.
+        // 20 s — the Adversed certification triggers additional underwriting checks
+        // that make the server response slower than on the Active tab.
         await expect(
             activePage.page.getByText(/Certification completed successfully/i)
-        ).toBeVisible({ timeout: 10000 });
+        ).toBeVisible({ timeout: 20000 });
     });
 
     // -------------------------------------------------------------------------

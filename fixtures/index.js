@@ -14,6 +14,8 @@ import ManageUsersPage from '../pages/Manage Users/ManageUsersPage';
 import QuickPricerPage from '../pages/Quick Pricer/QuickPricerPage';
 import CompaniesPage from '../pages/Companies/CompaniesPage';
 import CompanyBranchesPage from '../pages/Company Branches/CompanyBranchesPage';
+import ManageEmailsPage from '../pages/Manage Emails/ManageEmailsPage';
+import NewEmailTemplatePage from '../pages/Manage Emails/NewEmailTemplatePage';
 
 export const test = base.extend({
     loginPage: async ({ page }, use) => {
@@ -74,6 +76,14 @@ export const test = base.extend({
 
     companyBranchesPage: async ({ page }, use) => {
         await use(new CompanyBranchesPage(page));
+    },
+
+    manageEmailsPage: async ({ page }, use) => {
+        await use(new ManageEmailsPage(page));
+    },
+
+    newEmailTemplatePage: async ({ page }, use) => {
+        await use(new NewEmailTemplatePage(page));
     },
 });
 
