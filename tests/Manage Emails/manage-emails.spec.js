@@ -176,6 +176,10 @@ test.describe('Manage Emails - Email Templates (CRUD)', () => {
         manageEmailsPage,
         newEmailTemplatePage,
     }) => {
+        // Pre-run cleanup — removes duplicates left by prior failed runs so the
+        // server won't reject this save with a duplicate-name error.
+        await manageEmailsPage.cleanupIfExists(NEW_TEMPLATE.templateName);
+
         // Create a minimal filled template so Save succeeds (required fields)
         await manageEmailsPage.clickAddNewTemplate();
         await newEmailTemplatePage.waitForForm();
@@ -190,7 +194,7 @@ test.describe('Manage Emails - Email Templates (CRUD)', () => {
         await manageEmailsPage.search(NEW_TEMPLATE.templateName);
         const createdRow = manageEmailsPage.page.getByRole('row', {
             name: new RegExp(NEW_TEMPLATE.templateName, 'i'),
-        });
+        }).last();
         await expect(createdRow).toBeVisible({ timeout: 10000 });
 
         // Cleanup
@@ -219,6 +223,9 @@ test.describe('Manage Emails - Email Templates (CRUD)', () => {
         manageEmailsPage,
         newEmailTemplatePage,
     }) => {
+        // Pre-run cleanup
+        await manageEmailsPage.cleanupIfExists(DRAFT_TEMPLATE.templateName);
+
         // -- Step 1: Open the New Template form ------------------------------
         await manageEmailsPage.clickAddNewTemplate();
         await newEmailTemplatePage.waitForForm();
@@ -231,9 +238,11 @@ test.describe('Manage Emails - Email Templates (CRUD)', () => {
 
         // -- Step 4: Search for the template in the list --------------------
         await manageEmailsPage.search(DRAFT_TEMPLATE.templateName);
+        // Use .last() — targets the most recently created row and avoids a
+        // strict-mode violation when a previous failed run left a duplicate.
         const draftRow = manageEmailsPage.page.getByRole('row', {
             name: new RegExp(DRAFT_TEMPLATE.templateName, 'i'),
-        });
+        }).last();
         await expect(draftRow).toBeVisible({ timeout: 10000 });
 
         // -- Step 5: Verify the status column shows "draft" -----------------
@@ -259,6 +268,9 @@ test.describe('Manage Emails - Email Templates (CRUD)', () => {
         manageEmailsPage,
         newEmailTemplatePage,
     }) => {
+        // Pre-run cleanup
+        await manageEmailsPage.cleanupIfExists(NEW_TEMPLATE.templateName);
+
         // -- Step 1: Open the create form ------------------------------------
         await manageEmailsPage.clickAddNewTemplate();
         await newEmailTemplatePage.waitForForm();
@@ -273,7 +285,7 @@ test.describe('Manage Emails - Email Templates (CRUD)', () => {
         await manageEmailsPage.search(NEW_TEMPLATE.templateName);
         const createdRow = manageEmailsPage.page.getByRole('row', {
             name: new RegExp(NEW_TEMPLATE.templateName, 'i'),
-        });
+        }).last(); // .last() — targets newest; avoids strict-mode on duplicates
         await expect(createdRow).toBeVisible({ timeout: 10000 });
 
         // Confirm the event/trigger column matches what we selected
@@ -292,6 +304,9 @@ test.describe('Manage Emails - Email Templates (CRUD)', () => {
         manageEmailsPage,
         newEmailTemplatePage,
     }) => {
+        // Pre-run cleanup
+        await manageEmailsPage.cleanupIfExists(NEW_TEMPLATE.templateName);
+
         // -- Step 1: Create the template -------------------------------------
         await manageEmailsPage.clickAddNewTemplate();
         await newEmailTemplatePage.waitForForm();
@@ -302,7 +317,7 @@ test.describe('Manage Emails - Email Templates (CRUD)', () => {
         await manageEmailsPage.search(NEW_TEMPLATE.templateName);
         const templateRow = manageEmailsPage.page.getByRole('row', {
             name: new RegExp(NEW_TEMPLATE.templateName, 'i'),
-        });
+        }).last(); // .last() — targets newest; avoids strict-mode on duplicates
         await expect(templateRow).toBeVisible({ timeout: 10000 });
         await manageEmailsPage.clickEditForTemplate(new RegExp(NEW_TEMPLATE.templateName, 'i'));
         await newEmailTemplatePage.waitForForm();
@@ -324,8 +339,11 @@ test.describe('Manage Emails - Email Templates (CRUD)', () => {
         await expect(newEmailTemplatePage.subjectInput).toHaveValue(UPDATED_TEMPLATE.subject);
 
         // -- Step 6: Cleanup — go back and delete --------------------------
+        // GO BACK is an SPA route change; wait for the load event then for the
+        // Email Templates heading to confirm the list page has fully mounted.
         await newEmailTemplatePage.goBackLink.click();
-        await manageEmailsPage.pageHeading.waitFor({ state: 'visible', timeout: 10000 });
+        await manageEmailsPage.page.waitForLoadState('load');
+        await manageEmailsPage.pageHeading.waitFor({ state: 'visible', timeout: 20000 });
         await manageEmailsPage.deleteTemplate(NEW_TEMPLATE.templateName);
     });
 });

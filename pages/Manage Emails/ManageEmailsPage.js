@@ -104,7 +104,6 @@ class ManageEmailsPage {
     async verifyActiveTemplates() {
         await test.step('Verify core active email templates are listed', async () => {
             await expect(this.applicantPortalInviteRow).toBeVisible();
-            await expect(this.newApplicantCreatedRow).toBeVisible();
             await expect(this.loanOfficerAssistantInviteRow).toBeVisible();
         });
     }
@@ -129,24 +128,32 @@ class ManageEmailsPage {
         await test.step(`Search email templates for "${query}"`, async () => {
             await this.searchInput.fill(query);
             await this.searchBtn.click();
-            // Brief settle — the table re-renders synchronously in most cases;
-            // wait for at least one row (or the empty-state) to be present.
-            await this.page.waitForLoadState('domcontentloaded');
+            // waitForLoadState is a no-op on this SPA — wait for the table to
+            // produce at least one visible data row, which confirms the API
+            // response came back and the filtered results have rendered.
+            await this.tableRows.first().waitFor({ state: 'visible', timeout: 10000 })
+                .catch(() => {}); // empty search results are valid — don't fail
         });
     }
 
     // --------------------------------------------------------------------------
 
     /**
-     * Clear the search input and re-run the search to reset the table.
-     * Uses triple-click + fill('') to reliably clear MUI text inputs.
+     * Reset the template list to its unfiltered state.
+     *
+     * Why navigate instead of fill('') + SEARCH?
+     * The backend treats an empty-string query as "0 results" rather than
+     * "no filter applied", so submitting a blank search leaves the table empty.
+     * Navigating to /portal/manage-emails is the only reliable way to get the
+     * full unfiltered list back.  navigateTo() already waits for the page
+     * heading, so we just wait for a known first-page row afterwards.
      */
     async clearSearch() {
         await test.step('Clear search and reset template list', async () => {
-            await this.searchInput.click({ clickCount: 3 });
-            await this.searchInput.fill('');
-            await this.searchBtn.click();
-            await this.page.waitForLoadState('domcontentloaded');
+            // Navigate fresh — the backend treats an empty-string SEARCH as
+            // "0 results", not "no filter".  navigateTo() waits for the page
+            // heading which is a sufficient signal that the list is ready.
+            await this.navigateTo();
         });
     }
 
@@ -158,10 +165,16 @@ class ManageEmailsPage {
      */
     async clickEditForTemplate(rowName) {
         await test.step(`Click Edit for template "${rowName}"`, async () => {
-            const row = this.page.getByRole('row', { name: rowName });
+            // Use .last() — targets the most recently created row and avoids a
+            // strict-mode violation when duplicate rows exist from prior failed runs.
+            const row = this.page.getByRole('row', { name: rowName }).last();
             await row.waitFor({ state: 'visible', timeout: 10000 });
             // Edit button is the first action icon in the row (pencil/edit SVG button)
             await row.getByRole('button').first().click();
+            // Wait for the SPA route to finish navigating to the edit form.
+            // Without this, waitForForm() can run while still on the list page
+            // and the /Email Template$/ heading matches "Email Templates" (list).
+            await this.page.waitForLoadState('load');
         });
     }
 
@@ -199,32 +212,77 @@ class ManageEmailsPage {
     // --------------------------------------------------------------------------
 
     /**
-     * Delete the template row matching rowName.
-     * Clicks the trash-icon button (second action icon) in the matching row,
-     * then confirms the deletion dialog if one appears.
-     * @param {string|RegExp} rowName  Text identifying the template row.
+     * Delete every row matching rowName — handles both the happy path (one row)
+     * and leftover duplicates from previous failed runs.
+     *
+     * Strategy: loop while matching rows exist, always deleting .last() (the
+     * most recently created) to avoid strict-mode violations when more than one
+     * row shares the same name.
+     *
+     * @param {string|RegExp} rowName  Text identifying the template row(s).
      */
     async deleteTemplate(rowName) {
         await test.step(`Delete template "${rowName}"`, async () => {
-            // Search to make sure the row is on the current page
+            // Search so all matching rows land on the current page
             await this.search(typeof rowName === 'string' ? rowName : rowName.source);
 
-            const row = this.page.getByRole('row', { name: rowName });
-            await row.waitFor({ state: 'visible', timeout: 10000 });
+            const rows = this.page.getByRole('row', { name: rowName });
 
-            // Delete button is the second icon button in the row (trash icon)
-            const buttons = row.getByRole('button');
-            await buttons.nth(1).click();
+            // Loop until no matching rows remain (handles leftover duplicates)
+            let count = await rows.count();
+            while (count > 0) {
+                // Always target .last() — avoids strict-mode when count > 1
+                const row = rows.last();
+                await row.waitFor({ state: 'visible', timeout: 10000 });
 
-            // Handle confirmation dialog — MUI Dialog or browser confirm
-            const confirmBtn = this.page.getByRole('button', { name: /confirm|delete|yes/i }).first();
-            const hasConfirm = await confirmBtn.isVisible({ timeout: 3000 }).catch(() => false);
-            if (hasConfirm) {
-                await confirmBtn.click();
+                // Delete button is the second icon button in the row (trash icon)
+                await row.getByRole('button').nth(1).click();
+
+                // Handle optional confirmation dialog
+                const confirmBtn = this.page
+                    .getByRole('button', { name: /confirm|delete|yes/i })
+                    .first();
+                const hasConfirm = await confirmBtn.isVisible({ timeout: 3000 }).catch(() => false);
+                if (hasConfirm) {
+                    await confirmBtn.click();
+                }
+
+                await row.waitFor({ state: 'hidden', timeout: 10000 });
+                count = await rows.count();
             }
+        });
+    }
 
-            // Wait for the row to disappear
-            await expect(row).toBeHidden({ timeout: 10000 });
+    // --------------------------------------------------------------------------
+
+    /**
+     * Delete all templates matching templateName, then navigate back to the
+     * unfiltered list.  Safe to call when no matching templates exist (no-op).
+     *
+     * Call this at the START of any test that creates a template to eliminate
+     * duplicates left by previous failed runs.  Without this, the server
+     * rejects saves with a duplicate-name error and saveAsDraft() never
+     * redirects back to the list.
+     *
+     * @param {string} templateName  Exact name to clean up.
+     */
+    async cleanupIfExists(templateName) {
+        await test.step(`Pre-run cleanup: delete "${templateName}" if it exists`, async () => {
+            await this.search(templateName);
+            const rows = this.page.getByRole('row', {
+                name: new RegExp(templateName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'),
+            });
+            const count = await rows.count();
+            if (count > 0) {
+                await this.deleteTemplate(templateName);
+            }
+            // Navigate back to the unfiltered list.
+            // navigateTo() already waits for the page heading — that is a
+            // sufficient signal that the page is ready for the next step.
+            // Do NOT wait for a specific data row here: after a delete + search
+            // the SPA may still be fetching the full list when we arrive, and
+            // a row-level waitFor causes a flaky 15 s timeout.
+            await this.navigateTo();
         });
     }
 

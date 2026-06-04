@@ -5,7 +5,11 @@ class NewEmailTemplatePage {
         this.page = page;
 
         // -- Page heading & navigation ----------------------------------------
-        this.pageHeading = this.page.getByRole('heading', { name: /New Email Template/i });
+        // Create form: "New Email Template"
+        // Edit form:   "New Email Template" (same heading used for both in this portal)
+        // Deliberately does NOT match "Email Templates" (the list page heading,
+        // which is plural).  The $ anchor ensures we match "Template" not "Templates".
+        this.pageHeading = this.page.getByRole('heading', { name: /Email Template$/ }).first();
         this.goBackLink  = this.page.getByRole('link', { name: /GO BACK/i })
             .or(this.page.getByText(/GO BACK/i)).first();
 
@@ -72,8 +76,15 @@ class NewEmailTemplatePage {
     /** Wait for the New Email Template form to be fully loaded. */
     async waitForForm() {
         await test.step('Wait for New Email Template form', async () => {
+            // Let the SPA finish its route transition before asserting.
+            await this.page.waitForLoadState('load');
+            // pageHeading uses /Email Template$/ which matches "New Email Template"
+            // but NOT "Email Templates" (the list), so this confirms we are on
+            // the create/edit form and not still on the list page.
             await expect(this.pageHeading).toBeVisible({ timeout: 15000 });
-            await expect(this.templateNameInput).toBeVisible({ timeout: 10000 });
+            // 15 s — MUI form fields render after the route animation completes;
+            // give extra time on CI where animations are slower.
+            await expect(this.templateNameInput).toBeVisible({ timeout: 15000 });
         });
     }
 
