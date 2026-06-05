@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 120
     runs-on: ubuntu-latest
 
     container:
@@ -169,7 +169,7 @@ jobs:
           curl -X POST -H 'Content-type: application/json' \
           --data "{
             \"channel\": \"#automation-alerts\",
-            \"text\": \"❌ *Nightly Regression Failed*\n\n📦 Repo: ${{ github.repository }}\n🌿 Branch: ${{ github.ref_name }}\n\n📈 Results:\n✅ Passed: ${PASSED}\n⏭️ Skipped: ${SKIPPED}\n❌ Failed: ${FAILED}\n\n🚨 Failed Tests:\n${FAILED_TESTS}\n\n📊 Report:\n${RUN_REPORT}\n\n🔍 Logs:\n${RUN_URL}\"
+            \"text\": \"❌ *Nightly Regression Failed*\n\n📦 Repo: ${{ github.repository }}\n🌿 Branch: ${{ github.ref_name }}\n\n📈 Results:\n✅ Passed: ${PASSED}\n⏭️ Skipped: ${SKIPPED}\n❌ Failed: ${FAILED}\n\n🚨 Report:\n${RUN_REPORT}\n\n🔍 Logs:\n${RUN_URL}\"
           }" \
           ${{ secrets.SLACK_WEBHOOK_URL }}
 

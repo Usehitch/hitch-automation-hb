@@ -209,6 +209,7 @@ class OfferReviewPage {
         await test.step('Open Edit Upfront Draw modal', async () => {
             if (!data.offerReview?.initialDraw?.edit) return;
 
+            await this.editInitialDrawBtn.scrollIntoViewIfNeeded();
             await this.editInitialDrawBtn.click({ force: true });
             await this.editUpfrontDrawHeading.waitFor({ state: 'visible', timeout: 10000 });
         });

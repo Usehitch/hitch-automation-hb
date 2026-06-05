@@ -95,10 +95,10 @@
               "projectName": "setup",
               "results": [
                 {
-                  "workerIndex": 85,
+                  "workerIndex": 58,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 15544,
+                  "duration": 14242,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
@@ -106,14 +106,14 @@
                   "steps": [
                     {
                       "title": "Click the go to broker portal",
-                      "duration": 77
+                      "duration": 66
                     },
                     {
                       "title": "Submit email and password",
-                      "duration": 114
+                      "duration": 108
                     }
                   ],
-                  "startTime": "2026-06-04T15:54:46.561Z",
+                  "startTime": "2026-06-05T11:20:14.850Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -154,10 +154,10 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 86,
+                      "workerIndex": 59,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 38606,
+                      "duration": 41113,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
@@ -165,38 +165,38 @@
                       "steps": [
                         {
                           "title": "Open shareable app link in new tab",
-                          "duration": 4617
+                          "duration": 4360
                         },
                         {
                           "title": "Click Get Started Now",
-                          "duration": 76
+                          "duration": 1167
                         },
                         {
                           "title": "Select property type",
-                          "duration": 885
+                          "duration": 1382
                         },
                         {
                           "title": "Select loan purpose",
-                          "duration": 1875
+                          "duration": 1878
                         },
                         {
                           "title": "Fill property info",
-                          "duration": 1971
-                        },
-                        {
-                          "title": "Fill about yourself",
                           "duration": 2117
                         },
                         {
+                          "title": "Fill about yourself",
+                          "duration": 1543
+                        },
+                        {
                           "title": "Fill credit check fields (TWN)",
-                          "duration": 10193
+                          "duration": 8638
                         },
                         {
                           "title": "Verify TWN auto-populated employer info",
-                          "duration": 12151
+                          "duration": 9146
                         }
                       ],
-                      "startTime": "2026-06-04T15:55:03.147Z",
+                      "startTime": "2026-06-05T11:20:30.064Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -216,8 +216,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-04T15:54:45.157Z",
-    "duration": 57333.88399999961,
+    "startTime": "2026-06-05T11:20:13.530Z",
+    "duration": 58142.093999998644,
     "expected": 2,
     "skipped": 0,
     "unexpected": 0,
