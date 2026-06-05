@@ -12,7 +12,11 @@ class OfferReviewPage {
         this.changeLoanAmountBtn = this.page.getByRole('button', { name: /CHANGE/i });
 
         // -- "Reduce Requested Loan Amount" modal ------------------------------
-        this.loanAmountModal = this.page.getByRole('dialog');
+        // Scoped to the dialog that contains the heading so the live-chat widget
+        // (also role="dialog") is never accidentally matched.
+        this.loanAmountModal = this.page.locator('[role="dialog"]').filter({
+            has: this.page.getByText('Reduce Requested Loan Amount'),
+        });
         this.modalHeading = this.loanAmountModal.getByText('Reduce Requested Loan Amount');
         this.loanAmountInput = this.loanAmountModal.getByLabel(/Requested Loan Amount/i);
         this.modalCancelBtn = this.loanAmountModal.getByRole('button', { name: /CANCEL/i });
@@ -22,8 +26,10 @@ class OfferReviewPage {
         this.manageDebtPayoffsBtn = this.page.getByRole('button', { name: /MANAGE/i });
 
         // -- "Select the accounts to payoff" modal ----------------------------
-        this.debtPayoffModal = this.page.getByRole('dialog'); 
-        this.debtPayoffModalHeading = this.debtPayoffModal.getByText('Select the accounts to payoff');
+        this.debtPayoffModal = this.page.locator('[role="dialog"]').filter({
+            has: this.page.getByText(/Select the accounts to payoff|Select accounts to pay off/i),
+        });
+        this.debtPayoffModalHeading = this.debtPayoffModal.getByText(/Select the accounts to payoff|Select accounts to pay off/i).first();
         this.debtPayoffDtiSection = this.debtPayoffModal.getByText('DTI After Proposed Payoff').first();
         this.debtPayoffCheckboxes = this.debtPayoffModal.getByRole('checkbox');
         this.debtPayoffSummary = this.debtPayoffModal.getByText('Summary').first();
@@ -34,8 +40,10 @@ class OfferReviewPage {
         this.editInitialDrawBtn = this.page.getByRole('button', { name: /EDIT/i });
 
         // -- "Edit Upfront Draw" modal -----------------------------------------
-        this.editUpfrontDrawModal = this.page.getByRole('dialog');
-        this.editUpfrontDrawHeading = this.editUpfrontDrawModal.getByText('Edit Upfront Draw');
+        this.editUpfrontDrawModal = this.page.locator('[role="dialog"]').filter({
+            has: this.page.getByText('Edit Upfront Draw'),
+        });
+        this.editUpfrontDrawHeading = this.editUpfrontDrawModal.getByRole('heading', { name: /Edit Upfront Draw/i });
 
         // Read-only summary rows inside the modal
         this.availableDrawRow = this.editUpfrontDrawModal.getByText('Available Draw');
@@ -211,7 +219,10 @@ class OfferReviewPage {
 
             await this.editInitialDrawBtn.scrollIntoViewIfNeeded();
             await this.editInitialDrawBtn.click({ force: true });
-            await this.editUpfrontDrawHeading.waitFor({ state: 'visible', timeout: 10000 });
+            // 20 s — the MUI Dialog animation + background pricing call can
+            // take longer than 10 s on CI, especially in co-borrower flows
+            // where two underwriting results need to settle first.
+            await this.editUpfrontDrawHeading.waitFor({ state: 'visible', timeout: 20000 });
         });
     };
 
