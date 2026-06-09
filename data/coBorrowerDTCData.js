@@ -60,19 +60,26 @@ export const marriedCoBorrowerData = {
     },
 
     creditCheck: {
-        ssn:         '999405000',   // TWN sandbox record — Method Fi dev
+        ssn:         '999-60-3333',   // TWN sandbox record — Method Fi dev
         dateOfBirth: '05/10/1978',
+    },
+
+    primaryIncome: {
+        incomeSources:      ['Salary or Hourly Wages'],
+        companyName:        'Hitch',
+        annualCompensation: '300000',
+        startDate:          '10/25/2020',
     },
 
     coBorrower: {
         ...BASE_CO_BORROWER,
         email:       randomEmail(),
-        ssn:         '999603333',   // Method Fi sandbox test SSN
+        ssn:         '500-60-2222',   // Method Fi sandbox test SSN
         dateOfBirth: '01/15/1985',
         // Income sources on the Application Participants page
         incomeSources:       ['Salary or hourly wages'],
         companyName:         'Hitch',
-        annualCompensation:  '60000',
+        annualCompensation:  '200000',
         startDate:           '12/29/2004',
         livesWithBorrower:   true,   // "Does co-borrower live with you?"
     },
@@ -86,7 +93,7 @@ export const marriedCoBorrowerData = {
     // Mortgages & Liens (DTC step that follows Application Participants)
     mortgages: {
         selectFirstMortgage: true,   // check the first listed mortgage row
-        requestedLoanAmount: '80000', // Requested Loan Amount field
+        requestedLoanAmount: '180000', // Requested Loan Amount field
     },
 };
 
@@ -105,11 +112,11 @@ export const unmarriedCoBorrowerData = {
     coBorrower: {
         ...BASE_CO_BORROWER,
         email:       randomEmail(),    // separate account — must be unique
-        ssn:         '999603333',
+        ssn:         '500-60-2222',
         dateOfBirth: '01/15/1985',
         incomeSources:      ['Salary or hourly wages'],
         companyName:        'Hitch',
-        annualCompensation: '60000',
+        annualCompensation: '200000',
         startDate:          '12/29/2004',
         livesWithBorrower:  true,
     },
@@ -121,6 +128,6 @@ export const unmarriedCoBorrowerData = {
 
     mortgages: {
         selectFirstMortgage: true,
-        requestedLoanAmount: '80000',
+        requestedLoanAmount: '250000',
     },
 };

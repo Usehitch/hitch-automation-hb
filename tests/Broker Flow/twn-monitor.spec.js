@@ -1,6 +1,6 @@
-import { expect, test } from '../fixtures';
-import { twnApplicationData } from '../data/twnApplication.js';
-import TWNPage from '../pages/The Work Number/TWNPage.js';
+import { expect, test } from '../../fixtures/index.js';
+import { twnApplicationData } from '../../data/twnApplication.js';
+import TWNPage from '../../pages/The Work Number/TWNPage.js';
 
 test.describe('The Work Number (TWN)', () => {
     test.beforeEach(async ({ page }) => {

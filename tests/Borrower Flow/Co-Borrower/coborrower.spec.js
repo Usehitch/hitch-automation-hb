@@ -22,8 +22,8 @@
  *  5.  Fill property info (address, city, county, state, zip, listing, trust, value, usage)
  *  6.  Fill about yourself (name, email, phone, password, e-consent)
  *  7.  Fill credit check — SSN + DOB (primary borrower)
- *  8.  Assert TWN auto-populated the employer card
- *  9.  Review & Confirm — check all consent checkboxes → CONTINUE
+ *  7b. Fill primary income sources (company name, compensation, start date)
+ *  8.  Review & Confirm — check all consent checkboxes → CONTINUE
  * 10.  Wait for "Checking Your Credit…" processing screen
  * 11.  Application Participants page:
  *        • Co-borrower toggle → Yes
@@ -36,17 +36,17 @@
  *        • CONTINUE
  * 12.  Select Mortgages & Liens — check first mortgage, fill loan amount ($80k)
  * 13.  Wait for offer calculation / underwriting processing screen
- * 14.  Verify pre-qualification completed (success banner / summary page)
- * 15.  Assert no blocking errors at every step throughout
+ * 14.  Verify pre-qualification completed → click "CONTINUE TO APPLICATION"
+ * 15.  Demographics — opt out Sex/Race, authorize hard credit check → Continue
+ * 16.  Assert no blocking errors at every step throughout
  *
  * SSNs are Method Fi / TWN sandbox values — never real PII.
  */
 
-import { test } from '../../fixtures';
-import TWNPage from '../../pages/The Work Number/TWNPage';
-import CoBorrowerFlowPage from '../../pages/Pre-Qual Manual/CoBorrowerFlowPage';
-import { marriedCoBorrowerData, unmarriedCoBorrowerData } from '../../data/coBorrowerDTCData';
-import { twnApplicationData } from '../../data/twnApplication';
+import { test } from '../../../fixtures';
+import TWNPage from '../../../pages/The Work Number/TWNPage';
+import CoBorrowerFlowPage from '../../../pages/Pre-Qual Manual/CoBorrowerFlowPage';
+import { marriedCoBorrowerData, unmarriedCoBorrowerData } from '../../../data/coBorrowerDTCData';
 
 // ---------------------------------------------------------------------------
 // Shared flow runner
@@ -93,12 +93,11 @@ async function runCoBorrowerFlow(preQualManualPage, data) {
     await twnPage.fillCreditCheck(data);
     await flow.assertNoBlockingError('Primary credit check');
 
-    // -- Step 8: Assert TWN auto-populated the employer card ------------------
-    // TWN sandbox record for SSN 999-40-5000 returns:
-    //   Employer: "Enterprise One-Verifier Integrations Only"
-    //   Start Date: 04/05/1995
-    await twnPage.verifyTwnPopulated(twnApplicationData);
-    await flow.assertNoBlockingError('TWN income verification');
+    // -- Step 7b: Fill primary borrower income sources ------------------------
+    // After SSN + DOB are entered, the income sources section appears.
+    // TWN may not auto-populate for this SSN, so we fill manually.
+    await twnPage.fillPrimaryIncomeSources(data);
+    await flow.assertNoBlockingError('Primary income sources');
 
     // -- Step 9: Review & Confirm consents ------------------------------------
     // After TWN income is displayed, the borrower must check three consent
@@ -130,22 +129,42 @@ async function runCoBorrowerFlow(preQualManualPage, data) {
     await flow.waitForOfferProcessing();
     await flow.assertNoBlockingError('Offer processing');
 
-    // -- Step 14: Verify pre-qualification completed --------------------------
-    // The flow should end on a Pre-Qualification Summary, success banner, or
-    // "invite sent to co-applicant" confirmation screen.
+    // -- Step 14: Verify pre-qualification completed + click Continue ----------
+    // Asserts the "You're pre-qualified" banner is visible, then clicks
+    // "CONTINUE TO APPLICATION" to proceed to the full application.
     await flow.verifyFlowCompleted();
+    await flow.assertNoBlockingError('Pre-qual offer page');
+
+    // -- Step 15: Demographics page -------------------------------------------
+    // Opts out of Ethnicity/Sex/Race disclosure, checks hard-credit
+    // authorization, then clicks Continue.
+    await flow.fillDemographics();
+    await flow.assertNoBlockingError('Demographics');
+
+    // -- Step 16: Income Verification (Plaid sandbox) -------------------------
+    // Clicks "BANK ACCOUNT VERIFICATION (PLAID)", enters sandbox phone + OTP
+    // (123456), selects Tartan Bank, confirms, then clicks Continue on the
+    // "Bank Account Verified Successfully" screen.
+    await flow.fillIncomeVerification();
+    await flow.assertNoBlockingError('Income Verification');
+
+    // -- Step 17: Funding Account page ----------------------------------------
+    // Runs Plaid sandbox (phone → OTP → Tartan Bank → Confirm) then clicks
+    // Continue with the pre-selected connected account.
+    await flow.fillFundingAccount();
+    await flow.assertNoBlockingError('Funding Account');
 }
 
 // ---------------------------------------------------------------------------
 // Test suite
 // ---------------------------------------------------------------------------
 
-test.describe('Co-Borrower DTC Flow — End-to-End via Shareable Link', () => {
+test.describe('Co-Borrower Flow — End-to-End via Shareable Link', () => {
 
     // 5 minutes — the full flow includes TWN lookup, soft credit pull,
     // "Checking Your Credit" processing, and Application Participants.
     // The default 3-minute timeout is not enough for CI.
-    test.setTimeout(300000);
+    test.setTimeout(480000); // 8 min — full flow includes 2× Plaid + credit pull + offer calc
 
     test.beforeEach(async ({ page }) => {
         await page.goto('/portal');

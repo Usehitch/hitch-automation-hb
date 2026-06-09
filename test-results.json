@@ -38,12 +38,46 @@
         "metadata": {
           "actualWorkers": 1
         },
-        "id": "chromium",
-        "name": "chromium",
+        "id": "setup-lo",
+        "name": "setup-lo",
         "testDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/tests",
         "testIgnore": [],
         "testMatch": [
+          "/auth\\.setup\\.lo\\.js/"
+        ],
+        "timeout": 180000
+      },
+      {
+        "outputDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/tests",
+        "testIgnore": [
+          "/Co-Borrower/"
+        ],
+        "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 180000
+      },
+      {
+        "outputDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-lo",
+        "name": "chromium-lo",
+        "testDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/Co-Borrower/"
         ],
         "timeout": 180000
       }
@@ -77,13 +111,13 @@
   },
   "suites": [
     {
-      "title": "auth.setup.js",
-      "file": "auth.setup.js",
+      "title": "auth.setup.lo.js",
+      "file": "auth.setup.lo.js",
       "column": 0,
       "line": 0,
       "specs": [
         {
-          "title": "authenticate",
+          "title": "authenticate as LO",
           "ok": true,
           "tags": [],
           "tests": [
@@ -91,14 +125,14 @@
               "timeout": 180000,
               "annotations": [],
               "expectedStatus": "passed",
-              "projectId": "setup",
-              "projectName": "setup",
+              "projectId": "setup-lo",
+              "projectName": "setup-lo",
               "results": [
                 {
-                  "workerIndex": 12,
+                  "workerIndex": 76,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 16393,
+                  "duration": 17171,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
@@ -106,14 +140,14 @@
                   "steps": [
                     {
                       "title": "Click the go to broker portal",
-                      "duration": 69
+                      "duration": 67
                     },
                     {
                       "title": "Submit email and password",
-                      "duration": 121
+                      "duration": 117
                     }
                   ],
-                  "startTime": "2026-06-05T15:14:49.505Z",
+                  "startTime": "2026-06-08T18:47:19.860Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -121,9 +155,9 @@
               "status": "expected"
             }
           ],
-          "id": "f376efe52c54b1a876fd-9d03a3bb502e264caa3f",
-          "file": "auth.setup.js",
-          "line": 6,
+          "id": "db3a8f2d3463a3c1924a-9a9c346f4775ae8cc816",
+          "file": "auth.setup.lo.js",
+          "line": 5,
           "column": 6
         }
       ]
@@ -136,9 +170,9 @@
       "specs": [],
       "suites": [
         {
-          "title": "Co-Borrower DTC Flow — End-to-End via Shareable Link",
+          "title": "Co-Borrower Flow — End-to-End via Shareable Link",
           "file": "Co-Borrower/coborrower.spec.js",
-          "line": 143,
+          "line": 162,
           "column": 6,
           "specs": [
             {
@@ -147,35 +181,35 @@
               "tags": [],
               "tests": [
                 {
-                  "timeout": 300000,
+                  "timeout": 480000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
+                  "projectId": "chromium-lo",
+                  "projectName": "chromium-lo",
                   "results": [
                     {
-                      "workerIndex": 13,
+                      "workerIndex": 77,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 78235,
+                      "duration": 251256,
                       "error": {
-                        "message": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i).first() to be visible\u001b[22m\n",
-                        "stack": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i).first() to be visible\u001b[22m\n\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:652:18\n    at CoBorrowerFlowPage.fillMortgagesAndLiens (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:646:9)\n    at runCoBorrowerFlow (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:124:5)\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:167:9",
+                        "message": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Bank Account Verification.*Plaid/i).first() to be visible\u001b[22m\n",
+                        "stack": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Bank Account Verification.*Plaid/i).first() to be visible\u001b[22m\n\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:894:28\n    at CoBorrowerFlowPage.fillIncomeVerification (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:876:9)\n    at runCoBorrowerFlow (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:148:5)\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:186:9",
                         "location": {
                           "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js",
-                          "column": 18,
-                          "line": 652
+                          "column": 28,
+                          "line": 894
                         },
-                        "snippet": "\u001b[90m   at \u001b[39m..\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:652\n\n\u001b[0m \u001b[90m 650 |\u001b[39m             \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mgetByText(\u001b[35m/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i\u001b[39m)\n \u001b[90m 651 |\u001b[39m                 \u001b[33m.\u001b[39mfirst()\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 652 |\u001b[39m                 \u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m20000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 653 |\u001b[39m\n \u001b[90m 654 |\u001b[39m             \u001b[36mif\u001b[39m (m\u001b[33m.\u001b[39mselectFirstMortgage) {\n \u001b[90m 655 |\u001b[39m                 \u001b[90m// Check whether the credit report returned any mortgage rows.\u001b[39m\u001b[0m"
+                        "snippet": "\u001b[90m   at \u001b[39m..\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:894\n\n\u001b[0m \u001b[90m 892 |\u001b[39m             \u001b[90m// Click \"BANK ACCOUNT VERIFICATION (PLAID)\"\u001b[39m\n \u001b[90m 893 |\u001b[39m             \u001b[36mconst\u001b[39m plaidBtn \u001b[33m=\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mgetByText(\u001b[35m/Bank Account Verification.*Plaid/i\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 894 |\u001b[39m             \u001b[36mawait\u001b[39m plaidBtn\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m60000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                            \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 895 |\u001b[39m             \u001b[36mawait\u001b[39m plaidBtn\u001b[33m.\u001b[39mclick({ force\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 896 |\u001b[39m\n \u001b[90m 897 |\u001b[39m             \u001b[90m// Plaid renders inside an iframe — locate it\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
                           "location": {
                             "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js",
-                            "column": 18,
-                            "line": 652
+                            "column": 28,
+                            "line": 894
                           },
-                          "message": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i).first() to be visible\u001b[22m\n\n\n\u001b[90m   at \u001b[39m..\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:652\n\n\u001b[0m \u001b[90m 650 |\u001b[39m             \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mgetByText(\u001b[35m/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i\u001b[39m)\n \u001b[90m 651 |\u001b[39m                 \u001b[33m.\u001b[39mfirst()\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 652 |\u001b[39m                 \u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m20000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 653 |\u001b[39m\n \u001b[90m 654 |\u001b[39m             \u001b[36mif\u001b[39m (m\u001b[33m.\u001b[39mselectFirstMortgage) {\n \u001b[90m 655 |\u001b[39m                 \u001b[90m// Check whether the credit report returned any mortgage rows.\u001b[39m\u001b[0m\n\u001b[2m    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:652:18\u001b[22m\n\u001b[2m    at CoBorrowerFlowPage.fillMortgagesAndLiens (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:646:9)\u001b[22m\n\u001b[2m    at runCoBorrowerFlow (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:124:5)\u001b[22m\n\u001b[2m    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:167:9\u001b[22m"
+                          "message": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Bank Account Verification.*Plaid/i).first() to be visible\u001b[22m\n\n\n\u001b[90m   at \u001b[39m..\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:894\n\n\u001b[0m \u001b[90m 892 |\u001b[39m             \u001b[90m// Click \"BANK ACCOUNT VERIFICATION (PLAID)\"\u001b[39m\n \u001b[90m 893 |\u001b[39m             \u001b[36mconst\u001b[39m plaidBtn \u001b[33m=\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mgetByText(\u001b[35m/Bank Account Verification.*Plaid/i\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 894 |\u001b[39m             \u001b[36mawait\u001b[39m plaidBtn\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m60000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                            \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 895 |\u001b[39m             \u001b[36mawait\u001b[39m plaidBtn\u001b[33m.\u001b[39mclick({ force\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 896 |\u001b[39m\n \u001b[90m 897 |\u001b[39m             \u001b[90m// Plaid renders inside an iframe — locate it\u001b[39m\u001b[0m\n\u001b[2m    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:894:28\u001b[22m\n\u001b[2m    at CoBorrowerFlowPage.fillIncomeVerification (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:876:9)\u001b[22m\n\u001b[2m    at runCoBorrowerFlow (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:148:5)\u001b[22m\n\u001b[2m    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:186:9\u001b[22m"
                         }
                       ],
                       "stdout": [],
@@ -184,309 +218,167 @@
                       "steps": [
                         {
                           "title": "Open shareable app link in new tab",
-                          "duration": 2407
+                          "duration": 1883
                         },
                         {
                           "title": "Click Get Started Now",
-                          "duration": 85
+                          "duration": 168
                         },
                         {
                           "title": "Assert no blocking error on: Landing page",
-                          "duration": 18
+                          "duration": 45
                         },
                         {
                           "title": "Select property type",
-                          "duration": 1345
+                          "duration": 1366
                         },
                         {
                           "title": "Assert no blocking error on: Property type",
-                          "duration": 11
+                          "duration": 9
                         },
                         {
                           "title": "Select loan purpose",
-                          "duration": 2393
+                          "duration": 1888
                         },
                         {
                           "title": "Assert no blocking error on: Loan purpose",
-                          "duration": 11
+                          "duration": 9
                         },
                         {
                           "title": "Fill property info",
-                          "duration": 2072
+                          "duration": 2103
                         },
                         {
                           "title": "Assert no blocking error on: Property info",
+                          "duration": 14
+                        },
+                        {
+                          "title": "Fill about yourself",
+                          "duration": 2133
+                        },
+                        {
+                          "title": "Assert no blocking error on: About yourself",
+                          "duration": 22
+                        },
+                        {
+                          "title": "Fill credit check fields (TWN)",
+                          "duration": 8670
+                        },
+                        {
+                          "title": "Assert no blocking error on: Primary credit check",
                           "duration": 10
                         },
                         {
-                          "title": "Fill about yourself",
-                          "duration": 2080
+                          "title": "Fill primary borrower income sources",
+                          "duration": 1098
                         },
                         {
-                          "title": "Assert no blocking error on: About yourself",
-                          "duration": 9
-                        },
-                        {
-                          "title": "Fill credit check fields (TWN)",
-                          "duration": 12229
-                        },
-                        {
-                          "title": "Assert no blocking error on: Primary credit check",
-                          "duration": 9
-                        },
-                        {
-                          "title": "Verify TWN auto-populated employer info",
-                          "duration": 11152
-                        },
-                        {
-                          "title": "Assert no blocking error on: TWN income verification",
-                          "duration": 8
-                        },
-                        {
-                          "title": "Fill Review & Confirm consents",
-                          "duration": 288
-                        },
-                        {
-                          "title": "Assert no blocking error on: Review & Confirm consents",
-                          "duration": 12
-                        },
-                        {
-                          "title": "Wait for credit-check processing to complete",
-                          "duration": 853
-                        },
-                        {
-                          "title": "Assert no blocking error on: Credit check processing",
-                          "duration": 13
-                        },
-                        {
-                          "title": "Fill Application Participants page",
-                          "duration": 12435
-                        },
-                        {
-                          "title": "Assert no blocking error on: Application Participants (Married)",
-                          "duration": 9
-                        },
-                        {
-                          "title": "Fill Mortgages & Liens (DTC)",
-                          "duration": 20005,
-                          "error": {
-                            "message": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i).first() to be visible\u001b[22m\n",
-                            "stack": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i).first() to be visible\u001b[22m\n\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:652:18\n    at CoBorrowerFlowPage.fillMortgagesAndLiens (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:646:9)\n    at runCoBorrowerFlow (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:124:5)\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:167:9",
-                            "location": {
-                              "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js",
-                              "column": 18,
-                              "line": 652
-                            },
-                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:652\n\n\u001b[0m \u001b[90m 650 |\u001b[39m             \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mgetByText(\u001b[35m/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i\u001b[39m)\n \u001b[90m 651 |\u001b[39m                 \u001b[33m.\u001b[39mfirst()\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 652 |\u001b[39m                 \u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m20000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 653 |\u001b[39m\n \u001b[90m 654 |\u001b[39m             \u001b[36mif\u001b[39m (m\u001b[33m.\u001b[39mselectFirstMortgage) {\n \u001b[90m 655 |\u001b[39m                 \u001b[90m// Check whether the credit report returned any mortgage rows.\u001b[39m\u001b[0m"
-                          }
-                        }
-                      ],
-                      "startTime": "2026-06-05T15:15:07.166Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\test-results\\Co-Borrower-coborrower-Co--677ba--blocking-errors-end-to-end-chromium\\test-failed-2.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\test-results\\Co-Borrower-coborrower-Co--677ba--blocking-errors-end-to-end-chromium\\test-failed-1.png"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\test-results\\Co-Borrower-coborrower-Co--677ba--blocking-errors-end-to-end-chromium\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js",
-                        "column": 18,
-                        "line": 652
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "ffdce2ad1902a21de6f8-bd819c5c17623e4730e0",
-              "file": "Co-Borrower/coborrower.spec.js",
-              "line": 157,
-              "column": 9
-            },
-            {
-              "title": "Unmarried co-borrower flow — no blocking errors end-to-end",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 300000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 14,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 58201,
-                      "error": {
-                        "message": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i).first() to be visible\u001b[22m\n",
-                        "stack": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i).first() to be visible\u001b[22m\n\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:652:18\n    at CoBorrowerFlowPage.fillMortgagesAndLiens (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:646:9)\n    at runCoBorrowerFlow (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:124:5)\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:183:9",
-                        "location": {
-                          "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js",
-                          "column": 18,
-                          "line": 652
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39m..\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:652\n\n\u001b[0m \u001b[90m 650 |\u001b[39m             \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mgetByText(\u001b[35m/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i\u001b[39m)\n \u001b[90m 651 |\u001b[39m                 \u001b[33m.\u001b[39mfirst()\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 652 |\u001b[39m                 \u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m20000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 653 |\u001b[39m\n \u001b[90m 654 |\u001b[39m             \u001b[36mif\u001b[39m (m\u001b[33m.\u001b[39mselectFirstMortgage) {\n \u001b[90m 655 |\u001b[39m                 \u001b[90m// Check whether the credit report returned any mortgage rows.\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js",
-                            "column": 18,
-                            "line": 652
-                          },
-                          "message": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i).first() to be visible\u001b[22m\n\n\n\u001b[90m   at \u001b[39m..\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:652\n\n\u001b[0m \u001b[90m 650 |\u001b[39m             \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mgetByText(\u001b[35m/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i\u001b[39m)\n \u001b[90m 651 |\u001b[39m                 \u001b[33m.\u001b[39mfirst()\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 652 |\u001b[39m                 \u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m20000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 653 |\u001b[39m\n \u001b[90m 654 |\u001b[39m             \u001b[36mif\u001b[39m (m\u001b[33m.\u001b[39mselectFirstMortgage) {\n \u001b[90m 655 |\u001b[39m                 \u001b[90m// Check whether the credit report returned any mortgage rows.\u001b[39m\u001b[0m\n\u001b[2m    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:652:18\u001b[22m\n\u001b[2m    at CoBorrowerFlowPage.fillMortgagesAndLiens (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:646:9)\u001b[22m\n\u001b[2m    at runCoBorrowerFlow (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:124:5)\u001b[22m\n\u001b[2m    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:183:9\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "steps": [
-                        {
-                          "title": "Open shareable app link in new tab",
-                          "duration": 3353
-                        },
-                        {
-                          "title": "Click Get Started Now",
-                          "duration": 1011
-                        },
-                        {
-                          "title": "Assert no blocking error on: Landing page",
-                          "duration": 15
-                        },
-                        {
-                          "title": "Select property type",
-                          "duration": 1876
-                        },
-                        {
-                          "title": "Assert no blocking error on: Property type",
-                          "duration": 16
-                        },
-                        {
-                          "title": "Select loan purpose",
-                          "duration": 1887
-                        },
-                        {
-                          "title": "Assert no blocking error on: Loan purpose",
-                          "duration": 9
-                        },
-                        {
-                          "title": "Fill property info",
-                          "duration": 2548
-                        },
-                        {
-                          "title": "Assert no blocking error on: Property info",
-                          "duration": 19
-                        },
-                        {
-                          "title": "Fill about yourself",
-                          "duration": 2575
-                        },
-                        {
-                          "title": "Assert no blocking error on: About yourself",
-                          "duration": 9
-                        },
-                        {
-                          "title": "Fill credit check fields (TWN)",
-                          "duration": 5557
-                        },
-                        {
-                          "title": "Assert no blocking error on: Primary credit check",
+                          "title": "Assert no blocking error on: Primary income sources",
                           "duration": 11
                         },
                         {
-                          "title": "Verify TWN auto-populated employer info",
-                          "duration": 3021
-                        },
-                        {
-                          "title": "Assert no blocking error on: TWN income verification",
-                          "duration": 7
-                        },
-                        {
                           "title": "Fill Review & Confirm consents",
-                          "duration": 278
+                          "duration": 614
                         },
                         {
                           "title": "Assert no blocking error on: Review & Confirm consents",
-                          "duration": 7
+                          "duration": 5
                         },
                         {
                           "title": "Wait for credit-check processing to complete",
-                          "duration": 4960
+                          "duration": 839
                         },
                         {
                           "title": "Assert no blocking error on: Credit check processing",
-                          "duration": 9
-                        },
-                        {
-                          "title": "Fill Application Participants page",
-                          "duration": 6747
-                        },
-                        {
-                          "title": "Assert no blocking error on: Application Participants (Unmarried)",
                           "duration": 8
                         },
                         {
+                          "title": "Fill Application Participants page",
+                          "duration": 41262
+                        },
+                        {
+                          "title": "Assert no blocking error on: Application Participants (Married)",
+                          "duration": 11
+                        },
+                        {
                           "title": "Fill Mortgages & Liens (DTC)",
-                          "duration": 20014,
+                          "duration": 10192
+                        },
+                        {
+                          "title": "Assert no blocking error on: Mortgages & Liens",
+                          "duration": 7
+                        },
+                        {
+                          "title": "Wait for offer calculation / underwriting",
+                          "duration": 10014
+                        },
+                        {
+                          "title": "Assert no blocking error on: Offer processing",
+                          "duration": 9
+                        },
+                        {
+                          "title": "Verify co-borrower flow reached completion",
+                          "duration": 97190
+                        },
+                        {
+                          "title": "Assert no blocking error on: Pre-qual offer page",
+                          "duration": 11
+                        },
+                        {
+                          "title": "Fill Demographics page",
+                          "duration": 229
+                        },
+                        {
+                          "title": "Assert no blocking error on: Demographics",
+                          "duration": 9
+                        },
+                        {
+                          "title": "Fill Income Verification (Plaid sandbox)",
+                          "duration": 60028,
                           "error": {
-                            "message": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i).first() to be visible\u001b[22m\n",
-                            "stack": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i).first() to be visible\u001b[22m\n\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:652:18\n    at CoBorrowerFlowPage.fillMortgagesAndLiens (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:646:9)\n    at runCoBorrowerFlow (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:124:5)\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:183:9",
+                            "message": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Bank Account Verification.*Plaid/i).first() to be visible\u001b[22m\n",
+                            "stack": "TimeoutError: locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Bank Account Verification.*Plaid/i).first() to be visible\u001b[22m\n\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:894:28\n    at CoBorrowerFlowPage.fillIncomeVerification (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:876:9)\n    at runCoBorrowerFlow (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:148:5)\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Co-Borrower\\coborrower.spec.js:186:9",
                             "location": {
                               "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js",
-                              "column": 18,
-                              "line": 652
+                              "column": 28,
+                              "line": 894
                             },
-                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:652\n\n\u001b[0m \u001b[90m 650 |\u001b[39m             \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mgetByText(\u001b[35m/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i\u001b[39m)\n \u001b[90m 651 |\u001b[39m                 \u001b[33m.\u001b[39mfirst()\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 652 |\u001b[39m                 \u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m20000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 653 |\u001b[39m\n \u001b[90m 654 |\u001b[39m             \u001b[36mif\u001b[39m (m\u001b[33m.\u001b[39mselectFirstMortgage) {\n \u001b[90m 655 |\u001b[39m                 \u001b[90m// Check whether the credit report returned any mortgage rows.\u001b[39m\u001b[0m"
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:894\n\n\u001b[0m \u001b[90m 892 |\u001b[39m             \u001b[90m// Click \"BANK ACCOUNT VERIFICATION (PLAID)\"\u001b[39m\n \u001b[90m 893 |\u001b[39m             \u001b[36mconst\u001b[39m plaidBtn \u001b[33m=\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mgetByText(\u001b[35m/Bank Account Verification.*Plaid/i\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 894 |\u001b[39m             \u001b[36mawait\u001b[39m plaidBtn\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m60000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                            \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 895 |\u001b[39m             \u001b[36mawait\u001b[39m plaidBtn\u001b[33m.\u001b[39mclick({ force\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 896 |\u001b[39m\n \u001b[90m 897 |\u001b[39m             \u001b[90m// Plaid renders inside an iframe — locate it\u001b[39m\u001b[0m"
                           }
                         }
                       ],
-                      "startTime": "2026-06-05T15:16:26.756Z",
+                      "startTime": "2026-06-08T18:47:38.244Z",
                       "annotations": [],
                       "attachments": [
                         {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\test-results\\Co-Borrower-coborrower-Co--797b2--blocking-errors-end-to-end-chromium\\test-failed-2.png"
+                          "path": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\test-results\\Co-Borrower-coborrower-Co--c219d--blocking-errors-end-to-end-chromium-lo\\test-failed-2.png"
                         },
                         {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\test-results\\Co-Borrower-coborrower-Co--797b2--blocking-errors-end-to-end-chromium\\test-failed-1.png"
+                          "path": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\test-results\\Co-Borrower-coborrower-Co--c219d--blocking-errors-end-to-end-chromium-lo\\test-failed-1.png"
                         },
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
-                          "path": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\test-results\\Co-Borrower-coborrower-Co--797b2--blocking-errors-end-to-end-chromium\\error-context.md"
+                          "path": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\test-results\\Co-Borrower-coborrower-Co--c219d--blocking-errors-end-to-end-chromium-lo\\error-context.md"
                         }
                       ],
                       "errorLocation": {
                         "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js",
-                        "column": 18,
-                        "line": 652
+                        "column": 28,
+                        "line": 894
                       }
                     }
                   ],
                   "status": "unexpected"
                 }
               ],
-              "id": "ffdce2ad1902a21de6f8-424fe071111c07fd3feb",
+              "id": "ffdce2ad1902a21de6f8-2f3e198025c424f324bf",
               "file": "Co-Borrower/coborrower.spec.js",
-              "line": 172,
+              "line": 176,
               "column": 9
             }
           ]
@@ -496,11 +388,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-05T15:14:48.136Z",
-    "duration": 156895.98500000034,
+    "startTime": "2026-06-08T18:47:18.498Z",
+    "duration": 271527.4110000022,
     "expected": 1,
     "skipped": 0,
-    "unexpected": 2,
+    "unexpected": 1,
     "flaky": 0
   }
 }

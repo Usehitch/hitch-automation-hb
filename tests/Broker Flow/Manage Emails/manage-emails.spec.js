@@ -18,7 +18,7 @@
  * All tests share the same beforeEach that lands on the page.
  */
 
-import { expect, test } from '../../fixtures';
+import { expect, test } from '../../../fixtures';
 
 // ---------------------------------------------------------------------------
 // Test data for the "Add New Template" flow.

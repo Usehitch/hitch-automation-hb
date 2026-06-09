@@ -1,5 +1,5 @@
-import { expect, test } from '../fixtures';
-import { coBorrowerApplicationData } from '../data/newApplication';
+import { expect, test } from '../../fixtures';
+import { coBorrowerApplicationData } from '../../data/newApplication';
 
 test.describe('E-Consent', () => {
     test.beforeEach(async ({ page }) => {

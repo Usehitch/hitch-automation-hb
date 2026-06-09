@@ -31,8 +31,8 @@
  * All tests share a beforeEach that lands on the Branches page.
  */
 
-import { expect, test } from '../fixtures';
-import { createBranchData, editBranchData } from '../data/companyBranchesData';
+import { expect, test } from '../../fixtures';
+import { createBranchData, editBranchData } from '../../data/companyBranchesData';
 
 test.describe('Company Branches (CRU)', () => {
     test.beforeEach(async ({ page, companyBranchesPage }) => {

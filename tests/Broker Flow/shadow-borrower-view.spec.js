@@ -15,8 +15,8 @@
  * ShadowBorrowerViewPage bound to that tab for assertions.
  */
 
-import { expect, test } from '../fixtures';
-import ShadowBorrowerViewPage from '../pages/My Loans/ShadowBorrowerViewPage';
+import { expect, test } from '../../fixtures';
+import ShadowBorrowerViewPage from '../../pages/My Loans/ShadowBorrowerViewPage';
 
 // ---------------------------------------------------------------------------
 // Helper: navigate to Active, open the first Pre-Qual loan, verify the

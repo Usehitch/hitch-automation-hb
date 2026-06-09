@@ -1,5 +1,5 @@
-import { expect, test } from '../fixtures';
-import { OTPService } from '../services/otp.service';
+import { expect, test } from '../../fixtures';
+import { OTPService } from '../../services/otp.service';
 
 test.describe('Login', () => {
     test.beforeEach(async ({ page, context, loginPage }) => {

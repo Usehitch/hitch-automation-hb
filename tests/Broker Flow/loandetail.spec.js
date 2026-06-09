@@ -11,8 +11,8 @@
  * opens it via the My Loans "View" button — no new application is created.
  */
 
-import { expect, test } from '../fixtures';
-import { SHARED } from '../data/shared';
+import { expect, test } from '../../fixtures';
+import { SHARED } from '../../data/shared';
 
 // ---------------------------------------------------------------------------
 // Helper: navigate to My Loans, search by applicant name to pin the correct

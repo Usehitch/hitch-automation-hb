@@ -39,73 +39,73 @@ class CoBorrowerFlowPage {
 
         // -- Property type cards ------------------------------------------------
         this.singleFamilyCard = this.page.getByText('Single Family', { exact: true });
-        this.condoCard         = this.page.getByText('Condo',         { exact: true });
-        this.twoToFourCard     = this.page.getByText('2-4 Unit',      { exact: true });
+        this.condoCard = this.page.getByText('Condo', { exact: true });
+        this.twoToFourCard = this.page.getByText('2-4 Unit', { exact: true });
 
         // -- Loan purpose cards -------------------------------------------------
-        this.homeImprovementCard    = this.page.getByText('Home Improvement',   { exact: true });
-        this.debtConsolidationCard  = this.page.getByText('Debt Consolidation', { exact: true });
-        this.otherLoanPurposeCard   = this.page.getByText('Other',              { exact: true }).first();
+        this.homeImprovementCard = this.page.getByText('Home Improvement', { exact: true });
+        this.debtConsolidationCard = this.page.getByText('Debt Consolidation', { exact: true });
+        this.otherLoanPurposeCard = this.page.getByText('Other', { exact: true }).first();
 
         // -- Property info fields -----------------------------------------------
-        this.addressInput        = this.page.getByLabel(/Address/i).first();
-        this.cityInput           = this.page.getByLabel(/City/i);
-        this.countyInput         = this.page.getByLabel(/County/i);
-        this.stateInput          = this.page.getByRole('combobox', { name: /State/i });
-        this.zipInput            = this.page.getByLabel(/Zip/i);
+        this.addressInput = this.page.getByLabel(/Address/i).first();
+        this.cityInput = this.page.getByLabel(/City/i);
+        this.countyInput = this.page.getByLabel(/County/i);
+        this.stateInput = this.page.getByRole('combobox', { name: /State/i });
+        this.zipInput = this.page.getByLabel(/Zip/i);
         this.estimatedValueInput = this.page.getByLabel(/Estimated.*Value|Home Value/i).first();
 
         // Property-status radio group ("listed for sale?")
-        const propStatusGroup   = this.page.getByRole('radiogroup', { name: /listed.*sale|Property Status/i }).first();
-        this.notListedRadio     = propStatusGroup.getByRole('radio', { name: /No|Not listed/i }).first();
-        this.listedRadio        = propStatusGroup.getByRole('radio', { name: /Yes|listed/i }).first();
+        const propStatusGroup = this.page.getByRole('radiogroup', { name: /listed.*sale|Property Status/i }).first();
+        this.notListedRadio = propStatusGroup.getByRole('radio', { name: /No|Not listed/i }).first();
+        this.listedRadio = propStatusGroup.getByRole('radio', { name: /Yes|listed/i }).first();
 
         // Trust radio group ("held in trust?")
-        const trustGroup        = this.page.getByRole('radiogroup', { name: /Held in trust/i });
-        this.trustNoRadio       = trustGroup.getByRole('radio', { name: /No/i }).first();
-        this.trustYesRadio      = trustGroup.getByRole('radio', { name: /Yes/i }).first();
+        const trustGroup = this.page.getByRole('radiogroup', { name: /Held in trust/i });
+        this.trustNoRadio = trustGroup.getByRole('radio', { name: /No/i }).first();
+        this.trustYesRadio = trustGroup.getByRole('radio', { name: /Yes/i }).first();
 
         // Primary-residence radio
         this.primaryResidenceRadio = this.page.getByRole('radio', { name: /Primary Residence/i });
 
         // -- About Yourself fields ----------------------------------------------
-        this.firstNameInput    = this.page.getByLabel(/First Name/i);
-        this.lastNameInput     = this.page.getByLabel(/Last Name/i);
-        this.emailInput        = this.page.getByLabel(/Email Address/i);
-        this.phoneInput        = this.page.getByLabel(/Cell Phone|Phone Number/i).first();
-        this.passwordInput     = this.page.getByLabel(/^Password/i);
-        this.eConsentCheckbox  = this.page.locator("input[type='checkbox']").first();
+        this.firstNameInput = this.page.getByLabel(/First Name/i);
+        this.lastNameInput = this.page.getByLabel(/Last Name/i);
+        this.emailInput = this.page.getByLabel(/Email Address/i);
+        this.phoneInput = this.page.getByLabel(/Cell Phone|Phone Number/i).first();
+        this.passwordInput = this.page.getByLabel(/^Password/i);
+        this.eConsentCheckbox = this.page.locator("input[type='checkbox']").first();
 
         // -- Marital status radios ----------------------------------------------
         // MUI radio group labelled "Marital Status" or similar
         // Options: "Married" / "Unmarried" (covers single, divorced, widowed)
         // The radiogroup might use aria-label or a visible legend
-        this.maritalStatusGroup   = this.page.getByRole('radiogroup', { name: /Marital Status/i })
+        this.maritalStatusGroup = this.page.getByRole('radiogroup', { name: /Marital Status/i })
             .or(this.page.locator('[class*="marital"], [data-field*="marital"]')).first();
-        this.marriedRadio         = this.page.getByRole('radio', { name: /^Married$/i });
-        this.unmarriedRadio       = this.page.getByRole('radio', { name: /Unmarried|Single|Not Married/i }).first();
+        this.marriedRadio = this.page.getByRole('radio', { name: /^Married$/i });
+        this.unmarriedRadio = this.page.getByRole('radio', { name: /Unmarried|Single|Not Married/i }).first();
 
         // -- Co-borrower toggle -------------------------------------------------
         // "Do you have a co-borrower?" Yes / No radio or button
         this.hasCoBorrowerYes = this.page.getByRole('radio', { name: /Yes/i })
             .or(this.page.getByRole('button', { name: /Add Co-Borrower|I have a co-borrower/i }))
             .first();
-        this.hasCoBorrowerNo  = this.page.getByRole('radio', { name: /No/i }).first();
+        this.hasCoBorrowerNo = this.page.getByRole('radio', { name: /No/i }).first();
 
         // -- Co-borrower personal info fields -----------------------------------
         // These appear after confirming "Yes, I have a co-borrower"
-        this.coBorrowerFirstNameInput  = this.page.getByLabel(/Co.Borrower.*First|First.*Co.Borrower/i)
+        this.coBorrowerFirstNameInput = this.page.getByLabel(/Co.Borrower.*First|First.*Co.Borrower/i)
             .or(this.page.getByPlaceholder(/Co.Borrower.*First/i)).first();
-        this.coBorrowerLastNameInput   = this.page.getByLabel(/Co.Borrower.*Last|Last.*Co.Borrower/i)
+        this.coBorrowerLastNameInput = this.page.getByLabel(/Co.Borrower.*Last|Last.*Co.Borrower/i)
             .or(this.page.getByPlaceholder(/Co.Borrower.*Last/i)).first();
-        this.coBorrowerEmailInput      = this.page.getByLabel(/Co.Borrower.*Email|Email.*Co.Borrower/i)
+        this.coBorrowerEmailInput = this.page.getByLabel(/Co.Borrower.*Email|Email.*Co.Borrower/i)
             .or(this.page.getByPlaceholder(/Co.Borrower.*Email/i)).first();
-        this.coBorrowerPhoneInput      = this.page.getByLabel(/Co.Borrower.*Phone|Phone.*Co.Borrower/i)
+        this.coBorrowerPhoneInput = this.page.getByLabel(/Co.Borrower.*Phone|Phone.*Co.Borrower/i)
             .or(this.page.getByPlaceholder(/Co.Borrower.*Phone/i)).first();
 
         // -- Credit-check fields (primary) -------------------------------------
-        this.ssnInput  = this.page.getByLabel(/Social Security|SSN/i);
-        this.dobInput  = this.page.getByLabel(/Date of Birth/i);
+        this.ssnInput = this.page.getByLabel(/Social Security|SSN/i);
+        this.dobInput = this.page.getByLabel(/Date of Birth/i);
 
         // -- Credit-check fields (co-borrower) ---------------------------------
         // When the co-borrower credit check appears in the same session these
@@ -116,8 +116,8 @@ class CoBorrowerFlowPage {
 
         // -- Shared navigation -------------------------------------------------
         this.continueBtn = this.page.getByRole('button', { name: /Continue/i }).first();
-        this.nextBtn     = this.page.getByRole('button', { name: /^Next$/i }).first();
-        this.submitBtn   = this.page.getByRole('button', { name: /Submit|Finish/i }).first();
+        this.nextBtn = this.page.getByRole('button', { name: /^Next$/i }).first();
+        this.submitBtn = this.page.getByRole('button', { name: /Submit|Finish/i }).first();
 
         // -- Error indicators --------------------------------------------------
         // These locators detect BLOCKING errors after each step.
@@ -159,8 +159,8 @@ class CoBorrowerFlowPage {
         await test.step(`Select property type: ${data.propertyType}`, async () => {
             const map = {
                 'Single Family': this.singleFamilyCard,
-                'Condo':         this.condoCard,
-                '2-4 Unit':      this.twoToFourCard,
+                'Condo': this.condoCard,
+                '2-4 Unit': this.twoToFourCard,
             };
             const card = map[data.propertyType] ?? this.singleFamilyCard;
             await card.waitFor({ state: 'visible', timeout: 10000 });
@@ -177,9 +177,9 @@ class CoBorrowerFlowPage {
     async selectLoanPurpose(data) {
         await test.step(`Select loan purpose: ${data.loanPurpose}`, async () => {
             const map = {
-                'Home Improvement':   this.homeImprovementCard,
+                'Home Improvement': this.homeImprovementCard,
                 'Debt Consolidation': this.debtConsolidationCard,
-                'Other':              this.otherLoanPurposeCard,
+                'Other': this.otherLoanPurposeCard,
             };
             const card = map[data.loanPurpose] ?? this.homeImprovementCard;
             await card.waitFor({ state: 'visible', timeout: 10000 });
@@ -497,8 +497,8 @@ class CoBorrowerFlowPage {
     async fillApplicationParticipants(data) {
         await test.step('Fill Application Participants page', async () => {
             const cb = data.coBorrower;
-            const b  = data.borrower;
-            const p  = data.participants;
+            const b = data.borrower;
+            const p = data.participants;
 
             // Wait for the page heading
             await this.page.getByText(/Application Participants/i)
@@ -625,6 +625,15 @@ class CoBorrowerFlowPage {
             // -- CONTINUE ---------------------------------------------------
             await this.continueBtn.scrollIntoViewIfNeeded();
             await this.continueBtn.click({ force: true });
+
+            // Wait for the loading spinner on the button to disappear before
+            // the next step asserts the new page content.
+            await this.page.waitForFunction(() => {
+                const btn = document.querySelector('button[type="submit"], button:has(svg[class*="spin"], circle[class*="spin"])');
+                return !btn || !btn.disabled;
+            }, { timeout: 30000 }).catch(() => { });
+
+            await this.page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
         });
     }
 
@@ -649,30 +658,64 @@ class CoBorrowerFlowPage {
             // Wait for the page heading
             await this.page.getByText(/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i)
                 .first()
-                .waitFor({ state: 'visible', timeout: 20000 });
+                .waitFor({ state: 'visible', timeout: 60000 });
+
+            // "No existing mortgage, property is free and clear." is a named
+            // checkbox that can be auto-checked on load.  Locate it explicitly
+            // so we can uncheck it when real mortgage rows are present.
+            const freeAndClearCheckbox = this.page.getByRole('checkbox', {
+                name: /free and clear/i,
+            }).first();
 
             if (m.selectFirstMortgage) {
-                // Check whether the credit report returned any mortgage rows.
-                // If none were found, fall back to the "free and clear" checkbox.
-                const noMortgages = await this.page
-                    .getByText(/No.*mortgage.*found|no existing mortgage/i)
-                    .isVisible({ timeout: 3000 })
-                    .catch(() => false);
+                // Collect ALL checkboxes on the page, then separate the
+                // "free and clear" one from the mortgage row checkboxes.
+                // We cannot rely on table/row structure because the lender
+                // table uses a custom component (not native <tr> elements).
+                const allCheckboxes = this.page.getByRole('checkbox');
+                const total = await allCheckboxes.count();
 
-                if (!noMortgages) {
-                    // Select first mortgage checkbox — MUI checkbox, use evaluate
-                    const firstCheckbox = this.page.getByRole('checkbox').first();
-                    await firstCheckbox.waitFor({ state: 'visible', timeout: 10000 });
-                    const alreadyChecked = await firstCheckbox.isChecked().catch(() => false);
+                // Identify mortgage-row checkboxes: any checkbox whose
+                // nearest ancestor does NOT contain "free and clear" text.
+                const mortgageCheckboxes = [];
+                for (let i = 0; i < total; i++) {
+                    const cb = allCheckboxes.nth(i);
+                    // Walk up to find if this checkbox is inside the free-and-clear label
+                    const isFreeAndClear = await cb.evaluate(el => {
+                        let node = el.parentElement;
+                        for (let depth = 0; depth < 6; depth++) {
+                            if (!node) break;
+                            if (/free and clear/i.test(node.textContent ?? '')) return true;
+                            node = node.parentElement;
+                        }
+                        return false;
+                    });
+                    if (!isFreeAndClear) mortgageCheckboxes.push(cb);
+                }
+
+                if (mortgageCheckboxes.length > 0) {
+                    // Uncheck "free and clear" first if auto-checked
+                    const freeAndClearChecked = await freeAndClearCheckbox
+                        .isChecked().catch(() => false);
+                    if (freeAndClearChecked) {
+                        await freeAndClearCheckbox.evaluate(el => el.click());
+                    }
+
+                    // Check the first mortgage row checkbox (BEST EVER MORTGAGE)
+                    const firstMortgageCheckbox = mortgageCheckboxes[0];
+                    await firstMortgageCheckbox.waitFor({ state: 'visible', timeout: 10000 });
+                    const alreadyChecked = await firstMortgageCheckbox
+                        .isChecked().catch(() => false);
                     if (!alreadyChecked) {
-                        await firstCheckbox.evaluate(el => el.click());
+                        await firstMortgageCheckbox.evaluate(el => el.click());
                     }
                 } else {
-                    // No mortgages returned — tick "free and clear"
-                    const freeAndClear = this.page.getByRole('checkbox', {
-                        name: /free and clear|no existing mortgage/i,
-                    });
-                    await freeAndClear.evaluate(el => el.click());
+                    // No mortgage rows — ensure "free and clear" is checked
+                    const freeAndClearChecked = await freeAndClearCheckbox
+                        .isChecked().catch(() => false);
+                    if (!freeAndClearChecked) {
+                        await freeAndClearCheckbox.evaluate(el => el.click());
+                    }
                 }
             }
 
@@ -706,7 +749,7 @@ class CoBorrowerFlowPage {
     async waitForOfferProcessing() {
         await test.step('Wait for offer calculation / underwriting', async () => {
             const processingText = this.page
-                .getByText(/Processing|Calculating.*offer|Just a moment|reviewing.*application/i)
+                .getByText(/Loading offers|Processing|Calculating.*offer|Just a moment|reviewing.*application|Searching for your best offer/i)
                 .first();
 
             const appeared = await processingText
@@ -758,14 +801,294 @@ class CoBorrowerFlowPage {
      * The exact text varies by portal version; we check for a family of known
      * completion phrases.
      */
+    /**
+     * Step 15 — Demographics page (post-offer).
+     *
+     * After clicking "CONTINUE TO APPLICATION" the app shows a Demographics
+     * form collecting Ethnicity, Sex, Race, and a Hard Credit Check consent.
+     * Ethnicity "I do not wish to provide this information" is pre-checked;
+     * Sex and Race need to be opted out, then the hard-credit authorization
+     * checkbox must be checked before Continue becomes enabled.
+     */
+    async fillDemographics() {
+        await test.step('Fill Demographics page', async () => {
+            // "CONTINUE TO APPLICATION" navigates within the same tab.
+            // Wait for the Demographics heading to appear after the navigation.
+            await this.page.waitForLoadState('domcontentloaded', { timeout: 30000 });
+            await this.page.getByText(/^Demographics$/i)
+                .first()
+                .waitFor({ state: 'visible', timeout: 30000 });
+
+            // Check every "I do not wish to provide this information" checkbox
+            // on the page — covers Ethnicity, Sex, and Race in one pass.
+            const allOptOut = this.page.getByLabel(/I do not wish to provide this information/i);
+            await allOptOut.first().waitFor({ state: 'visible', timeout: 10000 });
+            const optOutCount = await allOptOut.count();
+            for (let i = 0; i < optOutCount; i++) {
+                const cb = allOptOut.nth(i);
+                const checked = await cb.isChecked().catch(() => false);
+                if (!checked) {
+                    await cb.evaluate(el => el.click());
+                }
+            }
+
+            // Hard Credit Check authorization checkbox.
+            // MUI renders the text in a sibling <p>, not a <label>, so neither
+            // getByLabel nor getByRole(checkbox, {name}) can find it by text.
+            // Strategy: find the nearest container div that holds BOTH the
+            // "I authorize" text AND a checkbox input, then click that input.
+            const hardCreditCb = this.page.locator('div').filter({
+                has: this.page.getByText(/I authorize/i),
+            }).filter({
+                has: this.page.locator('input[type="checkbox"]'),
+            }).last()
+                .locator('input[type="checkbox"]')
+                .first();
+            await hardCreditCb.waitFor({ state: 'visible', timeout: 10000 });
+            const hardCreditChecked = await hardCreditCb.isChecked().catch(() => false);
+            if (!hardCreditChecked) {
+                await hardCreditCb.evaluate(el => el.click());
+            }
+
+            // Wait for Continue to become enabled then click
+            const continueBtn = this.page.getByRole('button', { name: /^Continue$/i });
+            await continueBtn.waitFor({ state: 'visible', timeout: 10000 });
+            await expect(continueBtn).toBeEnabled({ timeout: 10000 });
+            await continueBtn.click({ force: true });
+        });
+    }
+
+    // -------------------------------------------------------------------------
+
+    /**
+     * Step 16 — Income Verification page via Plaid sandbox.
+     *
+     * Flow:
+     *  1. Wait for Income Verification page
+     *  2. Click "BANK ACCOUNT VERIFICATION (PLAID)"
+     *  3. Inside Plaid dialog/iframe:
+     *       a. Phone pre-filled (415-555-0011) → Continue
+     *       b. OTP code 123456 → Continue
+     *       c. Select Tartan Bank → Confirm
+     *  4. Wait for verification to complete and Continue to become enabled
+     */
+    async fillIncomeVerification() {
+        await test.step('Fill Income Verification (Plaid sandbox)', async () => {
+            // Wait for Income Verification page
+            await this.page.getByText(/Income Verification/i)
+                .first()
+                .waitFor({ state: 'visible', timeout: 30000 });
+
+            // Wait for the "CONNECTING..." spinner to clear before the
+            // "BANK ACCOUNT VERIFICATION (PLAID)" button becomes available.
+            // Wait for "CONNECTING..." to clear — can take up to 2 minutes in staging.
+            const connectingText = this.page.getByText(/CONNECTING\.\.\./i).first();
+            const isConnecting = await connectingText
+                .isVisible({ timeout: 5000 }).catch(() => false);
+            if (isConnecting) {
+                await connectingText.waitFor({ state: 'hidden', timeout: 120000 });
+            }
+
+            // Click "BANK ACCOUNT VERIFICATION (PLAID)"
+            const plaidBtn = this.page.getByText(/Bank Account Verification.*Plaid/i).first();
+            await plaidBtn.waitFor({ state: 'visible', timeout: 60000 });
+            await plaidBtn.click({ force: true });
+
+            // Plaid renders inside an iframe — locate it
+            const plaidFrame = this.page.frameLocator('iframe[title*="Plaid" i], iframe[name*="plaid" i], iframe[src*="plaid" i]')
+                .first();
+
+            // Step a: Phone number screen — sandbox phone is pre-filled
+            // Just click Continue
+            const phoneContinue = plaidFrame.getByRole('button', { name: /Continue/i }).first();
+            await phoneContinue.waitFor({ state: 'visible', timeout: 15000 });
+            await phoneContinue.click();
+
+            // Step b: OTP verification — sandbox code is always 123456
+            // Wait for the "Verify your phone number" screen to appear first,
+            // then type via page.keyboard so cross-origin iframe restrictions
+            // don't block the input events.
+            const codeInput = plaidFrame.locator('#otp-code-input-input').first()
+                .or(plaidFrame.getByPlaceholder(/Code/i).first());
+            await codeInput.waitFor({ state: 'visible', timeout: 30000 });
+            await codeInput.click();
+            // page.keyboard.type fires raw key events on the focused element —
+            // works in cross-origin iframes where pressSequentially may hang.
+            await this.page.keyboard.type('123456', { delay: 80 });
+            // Auto-submits after last digit — wait for Select accounts screen
+
+            // Step c: Select accounts — pick Tartan Bank (first pre-selected account)
+            const tartanBank = plaidFrame.getByText(/Tartan Bank/i).first();
+            await tartanBank.waitFor({ state: 'visible', timeout: 15000 });
+            await tartanBank.click();
+            const confirmBtn = plaidFrame.getByRole('button', { name: /Confirm/i }).first();
+            await confirmBtn.waitFor({ state: 'visible', timeout: 10000 });
+            await confirmBtn.click();
+
+            // Step d: "Share consumer report" confirmation dialog
+            const shareConfirm = plaidFrame.getByRole('button', { name: /Confirm/i }).first();
+            const shareVisible = await shareConfirm
+                .isVisible({ timeout: 10000 }).catch(() => false);
+            if (shareVisible) {
+                await shareConfirm.click();
+            }
+
+            // Wait for Plaid dialog to close
+            await this.page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
+
+            // Step e: Wait for "Bank Account Verified Successfully" banner then
+            // click Continue — required before Funding Account page loads.
+            const verifiedBanner = this.page.getByText(/Bank Account Verified Successfully/i).first();
+            await verifiedBanner.waitFor({ state: 'visible', timeout: 30000 });
+            const verifiedContinue = this.page.getByRole('button', { name: /^Continue$/i });
+            await verifiedContinue.waitFor({ state: 'visible', timeout: 10000 });
+            await expect(verifiedContinue).toBeEnabled({ timeout: 10000 });
+            await verifiedContinue.click({ force: true });
+
+            // Wait for navigation to funding-account before returning
+            await this.page.waitForURL(/funding-account/i, { timeout: 80000 }).catch(() => { });
+            await this.page.waitForLoadState('domcontentloaded', { timeout: 80000 }).catch(() => { });
+        });
+    }
+
+    // -------------------------------------------------------------------------
+
+    /**
+     * Step 17 — Funding Account page.
+     *
+     * Runs the Plaid sandbox flow to connect a bank account:
+     *   1. Click "CONNECT BANK ACCOUNT"
+     *   2. Enter sandbox phone (415-555-0011) → Continue
+     *   3. Type OTP 123456 (auto-submits after 6th digit)
+     *   4. Select Tartan Bank → Confirm
+     * After Plaid closes the page shows connected accounts with one pre-selected.
+     * Click Continue to proceed.
+     */
+    async fillFundingAccount() {
+        await test.step('Fill Funding Account page (Plaid)', async () => {
+            await this.page.getByText(/Funding Account/i)
+                .first()
+                .waitFor({ state: 'visible', timeout: 30000 });
+
+            // Check whether connected accounts from Income Verification carried over.
+            const hasConnectedAccounts = await this.page
+                .getByText(/Use a Connected Account/i)
+                .first()
+                .isVisible({ timeout: 5000 })
+                .catch(() => false);
+
+            if (!hasConnectedAccounts) {
+                // No linked accounts — run the Plaid sandbox flow.
+                const connectBtn = this.page.getByText(/Connect Bank Account/i).first();
+                await connectBtn.waitFor({ state: 'visible', timeout: 15000 });
+                await connectBtn.click({ force: true });
+
+                // The Funding Account Plaid dialog is a DOM modal (not an iframe).
+                // Wait for the phone input to appear (id contains "phone-number-input").
+                const phoneInput = this.page
+                    .locator('input[id*="phone-number-input-input"]')
+                    .or(this.page.locator('input[type="tel"]'))
+                    .first();
+                await phoneInput.waitFor({ state: 'visible', timeout: 30000 });
+                await phoneInput.click();
+                await this.page.keyboard.type('4155550011', { delay: 50 });
+
+                // Click Continue (scoped away from "Continue without phone number")
+                const phoneContinue = this.page
+                    .getByRole('button', { name: /^Continue$/i })
+                    .first();
+                await expect(phoneContinue).toBeEnabled({ timeout: 10000 });
+                await phoneContinue.click();
+
+                // OTP screen — auto-submits after 6th digit
+                const codeInput = this.page.locator('#otp-code-input-input')
+                    .or(this.page.locator('input[id*="otp"]'))
+                    .first();
+                await codeInput.waitFor({ state: 'visible', timeout: 30000 });
+                await codeInput.click();
+                await this.page.keyboard.type('123456', { delay: 80 });
+
+                // Select accounts: Tartan Bank → Confirm
+                const tartanBank = this.page.getByText(/Tartan Bank/i).first();
+                await tartanBank.waitFor({ state: 'visible', timeout: 15000 });
+                await tartanBank.click();
+                const confirmBtn = this.page.getByRole('button', { name: /^Confirm$/i }).first();
+                await confirmBtn.waitFor({ state: 'visible', timeout: 10000 });
+                await confirmBtn.click();
+
+                // Wait for Plaid dialog to close and accounts to load
+                await this.page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+            }
+
+            // Select Account 2 (Plaid Saving ****1111) to enable Continue.
+            // The account rows use MUI radio buttons — find the one labelled "Account 2".
+            const account2Radio = this.page.locator('input[type="radio"]').filter({
+                has: this.page.locator('..').filter({ hasText: /Account 2/i }),
+            }).first();
+            const account2Label = this.page.locator('label, div').filter({
+                hasText: /Account 2/i,
+            }).first();
+
+            const account2Visible = await account2Label
+                .isVisible({ timeout: 10000 }).catch(() => false);
+            if (account2Visible) {
+                await account2Label.click({ force: true });
+            }
+
+            const continueBtn = this.page.getByRole('button', { name: /^Continue$/i });
+            await continueBtn.waitFor({ state: 'visible', timeout: 10000 });
+            await expect(continueBtn).toBeEnabled({ timeout: 15000 });
+            await continueBtn.click({ force: true });
+        });
+    }
+
+    // -------------------------------------------------------------------------
+
     async verifyFlowCompleted() {
         await test.step('Verify co-borrower flow reached completion', async () => {
-            // Give up to 60 s for the final step to resolve — credit pulls can
-            // be slow in staging.
-            const successLocator = this.page.getByText(
-                /Pre-Qualified|Application Submitted|Thank you|We.ve received your application|Application Complete/i
-            ).first();
-            await expect(successLocator).toBeVisible({ timeout: 60000 });
+            // The "Loading offers..." spinner can still be visible when this
+            // step starts.  Wait up to 3 minutes for it to clear before
+            // asserting the pre-qual banner.
+            const loadingText = this.page
+                .getByText(/Loading offers|Searching for your best offer/i)
+                .first();
+            const stillLoading = await loadingText
+                .isVisible({ timeout: 5000 })
+                .catch(() => false);
+            if (stillLoading) {
+                await loadingText.waitFor({ state: 'hidden', timeout: 180000 });
+            }
+
+            // After offer processing the DTC app shows a pre-qualification
+            // summary banner: "You're pre-qualified, <name>!"
+            const preQualBanner = this.page.getByText(/You.re pre-qualified/i).first();
+            await expect(preQualBanner).toBeVisible({ timeout: 90000 });
+
+            const continueToApp = this.page.getByRole('button', {
+                name: /Continue to Application/i,
+            });
+            await continueToApp.waitFor({ state: 'visible', timeout: 10000 });
+            await continueToApp.scrollIntoViewIfNeeded();
+
+            // "CONTINUE TO APPLICATION" opens the full application in a new tab.
+            // Listen for the new page BEFORE clicking so we don't miss it.
+            const newPagePromise = this.page.context().waitForEvent('page', {
+                timeout: 30000,
+            }).catch(() => null);
+
+            await continueToApp.click({ force: true });
+
+            // Switch this.page to the new tab so subsequent steps (Demographics,
+            // Income Verification, etc.) interact with the correct page.
+            const newPage = await newPagePromise;
+            if (newPage) {
+                await newPage.waitForLoadState('domcontentloaded', { timeout: 30000 });
+                this.page = newPage;
+            } else {
+                // Same-tab navigation — just wait for load
+                await this.page.waitForLoadState('networkidle', { timeout: 30000 })
+                    .catch(() => { });
+            }
         });
     }
 }

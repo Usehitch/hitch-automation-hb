@@ -1,5 +1,5 @@
-import { expect, test } from '../fixtures';
-import { applicationData, coBorrowerApplicationData } from '../data/newApplication';
+import { expect, test } from '../../fixtures';
+import { applicationData, coBorrowerApplicationData } from '../../data/newApplication';
 
 test.describe('Pre-Qual Manually', () => {
     test.beforeEach(async ({ page }) => {
