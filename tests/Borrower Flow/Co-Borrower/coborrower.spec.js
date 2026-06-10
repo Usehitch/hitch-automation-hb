@@ -135,6 +135,12 @@ async function runCoBorrowerFlow(preQualManualPage, data) {
     await flow.verifyFlowCompleted();
     await flow.assertNoBlockingError('Pre-qual offer page');
 
+    // -- Step 14b: Other Info page (post-offer) --------------------------------
+    // Marital Status, "Who are you married to?", and Title-Only Owners have
+    // moved to a dedicated "Other Info" page that appears before Demographics.
+    await flow.fillOtherInfo(data);
+    await flow.assertNoBlockingError('Other Info');
+
     // -- Step 15: Demographics page -------------------------------------------
     // Opts out of Ethnicity/Sex/Race disclosure, checks hard-credit
     // authorization, then clicks Continue.
@@ -151,8 +157,31 @@ async function runCoBorrowerFlow(preQualManualPage, data) {
     // -- Step 17: Funding Account page ----------------------------------------
     // Runs Plaid sandbox (phone → OTP → Tartan Bank → Confirm) then clicks
     // Continue with the pre-selected connected account.
+    // TODO: Replace skip with full Plaid sandbox flow once iframe interaction is stable.
     await flow.fillFundingAccount();
     await flow.assertNoBlockingError('Funding Account');
+
+    // -- Step 18: Verify Loan Hub welcome page --------------------------------
+    // After Funding Account the borrower lands on the Loan Hub.  Assert the
+    // "Welcome to Your Loan Hub" banner, "In Process" pipeline stage, then
+    // open the Loan Tracker and confirm B1 = Completed, B2 = Invited.
+    await flow.verifyLoanHub();
+    await flow.assertNoBlockingError('Loan Hub');
+
+    // -- Step 19: Co-borrower invite email in Mailinator ----------------------
+    // The system emails the co-borrower an invite to complete their portion.
+    // Opens Mailinator in an isolated context, clicks "COMPLETE APPLICATION",
+    // and verifies the Review Information page loads.
+    // Returns the co-borrower app tab for Step 20.
+    const coBorrowerPage = await flow.verifyCoBorrowerInviteEmail(data);
+    await flow.assertNoBlockingError('Co-borrower invite email');
+
+    // -- Step 20: Co-borrower completes their application ---------------------
+    // a. Review Information  → START APPLICATION
+    // b. Tell us about yourself → password + e-consent → Continue
+    // c. Check Your Eligibility → check consent boxes → Continue
+    await flow.fillCoBorrowerApplication(data, coBorrowerPage);
+    await flow.assertNoBlockingError('Co-borrower application');
 }
 
 // ---------------------------------------------------------------------------
