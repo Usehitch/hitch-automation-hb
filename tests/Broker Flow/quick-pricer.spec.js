@@ -32,8 +32,8 @@
  * All tests share a beforeEach that lands on the Quick Pricer page.
  */
 
-import { expect, test } from '../fixtures';
-import { randomEmail } from '../utils/dataGenerator';
+import { expect, test } from '../../fixtures';
+import { randomEmail } from '../../utils/dataGenerator';
 
 test.describe('Quick Pricer — HELOC Rate Calculator', () => {
     test.beforeEach(async ({ page, quickPricerPage }) => {

@@ -39,6 +39,12 @@ export default defineConfig({
       testMatch: /auth\.setup\.js/,
     },
 
+    // LO login — saves session to .playwright/.auth/lo-user.json
+    {
+      name: 'setup-lo',
+      testMatch: /auth\.setup\.lo\.js/,
+    },
+
     // All other tests reuse the saved session — no repeated logins
     {
       name: 'chromium',
@@ -57,6 +63,23 @@ export default defineConfig({
         },
       },
       dependencies: ['setup'],
+      testIgnore: /Co-Borrower|invitation\.spec/,
+    },
+
+    // Co-borrower + invitation tests — use LO session
+    {
+      name: 'chromium-lo',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: '.playwright/.auth/lo-user.json',
+        viewport: null,
+        deviceScaleFactor: undefined,
+        launchOptions: {
+          args: ['--start-maximized'],
+        },
+      },
+      dependencies: ['setup-lo'],
+      testMatch: /Co-Borrower|invitation\.spec/,
     },
   ],
 });

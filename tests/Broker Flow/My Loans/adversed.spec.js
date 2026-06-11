@@ -13,8 +13,8 @@
  * All tests share the same beforeEach that lands on the Adversed tab.
  */
 
-import { expect, test } from '../../fixtures';
-import { applicationData } from '../../data/newApplication';
+import { expect, test } from '../../../fixtures';
+import { applicationData } from '../../../data/newApplication';
 
 test.describe('My Loans - Adversed', () => {
     test.beforeEach(async ({ page, activePage }) => {

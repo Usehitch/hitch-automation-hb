@@ -186,6 +186,62 @@ class TWNPage {
     };
 
     /**
+     * Fills the primary borrower's income sources when TWN did not auto-populate.
+     * Selects each income source checkbox, then fills company name,
+     * total annual compensation, and start date for salary income.
+     *
+     * @param {object} data  data.primaryIncome — incomeSources, companyName,
+     *                       annualCompensation, startDate
+     */
+    async fillPrimaryIncomeSources(data) {
+        await test.step('Fill primary borrower income sources', async () => {
+            const inc = data.primaryIncome ?? {};
+
+            // Wait for the income sources section to appear
+            await this.page.getByText(/What are your income sources/i)
+                .first()
+                .waitFor({ state: 'visible', timeout: 15000 });
+
+            for (const source of (inc.incomeSources ?? [])) {
+                const checkbox = this.page.getByRole('checkbox', {
+                    name: new RegExp(source, 'i'),
+                });
+                const alreadyChecked = await checkbox.isChecked().catch(() => false);
+                if (!alreadyChecked) {
+                    await checkbox.evaluate(el => el.click());
+                }
+            }
+
+            // Job details — only when salary income is selected
+            if ((inc.incomeSources ?? []).some(s => /salary|hourly/i.test(s))) {
+                if (inc.companyName) {
+                    const companyInput = this.page.getByPlaceholder(/Company Name/i).first()
+                        .or(this.page.getByLabel(/Company Name/i).first());
+                    await companyInput.waitFor({ state: 'visible', timeout: 10000 });
+                    await companyInput.fill(inc.companyName);
+                }
+
+                if (inc.annualCompensation) {
+                    const compInput = this.page
+                        .getByLabel(/Total Annual Compensation|Annual Compensation/i).first();
+                    await compInput.waitFor({ state: 'visible', timeout: 10000 });
+                    await compInput.click({ clickCount: 3 });
+                    await compInput.fill(inc.annualCompensation);
+                    await compInput.press('Tab');
+                }
+
+                if (inc.startDate) {
+                    const startInput = this.page.getByPlaceholder(/Start Date/i).first()
+                        .or(this.page.getByLabel(/Start Date/i).first());
+                    await startInput.waitFor({ state: 'visible', timeout: 10000 });
+                    await startInput.fill(inc.startDate);
+                    await startInput.press('Tab');
+                }
+            }
+        });
+    };
+
+    /**
      * Asserts TWN populated the Salary or Hourly Wages checkbox and employer
      * card fields. Skips individual field checks when expected value is null.
      */

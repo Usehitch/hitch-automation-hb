@@ -38,12 +38,46 @@
         "metadata": {
           "actualWorkers": 1
         },
-        "id": "chromium",
-        "name": "chromium",
+        "id": "setup-lo",
+        "name": "setup-lo",
         "testDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/tests",
         "testIgnore": [],
         "testMatch": [
+          "/auth\\.setup\\.lo\\.js/"
+        ],
+        "timeout": 180000
+      },
+      {
+        "outputDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/tests",
+        "testIgnore": [
+          "/Co-Borrower|invitation\\.spec/"
+        ],
+        "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 180000
+      },
+      {
+        "outputDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-lo",
+        "name": "chromium-lo",
+        "testDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/Co-Borrower|invitation\\.spec/"
         ],
         "timeout": 180000
       }
@@ -77,13 +111,13 @@
   },
   "suites": [
     {
-      "title": "auth.setup.js",
-      "file": "auth.setup.js",
+      "title": "auth.setup.lo.js",
+      "file": "auth.setup.lo.js",
       "column": 0,
       "line": 0,
       "specs": [
         {
-          "title": "authenticate",
+          "title": "authenticate as LO",
           "ok": true,
           "tags": [],
           "tests": [
@@ -91,14 +125,14 @@
               "timeout": 180000,
               "annotations": [],
               "expectedStatus": "passed",
-              "projectId": "setup",
-              "projectName": "setup",
+              "projectId": "setup-lo",
+              "projectName": "setup-lo",
               "results": [
                 {
-                  "workerIndex": 58,
+                  "workerIndex": 2,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 14242,
+                  "duration": 17366,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
@@ -106,14 +140,14 @@
                   "steps": [
                     {
                       "title": "Click the go to broker portal",
-                      "duration": 66
+                      "duration": 1342
                     },
                     {
                       "title": "Submit email and password",
-                      "duration": 108
+                      "duration": 2132
                     }
                   ],
-                  "startTime": "2026-06-05T11:20:14.850Z",
+                  "startTime": "2026-06-11T17:13:23.792Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -121,103 +155,186 @@
               "status": "expected"
             }
           ],
-          "id": "f376efe52c54b1a876fd-9d03a3bb502e264caa3f",
-          "file": "auth.setup.js",
-          "line": 6,
+          "id": "db3a8f2d3463a3c1924a-9a9c346f4775ae8cc816",
+          "file": "auth.setup.lo.js",
+          "line": 5,
           "column": 6
         }
       ]
     },
     {
-      "title": "twn-monitor.spec.js",
-      "file": "twn-monitor.spec.js",
+      "title": "Borrower Flow\\invitation.spec.js",
+      "file": "Borrower Flow/invitation.spec.js",
       "column": 0,
       "line": 0,
-      "specs": [],
-      "suites": [
+      "specs": [
         {
-          "title": "The Work Number (TWN)",
-          "file": "twn-monitor.spec.js",
-          "line": 5,
-          "column": 6,
-          "specs": [
+          "title": "Scenario B: LO creates pre-qual with co-borrower and both receive invitations",
+          "ok": true,
+          "tags": [],
+          "tests": [
             {
-              "title": "TWN populates borrower info via shareable link",
-              "ok": true,
-              "tags": [],
-              "tests": [
+              "timeout": 1260000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-lo",
+              "projectName": "chromium-lo",
+              "results": [
                 {
-                  "timeout": 180000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 107673,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "steps": [
                     {
-                      "workerIndex": 59,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 41113,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
+                      "title": "Click the start app button",
+                      "duration": 1401
+                    },
+                    {
+                      "title": "Click the start pre-qual manually button",
+                      "duration": 3910
+                    },
+                    {
+                      "title": "Fill application details",
+                      "duration": 12088,
                       "steps": [
                         {
-                          "title": "Open shareable app link in new tab",
-                          "duration": 4360
+                          "title": "Fill property address",
+                          "duration": 4271
                         },
                         {
-                          "title": "Click Get Started Now",
-                          "duration": 1167
+                          "title": "Fill job details",
+                          "duration": 465
                         },
                         {
-                          "title": "Select property type",
-                          "duration": 1382
-                        },
-                        {
-                          "title": "Select loan purpose",
-                          "duration": 1878
-                        },
-                        {
-                          "title": "Fill property info",
-                          "duration": 2117
-                        },
-                        {
-                          "title": "Fill about yourself",
-                          "duration": 1543
-                        },
-                        {
-                          "title": "Fill credit check fields (TWN)",
-                          "duration": 8638
-                        },
-                        {
-                          "title": "Verify TWN auto-populated employer info",
-                          "duration": 9146
+                          "title": "Fill co-borrower details",
+                          "duration": 4183
                         }
-                      ],
-                      "startTime": "2026-06-05T11:20:30.064Z",
-                      "annotations": [],
-                      "attachments": []
+                      ]
+                    },
+                    {
+                      "title": "Click Next to proceed to Mortgages & Liens",
+                      "duration": 39663,
+                      "steps": [
+                        {
+                          "title": "Close soft credit consent PDF tab(s)",
+                          "duration": 14
+                        }
+                      ]
+                    },
+                    {
+                      "title": "Fill mortgages & liens",
+                      "duration": 177
+                    },
+                    {
+                      "title": "Click Next to proceed to Offer Review",
+                      "duration": 22548
+                    },
+                    {
+                      "title": "Update requested loan amount",
+                      "duration": 0
+                    },
+                    {
+                      "title": "Open Manage Debt Payoffs modal",
+                      "duration": 110
+                    },
+                    {
+                      "title": "Verify debt payoff modal contents",
+                      "duration": 62
+                    },
+                    {
+                      "title": "Save debt payoff plan",
+                      "duration": 315
+                    },
+                    {
+                      "title": "Open Edit Upfront Draw modal",
+                      "duration": 135
+                    },
+                    {
+                      "title": "Verify Edit Upfront Draw modal contents",
+                      "duration": 36
+                    },
+                    {
+                      "title": "Set upfront draw percentage",
+                      "duration": 298
+                    },
+                    {
+                      "title": "Confirm upfront draw",
+                      "duration": 269
+                    },
+                    {
+                      "title": "Acknowledge DTI above allowable limit (if required)",
+                      "duration": 8
+                    },
+                    {
+                      "title": "Click Next to proceed to Consents",
+                      "duration": 915
+                    },
+                    {
+                      "title": "Check all Loan Officer Certifications",
+                      "duration": 385
+                    },
+                    {
+                      "title": "Fill Broker MLO Name",
+                      "duration": 50
+                    },
+                    {
+                      "title": "Verify signature fields",
+                      "duration": 14
+                    },
+                    {
+                      "title": "Click Next to submit consents",
+                      "duration": 863
+                    },
+                    {
+                      "title": "Verify pre-qual confirmation screen",
+                      "duration": 94
+                    },
+                    {
+                      "title": "Copy borrower app link",
+                      "duration": 35
+                    },
+                    {
+                      "title": "Download PDF (if enabled)",
+                      "duration": 6
+                    },
+                    {
+                      "title": "Close confirmation and return to portal",
+                      "duration": 734
+                    },
+                    {
+                      "title": "B — B1 (borrower): verify invitation email in Mailinator",
+                      "duration": 6980
+                    },
+                    {
+                      "title": "B — B2 (co-borrower): verify invitation email in Mailinator",
+                      "duration": 6907
                     }
                   ],
-                  "status": "expected"
+                  "startTime": "2026-06-11T17:13:42.446Z",
+                  "annotations": [],
+                  "attachments": []
                 }
               ],
-              "id": "7991c4f60f0ddb418a93-05f886889ed14fc2e026",
-              "file": "twn-monitor.spec.js",
-              "line": 10,
-              "column": 9
+              "status": "expected"
             }
-          ]
+          ],
+          "id": "cbc830e13ac12d534f3b-fdbc2f01e3dbfa17afcc",
+          "file": "Borrower Flow/invitation.spec.js",
+          "line": 172,
+          "column": 5
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-05T11:20:13.530Z",
-    "duration": 58142.093999998644,
+    "startTime": "2026-06-11T17:13:22.458Z",
+    "duration": 128215.511,
     "expected": 2,
     "skipped": 0,
     "unexpected": 0,
