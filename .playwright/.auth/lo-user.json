@@ -2,7 +2,7 @@
   "cookies": [
     {
       "name": "next-auth.applicant-csrf-token",
-      "value": "c5c8037ccbb3f25abc76f3f6361a8d77bb0e19ad91e7787860879076937ae653%7Cae88c9402e0fdcbb6f81475917d8c221c71efcb726f047098b1e2ca70d069c8b",
+      "value": "329ca59dc4a66af1331b768609a25bb20eeb20d733ecbcfdf1fdf96ab35dcd8f%7C74e33a647993c38e3b7ab3b05c93f0763762826fefb56dfd89022e43d239c2f4",
       "domain": "hb-staging-pos.onrender.com",
       "path": "/",
       "expires": -1,
@@ -22,80 +22,60 @@
     },
     {
       "name": "__cf_bm",
-      "value": "k24rSM_2zNV16aX1EPVfC.V047FxbowsSZqsKZLjKQ4-1781109709.4448755-1.0.1.1-AAEsx3CtEj08Am5.hPv_MZ6EOZsvo1hrCTOhNL3oEbT6W_YDB8o4KE5b3VDDyJ2.cGXRsy48pIrkuvEDvJs1BuQSVgin2mey2bqMDxmjcxmVRMybnkmIvA2Ov1N7wI.e",
+      "value": "G6uGXnGzc5CR9V0Y_bMXtWeLbEI8noGmSOip1eNFboY-1781198004.9830773-1.0.1.1-g7Ube9jZsYNvcuDangPCwtjJ2cMlCa7NmOegOJUSw6JLlNUFpx3B_l1d69oK0hUpfVWP_DrgAsGmSI59Mgvzj9EkoLHJnQZUFGuBcFsnJ2Vx5518owRPhN.nIvp42nQx",
       "domain": ".argyle.com",
       "path": "/",
-      "expires": 1781111509.312236,
+      "expires": 1781199804.897163,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "CLID",
-      "value": "340037125c494112a142e6b34f89cf13.20260610.20270610",
+      "value": "e4a5f27194224728854e1bd65eae0b0c.20260611.20270611",
       "domain": "www.clarity.ms",
       "path": "/",
-      "expires": 1812645709.70944,
+      "expires": 1812734005.409954,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "_clck",
-      "value": "auqja3%5E2%5Eg6s%5E0%5E2352",
+      "value": "18ak19c%5E2%5Eg6t%5E0%5E2353",
       "domain": ".hb-staging-pos.onrender.com",
       "path": "/",
-      "expires": 1812645710,
+      "expires": 1812734005,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
     },
     {
       "name": "fs_lua",
-      "value": "1.1781109710076",
+      "value": "1.1781198005642",
       "domain": ".hb-staging-pos.onrender.com",
       "path": "/",
-      "expires": 1781111510,
+      "expires": 1781199806,
       "httpOnly": false,
       "secure": true,
       "sameSite": "Strict"
     },
     {
       "name": "__cf_bm",
-      "value": "AJvD62p3405DIDKK79KFp1RNarFdwV7vxknWB7VB6CI-1781109711.0391543-1.0.1.1-DluY2qxhiezWF53v_9HNLCscIHGGlnw5rE27DBp75KfQejLhRQdZmO1d7ihYWfvYB6ZxrieSLVOOq0OyQy0Y2C9qZqQ8aStsyqhQBwFDZTfdTv.4dBtKVJOCRta61FaG",
+      "value": "QDDT5cCfqStw16orK3gbG0OtZTadFaJd41TYLBsiF90-1781198006.7827742-1.0.1.1-JPNS3fRGwpapbHrGlExwd36.PDLSEiCt4MkvgHy4iiq9v.vdXK70astCve3E1SA65Dg28XYlJTddySG.B1zL.js_homTUZS46Lau40wy8m0RyiaGKWYO6NciKKmPRGI3",
       "domain": ".hs-scripts.com",
       "path": "/",
-      "expires": 1781111511.19325,
+      "expires": 1781199806.689737,
       "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "__cf_bm",
-      "value": "KOZxnjL5peLA6rsSkG54qcvAyvkzAy0twYFaTOGjAco-1781109714.8128684-1.0.1.1-cLsIgGS3cy7OcEZZNykJoc6zsSQryyxbJAnitrj4JWPUu2Z0SERCzICPWprtWJelCwof1rwu1YTSTnm_NN9dJIxjoPqaA4IQTgdnSDta5HDYxvyFXBURe4q2k3fr1.Q9",
-      "domain": ".hs-analytics.net",
-      "path": "/",
-      "expires": 1781111514.679223,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "AWSALBCORS",
-      "value": "5HCjLiFwktGNAdW+HiITX8mzgcqbROP9dyY+mZWjTTPPhbgOtcL+zrtRpH0PT5Gv6sYutSiuNMeZ0ViG9BOXTPJYfaXrxMA5I2zAjtYeViKakElRNwLzzjpl3dWZ",
-      "domain": "app.usecanopy.com",
-      "path": "/",
-      "expires": 1781714515.141047,
-      "httpOnly": false,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "MUID",
-      "value": "11E3F5E4C33469033F9CE290C20B68AA",
+      "value": "0E8AA1A09FE066303DA1B6D59EF467DE",
       "domain": ".bing.com",
       "path": "/",
-      "expires": 1814805716.292358,
+      "expires": 1814894012.130408,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
@@ -105,17 +85,27 @@
       "value": "0",
       "domain": ".c.bing.com",
       "path": "/",
-      "expires": 1781714516.292482,
+      "expires": 1781802812.130716,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "SRM_B",
-      "value": "11E3F5E4C33469033F9CE290C20B68AA",
+      "value": "0E8AA1A09FE066303DA1B6D59EF467DE",
       "domain": ".c.bing.com",
       "path": "/",
-      "expires": 1814805716.292527,
+      "expires": 1814894012.130792,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "AWSALBCORS",
+      "value": "ZXSxYS7stashpMUp8bOAX9h5Mamq2ppAi4sR5+pAglbu3OtwJ/z7FP00oNnzdh9v2DqvV5+QsNRIr+sYVDEh291dKjiZuV99SexPx8ICgAXwbt3S9HHG7ROTyBie",
+      "domain": "app.usecanopy.com",
+      "path": "/",
+      "expires": 1781802811.211924,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
@@ -132,10 +122,10 @@
     },
     {
       "name": "MUID",
-      "value": "11E3F5E4C33469033F9CE290C20B68AA",
+      "value": "0E8AA1A09FE066303DA1B6D59EF467DE",
       "domain": ".clarity.ms",
       "path": "/",
-      "expires": 1814805715.390173,
+      "expires": 1814894011.229173,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
@@ -145,7 +135,7 @@
       "value": "0",
       "domain": ".c.clarity.ms",
       "path": "/",
-      "expires": 1781714515.390245,
+      "expires": 1781802811.229241,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
@@ -155,14 +145,24 @@
       "value": "0",
       "domain": ".c.clarity.ms",
       "path": "/",
-      "expires": 1781110315.390275,
+      "expires": 1781198611.229273,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
     },
     {
+      "name": "__cf_bm",
+      "value": "Qz.xmhqtmGQqfn2vlvmCHI9L6NdH_kW6UUWkA71Pxi0-1781198011.3891857-1.0.1.1-Fh9QPZ8HyS619lFPykrdb2I5l8RFKoM.3.W6fN738hjPobOeztijZ4jlXNfUXSmWu8jobgcr8W.zzSKMYgYVjd5TSGOiCOYYavAzkr_WocWmcgfiASymGoDibAEMM2Mo",
+      "domain": ".hs-analytics.net",
+      "path": "/",
+      "expires": 1781199811.291648,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
       "name": "next-auth.portal-csrf-token",
-      "value": "9d25bd00e49ede640b4772970612ab1e3129cfb05e5ee1c483cd2385a13253b8%7C042961aa5419102979236ca3b6822c419590c5ee08561843f0a423c88dbde07c",
+      "value": "e1bad4f1e8f7c6241bd1aa3c1b3ab67fa5dde672dc12b8cb22ed665a16337eaf%7C07076985e5f3161c32fbe9a61c5b00e98cd50a55312cc7ef2b2870d3305e71fb",
       "domain": "hb-staging-pos.onrender.com",
       "path": "/",
       "expires": -1,
@@ -172,10 +172,10 @@
     },
     {
       "name": "_clsk",
-      "value": "e5ap5s%5E1781109718409%5E2%5E1%5Ez.clarity.ms%2Fcollect",
+      "value": "1utgt6j%5E1781198018064%5E2%5E1%5Ei.clarity.ms%2Fcollect",
       "domain": ".hb-staging-pos.onrender.com",
       "path": "/",
-      "expires": 1781196118,
+      "expires": 1781284418,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -192,20 +192,20 @@
     },
     {
       "name": "fs_uid",
-      "value": "#o-24C939-na1#e7ef63d3-c71d-450f-baa5-8bf67146db57:a891d3ae-aff9-483c-87b0-7c67445fafb4:1781109710076::1#8b79b8de##/1812645712",
+      "value": "#o-24C939-na1#056fb484-c749-4a10-9c38-48c1f1e04c98:42109539-1c8b-4093-885a-5057523d7a81:1781198005642::1#8b79b8de##/1812734008",
       "domain": ".hb-staging-pos.onrender.com",
       "path": "/",
-      "expires": 1812645712,
+      "expires": 1812734008,
       "httpOnly": false,
       "secure": true,
       "sameSite": "Strict"
     },
     {
       "name": "next-auth.portal-session-token",
-      "value": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..dErH-wloP2o-yWIU.i__IILhbUWHEo3PQQzbOyf7S1dPk-DWz8KsoIGZtSluIv_TdiCwb4GYw-tWFcmJBafEMqmm2Q78r-kHAHJVxxYb6Hvxci8EpQ3XCst5oa_r41w7OLgQVHova4gtbDKgr1PRxAKVPRF6ap9KBanPTS-QfbGVMOPKPxyEE-d1SmjljI-32kVGfFEuvl4ISBhKeES1Kl4f_AkuDL49hcq-08PKBTwpgezjivYfJo8lprHkW5JHAEsk7_pDlNm4CYO0sO7aPbIClVZjqfLzP6J61VMzhFb46Q5oUMdhmkPPYQH4XD--bMs0sk2HXRnUqxdrFbV3kw_D1WXSAP5sEPQ1Eq9_WoBACeuDc99OgQDcsP6lHY5a-8QikVL6fFx3cofA.toHYZwxTL7lCmMBzfA--Ow",
+      "value": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..MGgF4OTH2_W2e6NO.wOvUgcx2y2RW43vDjGBdt4hN7FCcENL9dY-fiQiadwSJWHVham0GEg7E2L6k5FDICPCLE8xfs3hyXcUWV6LqBzDs_vcgZqx_VK-Hkq0kA1h4qvmySec9yGWh7Qrl_3mEqzwfPakCWd0EhU3LqFgEx8CgjkE5yQ_T9zPPzAtMzlA0HpN1Y-Or2YcQpHQqrDLQTKxyDrjJ820AbU1aVyNI2yQCvQN420E2l5Tukk5aTOK3N6xjsQSDMuvebq2yg58rx7vKnhzJePdAD-8LGJZ1qyy3BHPiUzX3KHk07ZFzXajMRtFt-26i0DGPVglXwhSkQS3qJyw9m7PAhsDfCMuj653nAiAehhfX3Z8Cw66uIsBzIyahG2e6jHWUbw56J3c.L7YF5ipDT8KohpBG_IlBSw",
       "domain": "hb-staging-pos.onrender.com",
       "path": "/",
-      "expires": 1783701720.740508,
+      "expires": 1783790020.692402,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -217,27 +217,27 @@
       "localStorage": [
         {
           "name": "nextauth.message",
-          "value": "{\"event\":\"session\",\"data\":{\"trigger\":\"getSession\"},\"timestamp\":1781109711}"
+          "value": "{\"event\":\"session\",\"data\":{\"trigger\":\"getSession\"},\"timestamp\":1781198006}"
         },
         {
           "name": "ZD-suid",
-          "value": "{\"id\":\"b768a7594fad456a8159dc7183a9a941\",\"expiry\":1781110611592,\"tabs\":{\"count\":1,\"expiry\":0}}"
+          "value": "{\"id\":\"de0a617f3c14407da44b2ae1a67f507c\",\"expiry\":1781198909328,\"tabs\":{\"count\":1,\"expiry\":0}}"
         },
         {
           "name": "_cobrowse_window_id",
-          "value": "{\"value\":\"5ccf16ff-10ec-42ae-9411-652d1c1efc94\"}"
+          "value": "{\"value\":\"5f210c9c-9ce3-4942-8668-7f21ed54814a\"}"
         },
         {
           "name": "_cobrowse_device_id",
-          "value": "{\"value\":{\"id\":\"04ee6c3b-401d-4fc8-a6c1-13b02b0279de\",\"token\":\"775c3228-cdfb-49a2-b065-b9f651998213\"}}"
+          "value": "{\"value\":{\"id\":\"b8495d3d-f716-4e5a-a64f-094fa5927e5e\",\"token\":\"14f3b52d-05d8-4440-86b7-e30150b6baa0\"}}"
         },
         {
           "name": "_cobrowse_device_registration",
-          "value": "{\"value\":{\"notification_url\":\"https://api.cobrowse.io\",\"notification_token\":\"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImEyZWRlMmYyZGRiNyJ9.eyJhdWQiOiJjb2Jyb3dzZS5pby9zb2NrZXRzIiwiY2hhbm5lbCI6Ii9hcGkvMS9hY2NvdW50cy82OTRhZTZhMmYzNzkzMDE2ZTY3Zjk3NTkvZGV2aWNlcy8wNGVlNmMzYi00MDFkLTRmYzgtYTZjMS0xM2IwMmIwMjc5ZGUiLCJpYXQiOjE3ODExMDk3MjEsImV4cCI6MTc4MTk3MzcyMSwiaXNzIjoiY29icm93c2UuaW8ifQ.kZ4R8WIdPxcC9SzlJuO3BCVCW-KMnLGgPG9jHh3TjxCrGkswSVqj-WqCmcrPaY4inA-PrSNj9MhghUhWDMM51hdSsiNBrUGOAq-m_ljSw7icCcLw4BGB9Tg0sURLW-4cLeyw9TIM_Gj88rdc5UnHIuohl9ZFz0o2mmo4p0_mzexhHrYh2R25eK4NuJeuJso8KfcM48jTG8spDvahOtHvhgw-hJwJxHc0Gbzx9FpsaoQjMyjBL_dkch_wcE0_uDLRs__8r0LNGmFeo0uByHf3KZMBy62sFzb95bIdxe2ivS6twQeXYeW9IuEhBDPEH36eOyn3P1AZVgUZMvxQylnX7g\",\"custom_data\":{\"user_id\":\"ace34@mailinator.com\",\"user_name\":\"Ace Loan Officer\",\"user_email\":\"ace34@mailinator.com\",\"user_type\":\"loan_officer\"},\"next_registration_time\":1781187910094},\"group\":\"GEcEfh2ox1uJwQ:https://api.cobrowse.io\"}"
+          "value": "{\"value\":{\"notification_url\":\"https://api.cobrowse.io\",\"notification_token\":\"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjA0ZjIyZWYxYTIwYSJ9.eyJhdWQiOiJjb2Jyb3dzZS5pby9zb2NrZXRzIiwiY2hhbm5lbCI6Ii9hcGkvMS9hY2NvdW50cy82OTRhZTZhMmYzNzkzMDE2ZTY3Zjk3NTkvZGV2aWNlcy9iODQ5NWQzZC1mNzE2LTRlNWEtYTY0Zi0wOTRmYTU5MjdlNWUiLCJpYXQiOjE3ODExOTgwMjEsImV4cCI6MTc4MjA2MjAyMSwiaXNzIjoiY29icm93c2UuaW8ifQ.cReyGCB-WL023GDJ_OqeOapH9nW1wSwRju6zHEKM7Vhsn9BMuS68O1LfozckVzUaluqSG939nE3Mp3rZAARAFRv-gnyteUXnx2MeEkVGHnFB3tKYfUso-RANX6bVxapyhR1gP06U1o6DOLD6bDHr5tkPZepY8CzrXiO0dUooR4oOLY4qlLTLmPpCE9PiCwBHjwshyvizCPoz1u8rkOO4pXpCSafNmZzatn-sXB8mUycew6zTG7eHPuK2H5FTw0iAnjclma1uixepS_hT-dFu8fzynQHOkGsvywxydpPSO1hmOWYFra39X5K9oR1SXHn3AOUU6r5A_gl7an4v1xFe6A\",\"custom_data\":{\"user_id\":\"ace34@mailinator.com\",\"user_name\":\"Ace Loan Officer\",\"user_email\":\"ace34@mailinator.com\",\"user_type\":\"loan_officer\"},\"next_registration_time\":1781280740253},\"group\":\"GEcEfh2ox1uJwQ:https://api.cobrowse.io\"}"
         },
         {
           "name": "_fs_lua",
-          "value": "1.1781109710076"
+          "value": "1.1781198005642"
         },
         {
           "name": "custom-settings",
@@ -253,7 +253,7 @@
         },
         {
           "name": "_fs_uid",
-          "value": "#o-24C939-na1#e7ef63d3-c71d-450f-baa5-8bf67146db57:a891d3ae-aff9-483c-87b0-7c67445fafb4:1781109710076::1#8b79b8de##/1812645712"
+          "value": "#o-24C939-na1#056fb484-c749-4a10-9c38-48c1f1e04c98:42109539-1c8b-4093-885a-5057523d7a81:1781198005642::1#8b79b8de##/1812734008"
         }
       ]
     },
@@ -262,7 +262,7 @@
       "localStorage": [
         {
           "name": "rc::a",
-          "value": "MXR5anAxMWdjOG0wOA=="
+          "value": "MTBvZThyNW9zZ3NybQ=="
         }
       ]
     },
@@ -271,7 +271,7 @@
       "localStorage": [
         {
           "name": "_gcl_ls",
-          "value": "{\"schema\":\"gcl\",\"version\":1,\"gcl_ctr\":{\"value\":{\"value\":0,\"timeouts\":0,\"errors\":0,\"eopCount\":0,\"creationTimeMs\":1781109712408},\"expires\":1788885712408}}"
+          "value": "{\"schema\":\"gcl\",\"version\":1,\"gcl_ctr\":{\"value\":{\"value\":0,\"timeouts\":0,\"errors\":0,\"eopCount\":0,\"creationTimeMs\":1781198008606},\"expires\":1788974008606}}"
         }
       ]
     }

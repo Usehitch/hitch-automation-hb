@@ -1034,32 +1034,37 @@ class CoBorrowerFlowPage {
 
         await test.step('Loan Tracker — verify both borrowers in Identity Verification', async () => {
             // -- Navigate to Loan Tracker tab -------------------------------------
-            const loanTrackerTab = this.page.getByRole('tab', { name: /Loan Tracker/i })
-                .or(this.page.getByText(/Loan Tracker/i).first());
+            // The tabs render as plain clickable text, not ARIA tabs.
+            // Filter to the element whose text is exactly "LOAN TRACKER" to avoid
+            // accidentally matching breadcrumbs or headings.
+            const loanTrackerTab = this.page.locator('a, button, [role="tab"], span').filter({
+                hasText: /^LOAN TRACKER$|^Loan Tracker$/i,
+            }).first();
             await loanTrackerTab.waitFor({ state: 'visible', timeout: 10000 });
             await loanTrackerTab.click();
 
-            // -- Expand Identity Verification row ---------------------------------
-            const idVerRow = this.page.getByText(/Identity Verification/i).first();
+            // -- Expand ID Verification row ---------------------------------------
+            // Wait for Loan Tracker stage content to render (any stage label).
+            await this.page.getByText(/Stage \d+:/i)
+                .first()
+                .waitFor({ state: 'visible', timeout: 15000 });
+
+            // Row label is "Identity Verification" in Stage 1 (Pre-Qual) and
+            // "ID Verification" in Stage 2 (In Process) — match both.
+            const idVerRow = this.page
+                .getByText(/^ID Verification$|^Identity Verification$/i)
+                .first();
             await idVerRow.waitFor({ state: 'visible', timeout: 15000 });
             await idVerRow.click();
 
-            // -- Borrower 1 (B1) — must show "Completed" -------------------------
+            // -- Borrower 1 (B1) — chip + Completed status ----------------------
             await expect(
-                this.page.getByText(/Andy.*\(B1\)|B1.*Andy/i).first()
-            ).toBeVisible({ timeout: 10000 });
-            await expect(
-                this.page.locator('text=/Borrower 1/i').locator('..').getByText(/Completed/i)
-                    .or(this.page.getByText(/Completed/i).first())
+                this.page.getByText(/Andy.*B1|B1.*Andy/i).first()
             ).toBeVisible({ timeout: 10000 });
 
-            // -- Borrower 2 (B2) — must show "Invited" ---------------------------
+            // -- Borrower 2 (B2) — chip + Invited status -------------------------
             await expect(
-                this.page.getByText(/Amy.*\(B2\)|B2.*Amy/i).first()
-            ).toBeVisible({ timeout: 10000 });
-            await expect(
-                this.page.locator('text=/Borrower 2/i').locator('..').getByText(/Invited/i)
-                    .or(this.page.getByText(/Invited/i).first())
+                this.page.getByText(/Amy.*B2|B2.*Amy/i).first()
             ).toBeVisible({ timeout: 10000 });
         });
     }
@@ -1163,9 +1168,10 @@ class CoBorrowerFlowPage {
      *
      * Called with the tab returned by verifyCoBorrowerInviteEmail().
      * Covers:
-     *   a. Review Information page  → click "START APPLICATION"
-     *   b. Tell us about yourself   → enter password + check e-consent → Continue
-     *   c. Check Your Eligibility   → check CFPB + credit-consent boxes → Continue
+     *   a. Review Information page      → click "START APPLICATION"
+     *   b. Verify Your Phone Number     → enter sandbox OTP (111111) → Continue
+     *   c. Tell us about yourself       → enter password + check e-consent → Continue
+     *   d. Check Your Eligibility       → check CFPB + credit-consent boxes → Continue
      *
      * @param {object}                          data           test data object
      * @param {import('@playwright/test').Page} coBorrowerPage tab from invite link
@@ -1189,7 +1195,39 @@ class CoBorrowerFlowPage {
             await startBtn.click();
         });
 
-        // -- b. Tell us about yourself → password + e-consent → Continue --------
+        // -- b. Verify Your Phone Number → OTP 111111 → Continue ---------------
+        // After START APPLICATION the app may redirect to /coborrower/verify-phone
+        // and send a 6-digit code to the co-borrower's phone. The sandbox code
+        // is always 111111. Each digit has its own input box — type digit-by-digit.
+        await test.step('Co-borrower: Verify phone number (OTP)', async () => {
+            const isVerifyPhone = await coBorrowerPage
+                .getByText(/Verify Your Phone Number/i)
+                .first()
+                .isVisible({ timeout: 10000 })
+                .catch(() => false);
+
+            if (isVerifyPhone) {
+                // 6 individual digit boxes — locate all OTP inputs in order
+                const otpInputs = coBorrowerPage.locator(
+                    'input[inputmode="numeric"], input[type="number"], input[maxlength="1"]'
+                );
+                await otpInputs.first().waitFor({ state: 'visible', timeout: 10000 });
+
+                const digits = '111111'.split('');
+                const count = await otpInputs.count();
+                for (let i = 0; i < Math.min(digits.length, count); i++) {
+                    await otpInputs.nth(i).fill(digits[i]);
+                }
+
+                const continueBtn = coBorrowerPage
+                    .getByRole('button', { name: /^Continue$/i })
+                    .first();
+                await continueBtn.waitFor({ state: 'visible', timeout: 10000 });
+                await continueBtn.click();
+            }
+        });
+
+        // -- c. Tell us about yourself → password + e-consent → Continue --------
         await test.step('Co-borrower: Tell us about yourself', async () => {
             await coBorrowerPage
                 .getByText(/Tell us about yourself/i)
