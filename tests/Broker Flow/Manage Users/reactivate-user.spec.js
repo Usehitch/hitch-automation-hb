@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Manage Users — Re-activate User flow.
  *
  * Verifies the re-activation workflow for a previously deactivated user.
@@ -23,8 +23,8 @@
  * NOTE: Uses email address as the user identifier (no PII / borrower names).
  */
 
-import { expect, test } from '../../fixtures';
-import { randomEmail } from '../../utils/dataGenerator';
+import { expect, test } from '../../../fixtures';
+import { randomEmail } from '../../../utils/dataGenerator';
 
 // ---------------------------------------------------------------------------
 // Helpers

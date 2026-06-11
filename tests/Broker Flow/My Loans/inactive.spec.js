@@ -1,4 +1,4 @@
-/**
+﻿/**
  * My Loans — Inactive tab coverage tests.
  *
  * Verifies the Inactive sub-tab of My Loans:
@@ -13,8 +13,8 @@
  * All tests share the same beforeEach that lands on the Inactive tab.
  */
 
-import { expect, test } from '../../fixtures';
-import { applicationData } from '../../data/newApplication';
+import { expect, test } from '../../../fixtures';
+import { applicationData } from '../../../data/newApplication';
 
 test.describe('My Loans - Inactive', () => {
     test.beforeEach(async ({ page, activePage }) => {

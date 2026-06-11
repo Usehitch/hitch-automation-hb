@@ -10,18 +10,14 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {
-      "actualWorkers": 1
-    },
+    "metadata": {},
     "preserveOutput": "always",
     "projects": [
       {
         "outputDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "setup",
         "name": "setup",
         "testDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/tests",
@@ -35,9 +31,7 @@
         "outputDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "setup-lo",
         "name": "setup-lo",
         "testDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/tests",
@@ -51,9 +45,7 @@
         "outputDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "chromium",
         "name": "chromium",
         "testDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/tests",
@@ -69,9 +61,7 @@
         "outputDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "chromium-lo",
         "name": "chromium-lo",
         "testDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/tests",
@@ -104,238 +94,88 @@
     "shard": null,
     "tags": [],
     "updateSnapshots": "missing",
-    "updateSourceMethod": "3way",
+    "updateSourceMethod": "patch",
     "version": "1.59.1",
-    "workers": 1,
+    "workers": 4,
     "webServer": null
   },
-  "suites": [
+  "suites": [],
+  "errors": [
     {
-      "title": "auth.setup.lo.js",
-      "file": "auth.setup.lo.js",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "authenticate as LO",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 180000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "setup-lo",
-              "projectName": "setup-lo",
-              "results": [
-                {
-                  "workerIndex": 2,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 17366,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "steps": [
-                    {
-                      "title": "Click the go to broker portal",
-                      "duration": 1342
-                    },
-                    {
-                      "title": "Submit email and password",
-                      "duration": 2132
-                    }
-                  ],
-                  "startTime": "2026-06-11T17:13:23.792Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "db3a8f2d3463a3c1924a-9a9c346f4775ae8cc816",
-          "file": "auth.setup.lo.js",
-          "line": 5,
-          "column": 6
-        }
-      ]
+      "message": "Error: Cannot find module '../../fixtures'\nRequire stack:\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\add-user.spec.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\testActions.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\program.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\@playwright\\test\\cli.js",
+      "stack": "Error: Cannot find module '../../fixtures'\nRequire stack:\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\add-user.spec.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\testActions.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\program.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\@playwright\\test\\cli.js\n    at Object.<anonymous> (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\add-user.spec.js:27:1)",
+      "location": {
+        "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\add-user.spec.js",
+        "column": 1,
+        "line": 27
+      },
+      "snippet": "\u001b[90m   at \u001b[39mBroker Flow\\Manage Users\\add-user.spec.js:27\n\n\u001b[0m \u001b[90m 25 |\u001b[39m \u001b[90m */\u001b[39m\n \u001b[90m 26 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 27 |\u001b[39m \u001b[36mimport\u001b[39m { expect\u001b[33m,\u001b[39m test } \u001b[36mfrom\u001b[39m \u001b[32m'../../fixtures'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 28 |\u001b[39m \u001b[36mimport\u001b[39m { randomEmail } \u001b[36mfrom\u001b[39m \u001b[32m'../../utils/dataGenerator'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 29 |\u001b[39m\n \u001b[90m 30 |\u001b[39m \u001b[90m// ---------------------------------------------------------------------------\u001b[39m\u001b[0m"
     },
     {
-      "title": "Borrower Flow\\invitation.spec.js",
-      "file": "Borrower Flow/invitation.spec.js",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "Scenario B: LO creates pre-qual with co-borrower and both receive invitations",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 1260000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium-lo",
-              "projectName": "chromium-lo",
-              "results": [
-                {
-                  "workerIndex": 3,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 107673,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "steps": [
-                    {
-                      "title": "Click the start app button",
-                      "duration": 1401
-                    },
-                    {
-                      "title": "Click the start pre-qual manually button",
-                      "duration": 3910
-                    },
-                    {
-                      "title": "Fill application details",
-                      "duration": 12088,
-                      "steps": [
-                        {
-                          "title": "Fill property address",
-                          "duration": 4271
-                        },
-                        {
-                          "title": "Fill job details",
-                          "duration": 465
-                        },
-                        {
-                          "title": "Fill co-borrower details",
-                          "duration": 4183
-                        }
-                      ]
-                    },
-                    {
-                      "title": "Click Next to proceed to Mortgages & Liens",
-                      "duration": 39663,
-                      "steps": [
-                        {
-                          "title": "Close soft credit consent PDF tab(s)",
-                          "duration": 14
-                        }
-                      ]
-                    },
-                    {
-                      "title": "Fill mortgages & liens",
-                      "duration": 177
-                    },
-                    {
-                      "title": "Click Next to proceed to Offer Review",
-                      "duration": 22548
-                    },
-                    {
-                      "title": "Update requested loan amount",
-                      "duration": 0
-                    },
-                    {
-                      "title": "Open Manage Debt Payoffs modal",
-                      "duration": 110
-                    },
-                    {
-                      "title": "Verify debt payoff modal contents",
-                      "duration": 62
-                    },
-                    {
-                      "title": "Save debt payoff plan",
-                      "duration": 315
-                    },
-                    {
-                      "title": "Open Edit Upfront Draw modal",
-                      "duration": 135
-                    },
-                    {
-                      "title": "Verify Edit Upfront Draw modal contents",
-                      "duration": 36
-                    },
-                    {
-                      "title": "Set upfront draw percentage",
-                      "duration": 298
-                    },
-                    {
-                      "title": "Confirm upfront draw",
-                      "duration": 269
-                    },
-                    {
-                      "title": "Acknowledge DTI above allowable limit (if required)",
-                      "duration": 8
-                    },
-                    {
-                      "title": "Click Next to proceed to Consents",
-                      "duration": 915
-                    },
-                    {
-                      "title": "Check all Loan Officer Certifications",
-                      "duration": 385
-                    },
-                    {
-                      "title": "Fill Broker MLO Name",
-                      "duration": 50
-                    },
-                    {
-                      "title": "Verify signature fields",
-                      "duration": 14
-                    },
-                    {
-                      "title": "Click Next to submit consents",
-                      "duration": 863
-                    },
-                    {
-                      "title": "Verify pre-qual confirmation screen",
-                      "duration": 94
-                    },
-                    {
-                      "title": "Copy borrower app link",
-                      "duration": 35
-                    },
-                    {
-                      "title": "Download PDF (if enabled)",
-                      "duration": 6
-                    },
-                    {
-                      "title": "Close confirmation and return to portal",
-                      "duration": 734
-                    },
-                    {
-                      "title": "B — B1 (borrower): verify invitation email in Mailinator",
-                      "duration": 6980
-                    },
-                    {
-                      "title": "B — B2 (co-borrower): verify invitation email in Mailinator",
-                      "duration": 6907
-                    }
-                  ],
-                  "startTime": "2026-06-11T17:13:42.446Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "cbc830e13ac12d534f3b-fdbc2f01e3dbfa17afcc",
-          "file": "Borrower Flow/invitation.spec.js",
-          "line": 172,
-          "column": 5
-        }
-      ]
+      "message": "Error: Cannot find module '../../fixtures'\nRequire stack:\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\deactivate-user.spec.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\testActions.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\program.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\@playwright\\test\\cli.js",
+      "stack": "Error: Cannot find module '../../fixtures'\nRequire stack:\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\deactivate-user.spec.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\testActions.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\program.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\@playwright\\test\\cli.js\n    at Object.<anonymous> (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\deactivate-user.spec.js:22:1)",
+      "location": {
+        "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\deactivate-user.spec.js",
+        "column": 1,
+        "line": 22
+      },
+      "snippet": "\u001b[90m   at \u001b[39mBroker Flow\\Manage Users\\deactivate-user.spec.js:22\n\n\u001b[0m \u001b[90m 20 |\u001b[39m \u001b[90m */\u001b[39m\n \u001b[90m 21 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 22 |\u001b[39m \u001b[36mimport\u001b[39m { expect\u001b[33m,\u001b[39m test } \u001b[36mfrom\u001b[39m \u001b[32m'../../fixtures'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 23 |\u001b[39m \u001b[36mimport\u001b[39m { randomEmail } \u001b[36mfrom\u001b[39m \u001b[32m'../../utils/dataGenerator'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 24 |\u001b[39m\n \u001b[90m 25 |\u001b[39m \u001b[90m// ---------------------------------------------------------------------------\u001b[39m\u001b[0m"
+    },
+    {
+      "message": "Error: Cannot find module '../../fixtures'\nRequire stack:\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\manage-users.spec.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\testActions.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\program.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\@playwright\\test\\cli.js",
+      "stack": "Error: Cannot find module '../../fixtures'\nRequire stack:\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\manage-users.spec.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\testActions.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\program.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\@playwright\\test\\cli.js\n    at Object.<anonymous> (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\manage-users.spec.js:23:1)",
+      "location": {
+        "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\manage-users.spec.js",
+        "column": 1,
+        "line": 23
+      },
+      "snippet": "\u001b[90m   at \u001b[39mBroker Flow\\Manage Users\\manage-users.spec.js:23\n\n\u001b[0m \u001b[90m 21 |\u001b[39m \u001b[90m */\u001b[39m\n \u001b[90m 22 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 23 |\u001b[39m \u001b[36mimport\u001b[39m { expect\u001b[33m,\u001b[39m test } \u001b[36mfrom\u001b[39m \u001b[32m'../../fixtures'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 24 |\u001b[39m\n \u001b[90m 25 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m'Manage Users'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n \u001b[90m 26 |\u001b[39m     test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page\u001b[33m,\u001b[39m manageUsersPage }) \u001b[33m=>\u001b[39m {\u001b[0m"
+    },
+    {
+      "message": "Error: Cannot find module '../../fixtures'\nRequire stack:\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\reactivate-user.spec.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\testActions.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\program.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\@playwright\\test\\cli.js",
+      "stack": "Error: Cannot find module '../../fixtures'\nRequire stack:\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\reactivate-user.spec.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\testActions.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\program.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\@playwright\\test\\cli.js\n    at Object.<anonymous> (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\reactivate-user.spec.js:26:1)",
+      "location": {
+        "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\reactivate-user.spec.js",
+        "column": 1,
+        "line": 26
+      },
+      "snippet": "\u001b[90m   at \u001b[39mBroker Flow\\Manage Users\\reactivate-user.spec.js:26\n\n\u001b[0m \u001b[90m 24 |\u001b[39m \u001b[90m */\u001b[39m\n \u001b[90m 25 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 26 |\u001b[39m \u001b[36mimport\u001b[39m { expect\u001b[33m,\u001b[39m test } \u001b[36mfrom\u001b[39m \u001b[32m'../../fixtures'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 27 |\u001b[39m \u001b[36mimport\u001b[39m { randomEmail } \u001b[36mfrom\u001b[39m \u001b[32m'../../utils/dataGenerator'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 28 |\u001b[39m\n \u001b[90m 29 |\u001b[39m \u001b[90m// ---------------------------------------------------------------------------\u001b[39m\u001b[0m"
+    },
+    {
+      "message": "Error: Cannot find module '../../fixtures'\nRequire stack:\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\reset-password.spec.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\testActions.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\program.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\@playwright\\test\\cli.js",
+      "stack": "Error: Cannot find module '../../fixtures'\nRequire stack:\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\reset-password.spec.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\testActions.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\program.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\@playwright\\test\\cli.js\n    at Object.<anonymous> (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\reset-password.spec.js:20:1)",
+      "location": {
+        "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\Manage Users\\reset-password.spec.js",
+        "column": 1,
+        "line": 20
+      },
+      "snippet": "\u001b[90m   at \u001b[39mBroker Flow\\Manage Users\\reset-password.spec.js:20\n\n\u001b[0m \u001b[90m 18 |\u001b[39m \u001b[90m */\u001b[39m\n \u001b[90m 19 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 20 |\u001b[39m \u001b[36mimport\u001b[39m { expect\u001b[33m,\u001b[39m test } \u001b[36mfrom\u001b[39m \u001b[32m'../../fixtures'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 21 |\u001b[39m \u001b[36mimport\u001b[39m { randomEmail } \u001b[36mfrom\u001b[39m \u001b[32m'../../utils/dataGenerator'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m\n \u001b[90m 23 |\u001b[39m \u001b[90m// ---------------------------------------------------------------------------\u001b[39m\u001b[0m"
+    },
+    {
+      "message": "Error: Cannot find module '../../fixtures'\nRequire stack:\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\My Loans\\active.spec.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\testActions.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\program.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\@playwright\\test\\cli.js",
+      "stack": "Error: Cannot find module '../../fixtures'\nRequire stack:\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\My Loans\\active.spec.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\testActions.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\program.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\@playwright\\test\\cli.js\n    at Object.<anonymous> (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\My Loans\\active.spec.js:1:1)",
+      "location": {
+        "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\My Loans\\active.spec.js",
+        "column": 1,
+        "line": 1
+      },
+      "snippet": "\u001b[90m   at \u001b[39mBroker Flow\\My Loans\\active.spec.js:1\n\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 1 |\u001b[39m \u001b[36mimport\u001b[39m { expect\u001b[33m,\u001b[39m test } \u001b[36mfrom\u001b[39m \u001b[32m'../../fixtures'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 2 |\u001b[39m \u001b[36mimport\u001b[39m { applicationData } \u001b[36mfrom\u001b[39m \u001b[32m'../../data/newApplication'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 3 |\u001b[39m\n \u001b[90m 4 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m'My Loans - Active'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\u001b[0m"
+    },
+    {
+      "message": "Error: Cannot find module '../../fixtures'\nRequire stack:\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\My Loans\\inactive.spec.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\testActions.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\program.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\@playwright\\test\\cli.js",
+      "stack": "Error: Cannot find module '../../fixtures'\nRequire stack:\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\My Loans\\inactive.spec.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\testActions.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\playwright\\lib\\program.js\n- D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\node_modules\\@playwright\\test\\cli.js\n    at Object.<anonymous> (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\My Loans\\inactive.spec.js:16:1)",
+      "location": {
+        "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Broker Flow\\My Loans\\inactive.spec.js",
+        "column": 1,
+        "line": 16
+      },
+      "snippet": "\u001b[90m   at \u001b[39mBroker Flow\\My Loans\\inactive.spec.js:16\n\n\u001b[0m \u001b[90m 14 |\u001b[39m \u001b[90m */\u001b[39m\n \u001b[90m 15 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 16 |\u001b[39m \u001b[36mimport\u001b[39m { expect\u001b[33m,\u001b[39m test } \u001b[36mfrom\u001b[39m \u001b[32m'../../fixtures'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 17 |\u001b[39m \u001b[36mimport\u001b[39m { applicationData } \u001b[36mfrom\u001b[39m \u001b[32m'../../data/newApplication'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m'My Loans - Inactive'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\u001b[0m"
     }
   ],
-  "errors": [],
   "stats": {
-    "startTime": "2026-06-11T17:13:22.458Z",
-    "duration": 128215.511,
-    "expected": 2,
+    "startTime": "2026-06-11T18:14:09.610Z",
+    "duration": 343.3449999999999,
+    "expected": 0,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

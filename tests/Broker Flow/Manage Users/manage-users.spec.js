@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Manage Users — Portal Users page coverage.
  *
  * Verifies the Portal Users admin page accessible from the sidebar:
@@ -20,7 +20,7 @@
  * or are reverted before the test ends.
  */
 
-import { expect, test } from '../../fixtures';
+import { expect, test } from '../../../fixtures';
 
 test.describe('Manage Users', () => {
     test.beforeEach(async ({ page, manageUsersPage }) => {
