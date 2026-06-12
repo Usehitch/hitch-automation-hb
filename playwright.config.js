@@ -63,10 +63,10 @@ export default defineConfig({
         },
       },
       dependencies: ['setup'],
-      testIgnore: /Co-Borrower|invitation\.spec/,
+      testIgnore: /Co-Borrower|invitation\.spec|certifications\.spec/,
     },
 
-    // Co-borrower + invitation tests — use LO session
+    // Co-borrower + invitation + certification tests — use LO session
     {
       name: 'chromium-lo',
       use: {
@@ -79,7 +79,7 @@ export default defineConfig({
         },
       },
       dependencies: ['setup-lo'],
-      testMatch: /Co-Borrower|invitation\.spec/,
+      testMatch: /Co-Borrower|invitation\.spec|certifications\.spec/,
     },
   ],
 });
