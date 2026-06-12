@@ -65,6 +65,53 @@ class MloCertificationModal {
             await expect(this.modal).toBeHidden({ timeout: 15000 });
         });
     }
+
+    /**
+     * Submits the certification and captures the broker certification PDF that
+     * the portal produces afterward, returning its URL.
+     *
+     * The document surfaces differently per environment: a headed browser
+     * renders it in a NEW TAB (the popup's URL becomes the S3 PDF link), while
+     * headless CI cannot render PDFs and serves it as a DOWNLOAD (the popup tab
+     * navigates to ":" and a download fires on that popup). We listen for both
+     * paths and resolve whichever produces the document URL first.
+     *
+     * The download handler is attached to the popup the instant it opens so a
+     * fast headless download is never missed by a late listener.
+     *
+     * @returns {Promise<string|null>} the broker certification PDF URL, or null
+     *   if neither a PDF tab nor a download appeared within the timeout.
+     */
+    async submitAndGetCertificationPdfUrl() {
+        return await test.step('Submit MLO certification and capture broker certification PDF', async () => {
+            const ctx = this.page.context();
+
+            const pdfUrl = new Promise((resolve) => {
+                // Headless: download may fire on the original page in some flows.
+                this.page.on('download', (d) => resolve(d.url()));
+
+                ctx.on('page', (popup) => {
+                    // Headless: the popup navigates to the PDF then downloads it.
+                    popup.on('download', (d) => resolve(d.url()));
+                    // Headed: the popup's URL becomes the rendered PDF link.
+                    popup.waitForURL(/\.pdf/i, { timeout: 25000 })
+                        .then(() => resolve(popup.url()))
+                        .catch(() => { });
+                });
+            });
+
+            await this.submitBtn.scrollIntoViewIfNeeded();
+            await this.submitBtn.click();
+            await expect(this.modal).toBeHidden({ timeout: 15000 });
+
+            // Bound the wait so a missing PDF fails fast with a clear assertion
+            // in the caller rather than hanging until the test timeout.
+            return await Promise.race([
+                pdfUrl,
+                this.page.waitForTimeout(30000).then(() => null),
+            ]);
+        });
+    }
 }
 
 export default MloCertificationModal;
