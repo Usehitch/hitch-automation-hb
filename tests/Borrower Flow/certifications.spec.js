@@ -66,18 +66,21 @@ test('LO certifies the pending MLO application', async ({
         ).toBeVisible({ timeout: 30000 });
     });
 
-    let pdfUrl;
+    let pdfUrlPromise;
     await test.step('Certify the pending MLO loan', async () => {
         await activePage.clickCertify();
 
         await mloCertificationModal.waitForModal();
         await mloCertificationModal.checkAllCertifications();
         await mloCertificationModal.fillBrokerMloName(applicationData.consent.brokerMloName);
-        // Capture the broker certification PDF the portal opens on submit.
-        pdfUrl = await mloCertificationModal.submitAndGetCertificationPdfUrl();
+        // Arm broker-certification-PDF capture and submit. The PDF promise is
+        // awaited later — the transient success toast must be checked first.
+        ({ pdfUrlPromise } = await mloCertificationModal.submitCertificationAndStartPdfCapture());
     });
 
     await test.step('Verify certification succeeded', async () => {
+        // Transient toast — assert it before awaiting the PDF below, which can
+        // take several seconds to surface (the toast auto-dismisses by then).
         await expect(
             page.getByText(/Certification completed successfully/i)
         ).toBeVisible({ timeout: 15000 });
@@ -86,6 +89,7 @@ test('LO certifies the pending MLO application', async ({
     await test.step('Verify the broker certification PDF', async () => {
         // A document URL must have been produced — a new tab (headed) or a
         // download (headless). Its filename is the broker certification PDF.
+        const pdfUrl = await pdfUrlPromise;
         expect(
             pdfUrl,
             'No broker certification PDF was produced after certifying'
