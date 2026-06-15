@@ -20,3 +20,27 @@ export async function checkAllCheckboxes(checkboxes) {
         }
     }
 }
+
+/**
+ * Reliably checks a single MUI checkbox.
+ *
+ * MUI's visually-hidden <input> sometimes ignores Playwright's .check() (the
+ * forced click lands on a 0-size element and the state never flips — surfaced
+ * as "Clicking the checkbox did not change its state"). el.click() via
+ * evaluate() fires the synthetic React event directly; clicking the visible
+ * label text is the final fallback.
+ *
+ * @param {import('@playwright/test').Locator} checkbox
+ * @param {{ page?: import('@playwright/test').Page, label?: string }} [opts]
+ *   page + label enable the label-text fallback when the direct click fails.
+ */
+export async function ensureChecked(checkbox, { page, label } = {}) {
+    if (await checkbox.isChecked().catch(() => false)) return;
+    await checkbox.scrollIntoViewIfNeeded().catch(() => { });
+    await checkbox.evaluate(el => el.click()).catch(() => { });
+    if (await checkbox.isChecked().catch(() => false)) return;
+
+    if (page && label) {
+        await page.getByText(label, { exact: true }).first().click({ force: true }).catch(() => { });
+    }
+}
