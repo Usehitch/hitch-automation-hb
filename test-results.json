@@ -58,7 +58,7 @@
         "name": "chromium",
         "testDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/tests",
         "testIgnore": [
-          "/Co-Borrower|invitation\\.spec|certifications\\.spec/"
+          "/Co-Borrower|invitation\\.spec|certifications\\.spec|pipeline-management\\.spec/"
         ],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -77,7 +77,7 @@
         "testDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/tests",
         "testIgnore": [],
         "testMatch": [
-          "/Co-Borrower|invitation\\.spec|certifications\\.spec/"
+          "/Co-Borrower|invitation\\.spec|certifications\\.spec|pipeline-management\\.spec/"
         ],
         "timeout": 180000
       }
@@ -129,10 +129,10 @@
               "projectName": "setup-lo",
               "results": [
                 {
-                  "workerIndex": 10,
+                  "workerIndex": 6,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 13659,
+                  "duration": 21878,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
@@ -140,14 +140,14 @@
                   "steps": [
                     {
                       "title": "Click the go to broker portal",
-                      "duration": 73
+                      "duration": 82
                     },
                     {
                       "title": "Submit email and password",
-                      "duration": 124
+                      "duration": 130
                     }
                   ],
-                  "startTime": "2026-06-15T09:43:50.094Z",
+                  "startTime": "2026-06-15T11:53:57.039Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -163,171 +163,120 @@
       ]
     },
     {
-      "title": "Borrower Flow\\invitation.spec.js",
-      "file": "Borrower Flow/invitation.spec.js",
+      "title": "Borrower Flow\\pipeline-management.spec.js",
+      "file": "Borrower Flow/pipeline-management.spec.js",
       "column": 0,
       "line": 0,
-      "specs": [
+      "specs": [],
+      "suites": [
         {
-          "title": "Scenario A: LO creates pre-qual and borrower receives invitation",
-          "ok": true,
-          "tags": [],
-          "tests": [
+          "title": "LO - Pipeline Management",
+          "file": "Borrower Flow/pipeline-management.spec.js",
+          "line": 20,
+          "column": 6,
+          "specs": [
             {
-              "timeout": 960000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium-lo",
-              "projectName": "chromium-lo",
-              "results": [
+              "title": "LO can view the pipeline buckets and their contents",
+              "ok": true,
+              "tags": [],
+              "tests": [
                 {
-                  "workerIndex": 11,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 84265,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "steps": [
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-lo",
+                  "projectName": "chromium-lo",
+                  "results": [
                     {
-                      "title": "Click the start app button",
-                      "duration": 127
-                    },
-                    {
-                      "title": "Click the start pre-qual manually button",
-                      "duration": 1981
-                    },
-                    {
-                      "title": "Fill application details",
-                      "duration": 1812,
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6921,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
                       "steps": [
                         {
-                          "title": "Fill property address",
-                          "duration": 478
+                          "title": "Verify overview stat tiles",
+                          "duration": 83
                         },
                         {
-                          "title": "Fill job details",
-                          "duration": 237
-                        }
-                      ]
-                    },
-                    {
-                      "title": "Click Next to proceed to Mortgages & Liens",
-                      "duration": 34366,
-                      "steps": [
+                          "title": "Verify toolbar (search + filter)",
+                          "duration": 35
+                        },
                         {
-                          "title": "Close soft credit consent PDF tab(s)",
-                          "duration": 9
+                          "title": "Verify pipeline section headings",
+                          "duration": 43
+                        },
+                        {
+                          "title": "Verify standard pipeline table columns (Pre-Qual / In Process / Closing / Funded)",
+                          "duration": 37
                         }
-                      ]
-                    },
-                    {
-                      "title": "Fill mortgages & liens",
-                      "duration": 192
-                    },
-                    {
-                      "title": "Click Next to proceed to Offer Review",
-                      "duration": 21646
-                    },
-                    {
-                      "title": "Update requested loan amount",
-                      "duration": 0
-                    },
-                    {
-                      "title": "Open Manage Debt Payoffs modal",
-                      "duration": 113
-                    },
-                    {
-                      "title": "Verify debt payoff modal contents",
-                      "duration": 71
-                    },
-                    {
-                      "title": "Save debt payoff plan",
-                      "duration": 378
-                    },
-                    {
-                      "title": "Open Edit Upfront Draw modal",
-                      "duration": 100
-                    },
-                    {
-                      "title": "Verify Edit Upfront Draw modal contents",
-                      "duration": 45
-                    },
-                    {
-                      "title": "Set upfront draw percentage",
-                      "duration": 300
-                    },
-                    {
-                      "title": "Confirm upfront draw",
-                      "duration": 272
-                    },
-                    {
-                      "title": "Acknowledge DTI above allowable limit (if required)",
-                      "duration": 6
-                    },
-                    {
-                      "title": "Click Next to proceed to Consents",
-                      "duration": 931
-                    },
-                    {
-                      "title": "Check all Loan Officer Certifications",
-                      "duration": 381
-                    },
-                    {
-                      "title": "Fill Broker MLO Name",
-                      "duration": 50
-                    },
-                    {
-                      "title": "Verify signature fields",
-                      "duration": 13
-                    },
-                    {
-                      "title": "Click Next to submit consents",
-                      "duration": 1385
-                    },
-                    {
-                      "title": "Verify pre-qual confirmation screen",
-                      "duration": 84
-                    },
-                    {
-                      "title": "Copy borrower app link",
-                      "duration": 33
-                    },
-                    {
-                      "title": "Download PDF (if enabled)",
-                      "duration": 7
-                    },
-                    {
-                      "title": "Close confirmation and return to portal",
-                      "duration": 626
-                    },
-                    {
-                      "title": "A — B1 (borrower): verify invitation email in Mailinator",
-                      "duration": 10941
+                      ],
+                      "startTime": "2026-06-15T11:54:20.181Z",
+                      "annotations": [],
+                      "attachments": []
                     }
                   ],
-                  "startTime": "2026-06-15T09:44:04.752Z",
-                  "annotations": [],
-                  "attachments": []
+                  "status": "expected"
                 }
               ],
-              "status": "expected"
+              "id": "4312c8129d66ce7f5dbb-9b127c5c8adac8f0153c",
+              "file": "Borrower Flow/pipeline-management.spec.js",
+              "line": 26,
+              "column": 9
+            },
+            {
+              "title": "LO sees the Pending MLO Certification bucket when loans await certification",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-lo",
+                  "projectName": "chromium-lo",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4977,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Verify Pending MLO Certification table columns and actions",
+                          "duration": 68
+                        }
+                      ],
+                      "startTime": "2026-06-15T11:54:27.758Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4312c8129d66ce7f5dbb-c5c8e9fe97d0c966fe6a",
+              "file": "Borrower Flow/pipeline-management.spec.js",
+              "line": 49,
+              "column": 9
             }
-          ],
-          "id": "cbc830e13ac12d534f3b-eb3d7245dc4e4c97acc7",
-          "file": "Borrower Flow/invitation.spec.js",
-          "line": 137,
-          "column": 5
+          ]
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-15T09:43:48.773Z",
-    "duration": 100887.61599999992,
-    "expected": 2,
+    "startTime": "2026-06-15T11:53:55.654Z",
+    "duration": 37130.8320000004,
+    "expected": 3,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0
