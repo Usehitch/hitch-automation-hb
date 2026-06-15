@@ -53,6 +53,8 @@ jobs:
           [ -z "$EMAIL" ] && missing="$missing EMAIL"
           [ -z "$PASSWORD" ] && missing="$missing PASSWORD"
           [ -z "$OTP_SECRET" ] && missing="$missing OTP_SECRET"
+          [ -z "$EMAIL_LO" ] && missing="$missing EMAIL_LO"
+          [ -z "$PASSWORD_LO" ] && missing="$missing PASSWORD_LO"
 
           if [ -n "$missing" ]; then
             echo "❌ Missing required secrets:$missing"
@@ -65,6 +67,8 @@ jobs:
           EMAIL: ${{ secrets.EMAIL }}
           PASSWORD: ${{ secrets.PASSWORD }}
           OTP_SECRET: ${{ secrets.OTP_SECRET }}
+          EMAIL_LO: ${{ secrets.EMAIL_LO }}
+          PASSWORD_LO: ${{ secrets.PASSWORD_LO }}
 
       # -----------------------------
       # Run Playwright Tests
@@ -78,6 +82,10 @@ jobs:
           EMAIL: ${{ secrets.EMAIL }}
           PASSWORD: ${{ secrets.PASSWORD }}
           OTP_SECRET: ${{ secrets.OTP_SECRET }}
+          # LO session creds — required by auth.setup.lo.js. Without these the
+          # setup-lo project fails and every chromium-lo test is skipped.
+          EMAIL_LO: ${{ secrets.EMAIL_LO }}
+          PASSWORD_LO: ${{ secrets.PASSWORD_LO }}
 
       # -----------------------------
       # Install jq
