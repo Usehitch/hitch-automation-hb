@@ -230,14 +230,15 @@ class OfferReviewPage {
 
             // Click-and-verify with retry: a single click can still land during a
             // re-render and be dropped. Re-click until the modal heading appears,
-            // skipping the click when the modal is already open so we never
-            // toggle it shut. ~40 s budget covers the slowest CI pricing settle.
+            // skipping the click when the dialog is already open — even if the
+            // heading is still mounting — so we never toggle it shut. ~40 s budget
+            // covers the slowest CI pricing settle.
             await expect(async () => {
-                const alreadyOpen = await this.editUpfrontDrawHeading
+                const modalOpen = await this.editUpfrontDrawModal
                     .isVisible()
                     .catch(() => false);
-                if (!alreadyOpen) {
-                    await this.editInitialDrawBtn.click({ force: true }).catch(() => { });
+                if (!modalOpen) {
+                    await this.editInitialDrawBtn.click({ force: true });
                 }
                 await expect(this.editUpfrontDrawHeading).toBeVisible({ timeout: 7000 });
             }).toPass({ timeout: 40000, intervals: [1000, 2000, 3000] });
