@@ -49,12 +49,10 @@ test.describe('LO - Pipeline Management', () => {
     test('LO sees the Pending MLO Certification bucket when loans await certification', async ({ activePage }) => {
         await expect(activePage.pageHeading).toBeVisible({ timeout: 20000 });
 
-        // The Pending MLO Certification bucket only renders when at least one
-        // loan is awaiting certification. Verify its table structure (unique
-        // Status + LO Assistant columns, Certify + View actions) when present;
-        // otherwise skip rather than fail — its presence is data-dependent on
-        // staging.
-        const hasPending = await activePage.pendingMloCertSection
+        // The Pending MLO Certification heading stays visible even when the
+        // section has "No results". Check for an actual Certify button — it only
+        // renders when at least one loan is awaiting certification.
+        const hasPending = await activePage.certifyBtn
             .isVisible({ timeout: 15000 })
             .catch(() => false);
         test.skip(!hasPending, 'No loans currently pending MLO certification on staging');
