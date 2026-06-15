@@ -104,20 +104,20 @@
     "shard": null,
     "tags": [],
     "updateSnapshots": "missing",
-    "updateSourceMethod": "3way",
+    "updateSourceMethod": "patch",
     "version": "1.59.1",
-    "workers": 1,
+    "workers": 4,
     "webServer": null
   },
   "suites": [
     {
-      "title": "auth.setup.lo.js",
-      "file": "auth.setup.lo.js",
+      "title": "auth.setup.js",
+      "file": "auth.setup.js",
       "column": 0,
       "line": 0,
       "specs": [
         {
-          "title": "authenticate as LO",
+          "title": "authenticate",
           "ok": true,
           "tags": [],
           "tests": [
@@ -125,14 +125,14 @@
               "timeout": 180000,
               "annotations": [],
               "expectedStatus": "passed",
-              "projectId": "setup-lo",
-              "projectName": "setup-lo",
+              "projectId": "setup",
+              "projectName": "setup",
               "results": [
                 {
-                  "workerIndex": 2,
+                  "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 14335,
+                  "duration": 16200,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
@@ -140,14 +140,14 @@
                   "steps": [
                     {
                       "title": "Click the go to broker portal",
-                      "duration": 69
+                      "duration": 98
                     },
                     {
                       "title": "Submit email and password",
-                      "duration": 107
+                      "duration": 106
                     }
                   ],
-                  "startTime": "2026-06-15T14:21:27.186Z",
+                  "startTime": "2026-06-15T14:44:59.041Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -155,80 +155,82 @@
               "status": "expected"
             }
           ],
-          "id": "db3a8f2d3463a3c1924a-9a9c346f4775ae8cc816",
-          "file": "auth.setup.lo.js",
-          "line": 5,
+          "id": "f376efe52c54b1a876fd-9d03a3bb502e264caa3f",
+          "file": "auth.setup.js",
+          "line": 6,
           "column": 6
         }
       ]
     },
     {
-      "title": "Borrower Flow\\property-applicant-data.spec.js",
-      "file": "Borrower Flow/property-applicant-data.spec.js",
+      "title": "Broker Flow\\twn-monitor.spec.js",
+      "file": "Broker Flow/twn-monitor.spec.js",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "LO - Property and Applicant Data",
-          "file": "Borrower Flow/property-applicant-data.spec.js",
-          "line": 24,
+          "title": "The Work Number (TWN)",
+          "file": "Broker Flow/twn-monitor.spec.js",
+          "line": 5,
           "column": 6,
           "specs": [
             {
-              "title": "LO is blocked from proceeding when the property is held in a(n) Irrevocable Trust",
+              "title": "TWN populates borrower info via shareable link",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 120000,
+                  "timeout": 180000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "chromium-lo",
-                  "projectName": "chromium-lo",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 3,
+                      "workerIndex": 1,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 12378,
+                      "duration": 48969,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
                       "steps": [
                         {
-                          "title": "Click the start app button",
-                          "duration": 110
+                          "title": "Open shareable app link in new tab",
+                          "duration": 2149
                         },
                         {
-                          "title": "Click the start pre-qual manually button",
-                          "duration": 1970
+                          "title": "Click Get Started Now",
+                          "duration": 89
                         },
                         {
-                          "title": "Fill application details",
-                          "duration": 3643,
-                          "steps": [
-                            {
-                              "title": "Fill property address",
-                              "duration": 453
-                            },
-                            {
-                              "title": "Select trust type: Irrevocable Trust",
-                              "duration": 83
-                            },
-                            {
-                              "title": "Fill job details",
-                              "duration": 245
-                            }
-                          ]
+                          "title": "Select property type",
+                          "duration": 855
                         },
                         {
-                          "title": "Click Next and expect the trust/LLC lending block",
-                          "duration": 95
+                          "title": "Select loan purpose",
+                          "duration": 1379
+                        },
+                        {
+                          "title": "Fill property info",
+                          "duration": 1999
+                        },
+                        {
+                          "title": "Fill about yourself",
+                          "duration": 2029
+                        },
+                        {
+                          "title": "Fill credit check fields (TWN)",
+                          "duration": 13746
+                        },
+                        {
+                          "title": "Verify TWN auto-populated employer info",
+                          "duration": 19245
                         }
                       ],
-                      "startTime": "2026-06-15T14:21:42.778Z",
+                      "startTime": "2026-06-15T14:45:16.182Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -236,137 +238,9 @@
                   "status": "expected"
                 }
               ],
-              "id": "bb26d910f85721a0991d-a14bbe34f9c01f1e9183",
-              "file": "Borrower Flow/property-applicant-data.spec.js",
-              "line": 44,
-              "column": 13
-            },
-            {
-              "title": "LO is blocked from proceeding when the property is held in a(n) LLC",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-lo",
-                  "projectName": "chromium-lo",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 11250,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "steps": [
-                        {
-                          "title": "Click the start app button",
-                          "duration": 96
-                        },
-                        {
-                          "title": "Click the start pre-qual manually button",
-                          "duration": 1963
-                        },
-                        {
-                          "title": "Fill application details",
-                          "duration": 3615,
-                          "steps": [
-                            {
-                              "title": "Fill property address",
-                              "duration": 398
-                            },
-                            {
-                              "title": "Select trust type: LLC",
-                              "duration": 69
-                            },
-                            {
-                              "title": "Fill job details",
-                              "duration": 226
-                            }
-                          ]
-                        },
-                        {
-                          "title": "Click Next and expect the trust/LLC lending block",
-                          "duration": 82
-                        }
-                      ],
-                      "startTime": "2026-06-15T14:21:55.865Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "bb26d910f85721a0991d-3642819a4d9bc6757ec7",
-              "file": "Borrower Flow/property-applicant-data.spec.js",
-              "line": 44,
-              "column": 13
-            },
-            {
-              "title": "LO can proceed past a revocable trust (control — no block)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-lo",
-                  "projectName": "chromium-lo",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 10140,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "steps": [
-                        {
-                          "title": "Click the start app button",
-                          "duration": 103
-                        },
-                        {
-                          "title": "Click the start pre-qual manually button",
-                          "duration": 941
-                        },
-                        {
-                          "title": "Fill application details",
-                          "duration": 3919,
-                          "steps": [
-                            {
-                              "title": "Fill property address",
-                              "duration": 771
-                            },
-                            {
-                              "title": "Select trust type: Revocable Trust",
-                              "duration": 47
-                            },
-                            {
-                              "title": "Fill job details",
-                              "duration": 223
-                            }
-                          ]
-                        }
-                      ],
-                      "startTime": "2026-06-15T14:22:07.131Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "bb26d910f85721a0991d-bdec17646bcec3e3f9c1",
-              "file": "Borrower Flow/property-applicant-data.spec.js",
-              "line": 57,
+              "id": "8c096b5d4091b17add33-e7cbe368f43c381ee480",
+              "file": "Broker Flow/twn-monitor.spec.js",
+              "line": 10,
               "column": 9
             }
           ]
@@ -376,9 +250,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-15T14:21:25.706Z",
-    "duration": 51600.226000000024,
-    "expected": 4,
+    "startTime": "2026-06-15T14:44:58.238Z",
+    "duration": 67085.388,
+    "expected": 2,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0
