@@ -217,12 +217,31 @@ class OfferReviewPage {
         await test.step('Open Edit Upfront Draw modal', async () => {
             if (!data.offerReview?.initialDraw?.edit) return;
 
+            // The Initial Draw section re-renders after a background pricing
+            // recalculation settles — slower on CI, and slower still in
+            // co-borrower flows where two underwriting results must settle first.
+            // First wait for the EDIT button to be genuinely actionable (not just
+            // present): force:true would otherwise click a button whose React
+            // handler isn't wired up yet, producing a silent no-op and a modal
+            // that never opens (the classic "passes local, fails CI" symptom).
             await this.editInitialDrawBtn.scrollIntoViewIfNeeded();
-            await this.editInitialDrawBtn.click({ force: true });
-            // 20 s — the MUI Dialog animation + background pricing call can
-            // take longer than 10 s on CI, especially in co-borrower flows
-            // where two underwriting results need to settle first.
-            await this.editUpfrontDrawHeading.waitFor({ state: 'visible', timeout: 20000 });
+            await expect(this.editInitialDrawBtn).toBeVisible({ timeout: 30000 });
+            await expect(this.editInitialDrawBtn).toBeEnabled({ timeout: 30000 });
+
+            // Click-and-verify with retry: a single click can still land during a
+            // re-render and be dropped. Re-click until the modal heading appears,
+            // skipping the click when the dialog is already open — even if the
+            // heading is still mounting — so we never toggle it shut. ~40 s budget
+            // covers the slowest CI pricing settle.
+            await expect(async () => {
+                const modalOpen = await this.editUpfrontDrawModal
+                    .isVisible()
+                    .catch(() => false);
+                if (!modalOpen) {
+                    await this.editInitialDrawBtn.click({ force: true });
+                }
+                await expect(this.editUpfrontDrawHeading).toBeVisible({ timeout: 7000 });
+            }).toPass({ timeout: 40000, intervals: [1000, 2000, 3000] });
         });
     };
 

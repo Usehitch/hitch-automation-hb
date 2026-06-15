@@ -347,6 +347,18 @@ class NewApplicationPage {
             this.page.context().on('page', onPage);
 
             await withProcessAppRetry(this.page, async () => {
+                // NEXT enables only after the Application Details form passes
+                // validation. If a field value failed to commit (an intermittent
+                // issue with MUI .fill() not firing the events the form's
+                // validation listens to), NEXT stays disabled — and a plain
+                // .click() then AUTO-WAITS for it to become enabled until the
+                // whole test times out (~11 min). Bound that wait and fail fast
+                // with a diagnostic message instead of a silent multi-minute hang.
+                await expect(
+                    this.nextBtn,
+                    'NEXT did not enable within 45s — Application Details failed validation (a required field likely did not commit). See the attached screenshot.'
+                ).toBeEnabled({ timeout: 45000 });
+
                 await this.nextBtn.click();
 
                 // The "Finalizing pre-qualification" overlay may be skipped when the
