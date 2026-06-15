@@ -60,9 +60,13 @@ class MloCertificationModal {
 
     async submit() {
         await test.step('Submit MLO certification', async () => {
-            await this.submitBtn.scrollIntoViewIfNeeded();
-            await this.submitBtn.click();
-            await expect(this.modal).toBeHidden({ timeout: 15000 });
+            // The modal can re-render after the last checkbox is ticked, detaching
+            // SUBMIT mid-click. Retry until the modal closes.
+            await expect(async () => {
+                await this.submitBtn.scrollIntoViewIfNeeded();
+                await this.submitBtn.click();
+                await expect(this.modal).toBeHidden({ timeout: 15000 });
+            }).toPass({ timeout: 60000, intervals: [1000, 2000] });
         });
     }
 

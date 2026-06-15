@@ -158,6 +158,21 @@ class NewApplicationPage {
         };
     };
 
+    async #isSelectedToggle(btn) {
+        return btn.evaluate(el =>
+            el.getAttribute('aria-pressed') === 'true'
+            || el.classList.contains('MuiChip-filledPrimary'),
+        );
+    }
+
+    /** Clicks a MUI toggle/chip until its selected state is reflected in the DOM. */
+    async #selectToggleButton(btn) {
+        await btn.scrollIntoViewIfNeeded();
+        if (await this.#isSelectedToggle(btn)) return;
+        await btn.click({ force: true });
+        await expect.poll(async () => this.#isSelectedToggle(btn)).toBe(true);
+    };
+
     // -- Public methods --------------------------------------------------------
 
     async fillPropertyAddress(address) {
@@ -248,8 +263,8 @@ class NewApplicationPage {
         await test.step('Fill application details', async () => {
             await this.fillPropertyAddress(data.property.address);
 
-            await this.#propertyUsageMap()[data.property.usage].click({ force: true });
-            await this.#buildingTypeMap()[data.property.buildingType].click({ force: true });
+            await this.#selectToggleButton(this.#propertyUsageMap()[data.property.usage]);
+            await this.#selectToggleButton(this.#buildingTypeMap()[data.property.buildingType]);
 
             const statusRadio = data.property.isListed ? this.listedRadio : this.notListedRadio;
             await statusRadio.check();
@@ -293,7 +308,7 @@ class NewApplicationPage {
                 await this.fillJobDetails(data.applicant.job);
             }
 
-            await this.#loanPurposeMap()[data.applicant.loanPurpose].click({ force: true });
+            await this.#selectToggleButton(this.#loanPurposeMap()[data.applicant.loanPurpose]);
 
             if (data.coBorrower?.hasCoBorrower) {
                 await this.fillCoBorrowerDetails(data.coBorrower);
@@ -304,7 +319,12 @@ class NewApplicationPage {
                     page: this.page,
                     label: 'Consent to Soft Credit Check',
                 });
+                // Blur the consent block — Tab can land on inline Policy/TOS links
+                // and leave the form thinking a required toggle is still unset.
+                await this.applicationDetailsMarker.click({ force: true });
             }
+
+            await expect(this.nextBtn).toBeEnabled({ timeout: 45000 });
         });
     };
 

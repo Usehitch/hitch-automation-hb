@@ -37,13 +37,19 @@ class OfferReviewPage {
         this.cancelDebtPayoffBtn = this.debtPayoffModal.getByRole('button', { name: /CANCEL/i });
 
         // -- Initial Draw Amount section ---------------------------------------
-        this.editInitialDrawBtn = this.page.getByRole('button', { name: /EDIT/i });
+        // Scope EDIT to this section — a page-level /EDIT/i match can grab the
+        // wrong button when other cards expose similar labels on Offer Review.
+        this.initialDrawSection = this.page.locator('div').filter({
+            has: this.page.getByText(/Initial Draw Amount|Upfront Draw/i),
+        }).first();
+        this.editInitialDrawBtn = this.initialDrawSection.getByRole('button', { name: /^EDIT$/i });
 
         // -- "Edit Upfront Draw" modal -----------------------------------------
         this.editUpfrontDrawModal = this.page.locator('[role="dialog"]').filter({
             has: this.page.getByText('Edit Upfront Draw'),
         });
-        this.editUpfrontDrawHeading = this.editUpfrontDrawModal.getByRole('heading', { name: /Edit Upfront Draw/i });
+        // DialogTitle may not always expose role="heading" during MUI mount.
+        this.editUpfrontDrawHeading = this.editUpfrontDrawModal.getByText('Edit Upfront Draw').first();
 
         // Read-only summary rows inside the modal
         this.availableDrawRow = this.editUpfrontDrawModal.getByText('Available Draw');
@@ -229,19 +235,20 @@ class OfferReviewPage {
             await expect(this.editInitialDrawBtn).toBeEnabled({ timeout: 30000 });
 
             // Click-and-verify with retry: a single click can still land during a
-            // re-render and be dropped. Re-click until the modal heading appears,
-            // skipping the click when the dialog is already open — even if the
-            // heading is still mounting — so we never toggle it shut. ~40 s budget
-            // covers the slowest CI pricing settle.
+            // re-render and be dropped. Re-click until the modal is open, skipping
+            // the click when the dialog is already visible (even if inner content
+            // is still mounting) so we never toggle it shut. 60 s covers the
+            // slowest CI pricing settle, including co-borrower flows.
             await expect(async () => {
                 const modalOpen = await this.editUpfrontDrawModal
                     .isVisible()
                     .catch(() => false);
                 if (!modalOpen) {
-                    await this.editInitialDrawBtn.click({ force: true });
+                    await this.editInitialDrawBtn.click();
                 }
-                await expect(this.editUpfrontDrawHeading).toBeVisible({ timeout: 7000 });
-            }).toPass({ timeout: 40000, intervals: [1000, 2000, 3000] });
+                await expect(this.editUpfrontDrawModal).toBeVisible({ timeout: 10000 });
+                await expect(this.confirmDrawBtn).toBeVisible({ timeout: 10000 });
+            }).toPass({ timeout: 60000, intervals: [1000, 2000, 3000] });
         });
     };
 

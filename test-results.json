@@ -132,7 +132,7 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 16200,
+                  "duration": 11721,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
@@ -140,14 +140,14 @@
                   "steps": [
                     {
                       "title": "Click the go to broker portal",
-                      "duration": 98
+                      "duration": 84
                     },
                     {
                       "title": "Submit email and password",
-                      "duration": 106
+                      "duration": 104
                     }
                   ],
-                  "startTime": "2026-06-15T14:44:59.041Z",
+                  "startTime": "2026-06-15T17:21:52.298Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -163,25 +163,25 @@
       ]
     },
     {
-      "title": "Broker Flow\\twn-monitor.spec.js",
-      "file": "Broker Flow/twn-monitor.spec.js",
+      "title": "Broker Flow\\pre-qual-manual.spec.js",
+      "file": "Broker Flow/pre-qual-manual.spec.js",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "The Work Number (TWN)",
-          "file": "Broker Flow/twn-monitor.spec.js",
-          "line": 5,
+          "title": "Pre-Qual Manually",
+          "file": "Broker Flow/pre-qual-manual.spec.js",
+          "line": 4,
           "column": 6,
           "specs": [
             {
-              "title": "TWN populates borrower info via shareable link",
+              "title": "Create new application",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 180000,
+                  "timeout": 660000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
@@ -191,46 +191,136 @@
                       "workerIndex": 1,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 48969,
+                      "duration": 95711,
                       "errors": [],
                       "stdout": [],
-                      "stderr": [],
+                      "stderr": [
+                        {
+                          "text": "clickManageDebtPayoffs: no dialog appeared after clicking MANAGE — modal may not be applicable for this loan state\n"
+                        },
+                        {
+                          "text": "verifyDebtPayoffModal: skipping — debt payoff modal was not opened\n"
+                        },
+                        {
+                          "text": "saveDebtPayoffPlan: skipping — debt payoff modal was not opened\n"
+                        }
+                      ],
                       "retry": 0,
                       "steps": [
                         {
-                          "title": "Open shareable app link in new tab",
-                          "duration": 2149
+                          "title": "Click the start app button",
+                          "duration": 141
                         },
                         {
-                          "title": "Click Get Started Now",
-                          "duration": 89
+                          "title": "Click the start pre-qual manually button",
+                          "duration": 1948
                         },
                         {
-                          "title": "Select property type",
-                          "duration": 855
+                          "title": "Fill application details",
+                          "duration": 3950,
+                          "steps": [
+                            {
+                              "title": "Fill property address",
+                              "duration": 1298
+                            },
+                            {
+                              "title": "Fill job details",
+                              "duration": 193
+                            }
+                          ]
                         },
                         {
-                          "title": "Select loan purpose",
-                          "duration": 1379
+                          "title": "Click Next to proceed to Mortgages & Liens",
+                          "duration": 35354,
+                          "steps": [
+                            {
+                              "title": "Close soft credit consent PDF tab(s)",
+                              "duration": 3
+                            }
+                          ]
                         },
                         {
-                          "title": "Fill property info",
-                          "duration": 1999
+                          "title": "Fill mortgages & liens",
+                          "duration": 169
                         },
                         {
-                          "title": "Fill about yourself",
-                          "duration": 2029
+                          "title": "Click Next to proceed to Offer Review",
+                          "duration": 13053
                         },
                         {
-                          "title": "Fill credit check fields (TWN)",
-                          "duration": 13746
+                          "title": "Update requested loan amount",
+                          "duration": 0
                         },
                         {
-                          "title": "Verify TWN auto-populated employer info",
-                          "duration": 19245
+                          "title": "Open Manage Debt Payoffs modal",
+                          "duration": 30030
+                        },
+                        {
+                          "title": "Verify debt payoff modal contents",
+                          "duration": 0
+                        },
+                        {
+                          "title": "Save debt payoff plan",
+                          "duration": 1
+                        },
+                        {
+                          "title": "Open Edit Upfront Draw modal",
+                          "duration": 1059
+                        },
+                        {
+                          "title": "Verify Edit Upfront Draw modal contents",
+                          "duration": 16
+                        },
+                        {
+                          "title": "Set upfront draw percentage",
+                          "duration": 195
+                        },
+                        {
+                          "title": "Confirm upfront draw",
+                          "duration": 279
+                        },
+                        {
+                          "title": "Acknowledge DTI above allowable limit (if required)",
+                          "duration": 3
+                        },
+                        {
+                          "title": "Click Next to proceed to Consents",
+                          "duration": 1443
+                        },
+                        {
+                          "title": "Check all Loan Officer Certifications",
+                          "duration": 336
+                        },
+                        {
+                          "title": "Fill Broker MLO Name",
+                          "duration": 51
+                        },
+                        {
+                          "title": "Verify signature fields",
+                          "duration": 14
+                        },
+                        {
+                          "title": "Click Next to submit consents",
+                          "duration": 914
+                        },
+                        {
+                          "title": "Verify pre-qual confirmation screen",
+                          "duration": 44
+                        },
+                        {
+                          "title": "Copy borrower app link",
+                          "duration": 27
+                        },
+                        {
+                          "title": "Download PDF (if enabled)",
+                          "duration": 5
+                        },
+                        {
+                          "title": "Close confirmation and return to portal",
+                          "duration": 486
                         }
                       ],
-                      "startTime": "2026-06-15T14:45:16.182Z",
+                      "startTime": "2026-06-15T17:22:04.906Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -238,9 +328,9 @@
                   "status": "expected"
                 }
               ],
-              "id": "8c096b5d4091b17add33-e7cbe368f43c381ee480",
-              "file": "Broker Flow/twn-monitor.spec.js",
-              "line": 10,
+              "id": "271c929644d0e42f4868-c5cc6d0eeaa932c4514c",
+              "file": "Broker Flow/pre-qual-manual.spec.js",
+              "line": 9,
               "column": 9
             }
           ]
@@ -250,8 +340,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-15T14:44:58.238Z",
-    "duration": 67085.388,
+    "startTime": "2026-06-15T17:21:51.464Z",
+    "duration": 109342.59599999999,
     "expected": 2,
     "skipped": 0,
     "unexpected": 0,
