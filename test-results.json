@@ -58,7 +58,7 @@
         "name": "chromium",
         "testDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/tests",
         "testIgnore": [
-          "/Co-Borrower|invitation\\.spec|certifications\\.spec/"
+          "/Co-Borrower|invitation\\.spec|certifications\\.spec|pipeline-management\\.spec|property-applicant-data\\.spec/"
         ],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -77,7 +77,7 @@
         "testDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/tests",
         "testIgnore": [],
         "testMatch": [
-          "/Co-Borrower|invitation\\.spec|certifications\\.spec/"
+          "/Co-Borrower|invitation\\.spec|certifications\\.spec|pipeline-management\\.spec|property-applicant-data\\.spec/"
         ],
         "timeout": 180000
       }
@@ -129,10 +129,10 @@
               "projectName": "setup-lo",
               "results": [
                 {
-                  "workerIndex": 10,
+                  "workerIndex": 2,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 13659,
+                  "duration": 14335,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
@@ -140,14 +140,14 @@
                   "steps": [
                     {
                       "title": "Click the go to broker portal",
-                      "duration": 73
+                      "duration": 69
                     },
                     {
                       "title": "Submit email and password",
-                      "duration": 124
+                      "duration": 107
                     }
                   ],
-                  "startTime": "2026-06-15T09:43:50.094Z",
+                  "startTime": "2026-06-15T14:21:27.186Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -163,171 +163,222 @@
       ]
     },
     {
-      "title": "Borrower Flow\\invitation.spec.js",
-      "file": "Borrower Flow/invitation.spec.js",
+      "title": "Borrower Flow\\property-applicant-data.spec.js",
+      "file": "Borrower Flow/property-applicant-data.spec.js",
       "column": 0,
       "line": 0,
-      "specs": [
+      "specs": [],
+      "suites": [
         {
-          "title": "Scenario A: LO creates pre-qual and borrower receives invitation",
-          "ok": true,
-          "tags": [],
-          "tests": [
+          "title": "LO - Property and Applicant Data",
+          "file": "Borrower Flow/property-applicant-data.spec.js",
+          "line": 24,
+          "column": 6,
+          "specs": [
             {
-              "timeout": 960000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium-lo",
-              "projectName": "chromium-lo",
-              "results": [
+              "title": "LO is blocked from proceeding when the property is held in a(n) Irrevocable Trust",
+              "ok": true,
+              "tags": [],
+              "tests": [
                 {
-                  "workerIndex": 11,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 84265,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "steps": [
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-lo",
+                  "projectName": "chromium-lo",
+                  "results": [
                     {
-                      "title": "Click the start app button",
-                      "duration": 127
-                    },
-                    {
-                      "title": "Click the start pre-qual manually button",
-                      "duration": 1981
-                    },
-                    {
-                      "title": "Fill application details",
-                      "duration": 1812,
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12378,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
                       "steps": [
                         {
-                          "title": "Fill property address",
-                          "duration": 478
+                          "title": "Click the start app button",
+                          "duration": 110
                         },
                         {
-                          "title": "Fill job details",
-                          "duration": 237
-                        }
-                      ]
-                    },
-                    {
-                      "title": "Click Next to proceed to Mortgages & Liens",
-                      "duration": 34366,
-                      "steps": [
+                          "title": "Click the start pre-qual manually button",
+                          "duration": 1970
+                        },
                         {
-                          "title": "Close soft credit consent PDF tab(s)",
-                          "duration": 9
+                          "title": "Fill application details",
+                          "duration": 3643,
+                          "steps": [
+                            {
+                              "title": "Fill property address",
+                              "duration": 453
+                            },
+                            {
+                              "title": "Select trust type: Irrevocable Trust",
+                              "duration": 83
+                            },
+                            {
+                              "title": "Fill job details",
+                              "duration": 245
+                            }
+                          ]
+                        },
+                        {
+                          "title": "Click Next and expect the trust/LLC lending block",
+                          "duration": 95
                         }
-                      ]
-                    },
-                    {
-                      "title": "Fill mortgages & liens",
-                      "duration": 192
-                    },
-                    {
-                      "title": "Click Next to proceed to Offer Review",
-                      "duration": 21646
-                    },
-                    {
-                      "title": "Update requested loan amount",
-                      "duration": 0
-                    },
-                    {
-                      "title": "Open Manage Debt Payoffs modal",
-                      "duration": 113
-                    },
-                    {
-                      "title": "Verify debt payoff modal contents",
-                      "duration": 71
-                    },
-                    {
-                      "title": "Save debt payoff plan",
-                      "duration": 378
-                    },
-                    {
-                      "title": "Open Edit Upfront Draw modal",
-                      "duration": 100
-                    },
-                    {
-                      "title": "Verify Edit Upfront Draw modal contents",
-                      "duration": 45
-                    },
-                    {
-                      "title": "Set upfront draw percentage",
-                      "duration": 300
-                    },
-                    {
-                      "title": "Confirm upfront draw",
-                      "duration": 272
-                    },
-                    {
-                      "title": "Acknowledge DTI above allowable limit (if required)",
-                      "duration": 6
-                    },
-                    {
-                      "title": "Click Next to proceed to Consents",
-                      "duration": 931
-                    },
-                    {
-                      "title": "Check all Loan Officer Certifications",
-                      "duration": 381
-                    },
-                    {
-                      "title": "Fill Broker MLO Name",
-                      "duration": 50
-                    },
-                    {
-                      "title": "Verify signature fields",
-                      "duration": 13
-                    },
-                    {
-                      "title": "Click Next to submit consents",
-                      "duration": 1385
-                    },
-                    {
-                      "title": "Verify pre-qual confirmation screen",
-                      "duration": 84
-                    },
-                    {
-                      "title": "Copy borrower app link",
-                      "duration": 33
-                    },
-                    {
-                      "title": "Download PDF (if enabled)",
-                      "duration": 7
-                    },
-                    {
-                      "title": "Close confirmation and return to portal",
-                      "duration": 626
-                    },
-                    {
-                      "title": "A — B1 (borrower): verify invitation email in Mailinator",
-                      "duration": 10941
+                      ],
+                      "startTime": "2026-06-15T14:21:42.778Z",
+                      "annotations": [],
+                      "attachments": []
                     }
                   ],
-                  "startTime": "2026-06-15T09:44:04.752Z",
-                  "annotations": [],
-                  "attachments": []
+                  "status": "expected"
                 }
               ],
-              "status": "expected"
+              "id": "bb26d910f85721a0991d-a14bbe34f9c01f1e9183",
+              "file": "Borrower Flow/property-applicant-data.spec.js",
+              "line": 44,
+              "column": 13
+            },
+            {
+              "title": "LO is blocked from proceeding when the property is held in a(n) LLC",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-lo",
+                  "projectName": "chromium-lo",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 11250,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Click the start app button",
+                          "duration": 96
+                        },
+                        {
+                          "title": "Click the start pre-qual manually button",
+                          "duration": 1963
+                        },
+                        {
+                          "title": "Fill application details",
+                          "duration": 3615,
+                          "steps": [
+                            {
+                              "title": "Fill property address",
+                              "duration": 398
+                            },
+                            {
+                              "title": "Select trust type: LLC",
+                              "duration": 69
+                            },
+                            {
+                              "title": "Fill job details",
+                              "duration": 226
+                            }
+                          ]
+                        },
+                        {
+                          "title": "Click Next and expect the trust/LLC lending block",
+                          "duration": 82
+                        }
+                      ],
+                      "startTime": "2026-06-15T14:21:55.865Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "bb26d910f85721a0991d-3642819a4d9bc6757ec7",
+              "file": "Borrower Flow/property-applicant-data.spec.js",
+              "line": 44,
+              "column": 13
+            },
+            {
+              "title": "LO can proceed past a revocable trust (control — no block)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-lo",
+                  "projectName": "chromium-lo",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10140,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Click the start app button",
+                          "duration": 103
+                        },
+                        {
+                          "title": "Click the start pre-qual manually button",
+                          "duration": 941
+                        },
+                        {
+                          "title": "Fill application details",
+                          "duration": 3919,
+                          "steps": [
+                            {
+                              "title": "Fill property address",
+                              "duration": 771
+                            },
+                            {
+                              "title": "Select trust type: Revocable Trust",
+                              "duration": 47
+                            },
+                            {
+                              "title": "Fill job details",
+                              "duration": 223
+                            }
+                          ]
+                        }
+                      ],
+                      "startTime": "2026-06-15T14:22:07.131Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "bb26d910f85721a0991d-bdec17646bcec3e3f9c1",
+              "file": "Borrower Flow/property-applicant-data.spec.js",
+              "line": 57,
+              "column": 9
             }
-          ],
-          "id": "cbc830e13ac12d534f3b-eb3d7245dc4e4c97acc7",
-          "file": "Borrower Flow/invitation.spec.js",
-          "line": 137,
-          "column": 5
+          ]
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-15T09:43:48.773Z",
-    "duration": 100887.61599999992,
-    "expected": 2,
+    "startTime": "2026-06-15T14:21:25.706Z",
+    "duration": 51600.226000000024,
+    "expected": 4,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

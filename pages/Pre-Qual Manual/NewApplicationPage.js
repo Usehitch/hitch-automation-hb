@@ -1,5 +1,6 @@
 ﻿import { expect, test } from '../../fixtures';
 import { withProcessAppRetry } from '../../utils/routeHelpers';
+import { ensureChecked } from '../../utils/checkboxHelpers';
 
 class NewApplicationPage {
     constructor(page) {
@@ -32,6 +33,26 @@ class NewApplicationPage {
         this.trustSection = this.page.locator('text=Is the HELOC property currently held in a trust?').locator('..');
         this.trustYesRadio = this.trustSection.getByRole('radio', { name: 'Yes' });
         this.trustNoRadio = this.trustSection.getByRole('radio', { name: 'No' });
+
+        // Trust-type toggle buttons — revealed only after selecting "Yes" above.
+        // Selecting Irrevocable Trust or LLC and pressing Next surfaces a lending
+        // block (see trustLendingBlockMessage) and prevents advancing.
+        //
+        // Names are anchored regexes, NOT plain strings: each button's accessible
+        // name includes its tooltip ("Revocable Trust A trust that can be…"), and
+        // a substring match for 'Revocable Trust' also matches 'IRrevocable Trust'
+        // — a strict-mode collision. Anchoring with ^ keeps each unique.
+        this.revocableTrustBtn = this.page.getByRole('button', { name: /^Revocable Trust/ });
+        this.irrevocableTrustBtn = this.page.getByRole('button', { name: /^Irrevocable Trust/ });
+        this.llcTrustBtn = this.page.getByRole('button', { name: /^LLC/ });
+
+        // Inline block shown after pressing Next with an irrevocable trust / LLC.
+        // Wording observed: "We're sorry but as we can not currently lend in
+        // irrevocable trusts." — match flexibly so the LLC variant also matches.
+        this.trustLendingBlockMessage = this.page.getByText(/currently lend/i);
+
+        // Step-1 marker — present only while on the Application Details step.
+        this.applicationDetailsMarker = this.page.getByText('Property Address for Financing');
 
         // -- Main Applicant Information ----------------------------------------
         this.firstNameInput = this.page.getByLabel('First Name');
@@ -126,6 +147,14 @@ class NewApplicationPage {
             'Debt Consolidation': this.debtConsolidationBtn,
             'Home Improvement': this.homeImprovementBtn,
             'Other': this.otherPurposeBtn,
+        };
+    };
+
+    #trustTypeMap() {
+        return {
+            'Revocable Trust': this.revocableTrustBtn,
+            'Irrevocable Trust': this.irrevocableTrustBtn,
+            'LLC': this.llcTrustBtn,
         };
     };
 
@@ -232,6 +261,11 @@ class NewApplicationPage {
             const trustRadio = data.property.heldInTrust ? this.trustYesRadio : this.trustNoRadio;
             await trustRadio.check();
 
+            // When held in a trust, pick the trust type if one was provided.
+            if (data.property.heldInTrust && data.property.trustType) {
+                await this.selectTrustType(data.property.trustType);
+            }
+
             await this.firstNameInput.fill(data.applicant.firstName);
             await this.firstNameInput.press('Tab');
 
@@ -252,7 +286,7 @@ class NewApplicationPage {
 
             const incomeMap = this.#incomeSourceMap();
             for (const source of data.applicant.incomeSources) {
-                await incomeMap[source].check({ force: true });
+                await ensureChecked(incomeMap[source], { page: this.page, label: source });
             }
 
             if (data.applicant.incomeSources.includes('Salary or hourly wages') && data.applicant.job) {
@@ -266,8 +300,40 @@ class NewApplicationPage {
             }
 
             if (data.consent.softCreditCheck) {
-                await this.softCreditCheckConsent.check();
+                await ensureChecked(this.softCreditCheckConsent, {
+                    page: this.page,
+                    label: 'Consent to Soft Credit Check',
+                });
             }
+        });
+    };
+
+    /**
+     * Selects a trust-type toggle button (revealed after choosing "Yes" to the
+     * held-in-trust question). Accepts 'Revocable Trust', 'Irrevocable Trust',
+     * or 'LLC'.
+     */
+    async selectTrustType(trustType) {
+        await test.step(`Select trust type: ${trustType}`, async () => {
+            const btn = this.#trustTypeMap()[trustType];
+            await btn.waitFor({ state: 'visible', timeout: 10000 });
+            await btn.click({ force: true });
+        });
+    };
+
+    /**
+     * Clicks Next expecting the irrevocable-trust / LLC lending block: asserts
+     * the "can not currently lend" message appears and the form stays on the
+     * Application Details step (does not advance to Mortgages & Liens). Used to
+     * verify the pause behavior without proceeding into finalization.
+     */
+    async clickNextExpectingTrustBlock() {
+        await test.step('Click Next and expect the trust/LLC lending block', async () => {
+            await this.nextBtn.click({ force: true });
+            await expect(this.trustLendingBlockMessage).toBeVisible({ timeout: 10000 });
+            // Confirm we did NOT advance — still on Application Details, step 2 not shown.
+            await expect(this.applicationDetailsMarker).toBeVisible();
+            await expect(this.mortgagesHeading).toBeHidden();
         });
     };
     async clickNext() {
