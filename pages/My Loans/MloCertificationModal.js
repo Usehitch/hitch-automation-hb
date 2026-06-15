@@ -67,26 +67,35 @@ class MloCertificationModal {
     }
 
     /**
-     * Submits the certification and captures the broker certification PDF that
-     * the portal produces afterward, returning its URL.
+     * Arms broker-certification-PDF capture, submits, waits for the modal to
+     * close, and returns the still-pending capture promise (wrapped so the test
+     * runner does not await it here).
      *
-     * The document surfaces differently per environment: a headed browser
-     * renders it in a NEW TAB (the popup's URL becomes the S3 PDF link), while
-     * headless CI cannot render PDFs and serves it as a DOWNLOAD (the popup tab
-     * navigates to ":" and a download fires on that popup). We listen for both
-     * paths and resolve whichever produces the document URL first.
+     * The caller MUST assert the transient "Certification completed
+     * successfully" toast BEFORE awaiting the returned promise — the toast
+     * auto-dismisses within a few seconds, whereas the PDF can take longer to
+     * surface. Awaiting the PDF first would miss the toast entirely.
      *
-     * The download handler is attached to the popup the instant it opens so a
-     * fast headless download is never missed by a late listener.
+     * The PDF surfaces differently per environment: a headed browser renders it
+     * in a NEW TAB (the popup's URL becomes the S3 PDF link), while headless CI
+     * cannot render PDFs and serves it as a DOWNLOAD (the popup navigates to ":"
+     * and a download fires on that popup). We listen for both paths and resolve
+     * whichever produces the document URL first. The download handler is
+     * attached to the popup the instant it opens so a fast headless download is
+     * never missed by a late listener. The 30 s capture bound starts after
+     * submit and the modal closes, not when listeners are registered.
      *
-     * @returns {Promise<string|null>} the broker certification PDF URL, or null
-     *   if neither a PDF tab nor a download appeared within the timeout.
+     * @returns {Promise<{ pdfUrlPromise: Promise<string|null> }>}
+     *   pdfUrlPromise resolves to the broker certification PDF URL, or null if
+     *   neither a PDF tab nor a download appeared within the timeout.
      */
-    async submitAndGetCertificationPdfUrl() {
-        return await test.step('Submit MLO certification and capture broker certification PDF', async () => {
+    async submitCertificationAndStartPdfCapture() {
+        return await test.step('Submit MLO certification (capturing broker certification PDF)', async () => {
             const ctx = this.page.context();
 
-            const pdfUrl = new Promise((resolve) => {
+            // Arm listeners before submit so a fast headless download is never
+            // missed; the 30 s bound starts only after submit completes.
+            const pdfCapturePromise = new Promise((resolve) => {
                 // Headless: download may fire on the original page in some flows.
                 this.page.on('download', (d) => resolve(d.url()));
 
@@ -104,12 +113,17 @@ class MloCertificationModal {
             await this.submitBtn.click();
             await expect(this.modal).toBeHidden({ timeout: 15000 });
 
-            // Bound the wait so a missing PDF fails fast with a clear assertion
-            // in the caller rather than hanging until the test timeout.
-            return await Promise.race([
-                pdfUrl,
-                this.page.waitForTimeout(30000).then(() => null),
+            const pdfUrlPromise = Promise.race([
+                pdfCapturePromise,
+                // Bound the wait so a missing PDF fails fast in the caller rather
+                // than hanging until the test timeout. catch() guards against the
+                // page closing before the timer elapses.
+                this.page.waitForTimeout(30000).then(() => null).catch(() => null),
             ]);
+
+            // Wrap in an object so test.step resolves immediately instead of
+            // awaiting the still-pending capture promise.
+            return { pdfUrlPromise };
         });
     }
 }
