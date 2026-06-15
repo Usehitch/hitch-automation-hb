@@ -82,7 +82,8 @@ class MloCertificationModal {
      * and a download fires on that popup). We listen for both paths and resolve
      * whichever produces the document URL first. The download handler is
      * attached to the popup the instant it opens so a fast headless download is
-     * never missed by a late listener.
+     * never missed by a late listener. The 30 s capture bound starts after
+     * submit and the modal closes, not when listeners are registered.
      *
      * @returns {Promise<{ pdfUrlPromise: Promise<string|null> }>}
      *   pdfUrlPromise resolves to the broker certification PDF URL, or null if
@@ -92,29 +93,33 @@ class MloCertificationModal {
         return await test.step('Submit MLO certification (capturing broker certification PDF)', async () => {
             const ctx = this.page.context();
 
-            const pdfUrlPromise = Promise.race([
-                new Promise((resolve) => {
-                    // Headless: download may fire on the original page in some flows.
-                    this.page.on('download', (d) => resolve(d.url()));
+            // Arm listeners before submit so a fast headless download is never
+            // missed; the 30 s bound starts only after submit completes.
+            const pdfCapturePromise = new Promise((resolve) => {
+                // Headless: download may fire on the original page in some flows.
+                this.page.on('download', (d) => resolve(d.url()));
 
-                    ctx.on('page', (popup) => {
-                        // Headless: the popup navigates to the PDF then downloads it.
-                        popup.on('download', (d) => resolve(d.url()));
-                        // Headed: the popup's URL becomes the rendered PDF link.
-                        popup.waitForURL(/\.pdf/i, { timeout: 25000 })
-                            .then(() => resolve(popup.url()))
-                            .catch(() => { });
-                    });
-                }),
+                ctx.on('page', (popup) => {
+                    // Headless: the popup navigates to the PDF then downloads it.
+                    popup.on('download', (d) => resolve(d.url()));
+                    // Headed: the popup's URL becomes the rendered PDF link.
+                    popup.waitForURL(/\.pdf/i, { timeout: 25000 })
+                        .then(() => resolve(popup.url()))
+                        .catch(() => { });
+                });
+            });
+
+            await this.submitBtn.scrollIntoViewIfNeeded();
+            await this.submitBtn.click();
+            await expect(this.modal).toBeHidden({ timeout: 15000 });
+
+            const pdfUrlPromise = Promise.race([
+                pdfCapturePromise,
                 // Bound the wait so a missing PDF fails fast in the caller rather
                 // than hanging until the test timeout. catch() guards against the
                 // page closing before the timer elapses.
                 this.page.waitForTimeout(30000).then(() => null).catch(() => null),
             ]);
-
-            await this.submitBtn.scrollIntoViewIfNeeded();
-            await this.submitBtn.click();
-            await expect(this.modal).toBeHidden({ timeout: 15000 });
 
             // Wrap in an object so test.step resolves immediately instead of
             // awaiting the still-pending capture promise.
