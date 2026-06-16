@@ -81,8 +81,7 @@ jobs:
 
       # -----------------------------
       # Decide what to run:
-      #   full   — a shared file (config / pages / fixtures / services / utils /
-      #            data / auth setup / scripts) changed → can affect any spec
+      #   full   — shared infra (config / pages / fixtures / CI / …) changed
       #   scoped — only *.spec.js files changed → run just those (fast)
       #   none   — nothing test-relevant changed (e.g. README) → skip
       # -----------------------------
@@ -99,7 +98,9 @@ jobs:
           CHANGED=$(git diff --name-only "$BASE" HEAD)                    # list files changed between the divergence point and the current commit
           echo "Changed files:"; echo "$CHANGED"
           # If any changed path matches shared infra, scoping isn't safe → run everything.
-          if echo "$CHANGED" | grep -qE '^(playwright\.config\.js|allurerc\.mjs|package(-lock)?\.json|pages/|fixtures/|services/|utils/|data/|scripts/|tests/auth\.setup)'; then
+          # .github/ included so workflow-only PRs still execute tests (nightly no
+          # longer runs on pull_request).
+          if echo "$CHANGED" | grep -qE '^(playwright\.config\.js|allurerc\.mjs|package(-lock)?\.json|\.github/|pages/|fixtures/|services/|utils/|data/|scripts/|tests/auth\.setup)'; then
             echo "Shared infra changed → full suite."
             echo "mode=full" >> "$GITHUB_OUTPUT"
           else
@@ -117,6 +118,7 @@ jobs:
           fi
 
       - name: Run Playwright tests
+        id: playwright
         if: steps.scope.outputs.mode != 'none'                           # skip entirely when nothing test-relevant changed
         run: |
           if [ "${{ steps.scope.outputs.mode }}" = "scoped" ]; then
@@ -154,22 +156,53 @@ jobs:
             echo "body=🟦 **PR Tests skipped** — no \`*.spec.js\` or shared-infra changes detected." >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          # Pull pass/fail/skip counts out of Playwright's JSON report (0 if unreadable).
-          P=$(node -e 'try{console.log(require("./test-results.json").stats.expected||0)}catch{console.log(0)}')
-          F=$(node -e 'try{console.log(require("./test-results.json").stats.unexpected||0)}catch{console.log(0)}')
-          S=$(node -e 'try{console.log(require("./test-results.json").stats.skipped||0)}catch{console.log(0)}')
+          P=0; F=0; S=0
+          if [ -f test-results.json ]; then
+            P=$(node -e 'const s=require("./test-results.json").stats;process.stdout.write(String(s.expected||0))')
+            F=$(node -e 'const s=require("./test-results.json").stats;process.stdout.write(String(s.unexpected||0))')
+            S=$(node -e 'const s=require("./test-results.json").stats;process.stdout.write(String(s.skipped||0))')
+          fi
+          # Do not report zero failures when Playwright aborted or the JSON
+          # reporter never wrote — that would show a green summary on a red job.
+          if [ "${{ steps.playwright.outcome }}" != "success" ] || [ ! -f test-results.json ]; then
+            [ "$F" = "0" ] && F=1
+          fi
           MODE="${{ steps.scope.outputs.mode }}"
           SCOPE_NOTE="$MODE"
           [ "$MODE" = "scoped" ] && SCOPE_NOTE="scoped: ${{ steps.scope.outputs.specs }}"  # show which specs ran
           ICON="✅"; [ "$F" != "0" ] && ICON="❌"                                            # red icon if anything failed
           LINE="$ICON **PR Tests** — ${P} passed, ${F} failed, ${S} skipped (_${SCOPE_NOTE}_)"
+          if [ "${{ steps.playwright.outcome }}" != "success" ] || [ ! -f test-results.json ]; then
+            LINE="$ICON **PR Tests** — run did not complete cleanly (${P} passed, ${F} failed, ${S} skipped; _${SCOPE_NOTE}_)"
+          fi
           # Write the run-page summary (markdown)...
           echo "### $ICON PR Tests" >> "$GITHUB_STEP_SUMMARY"
           echo "- Passed: ${P} | Failed: ${F} | Skipped: ${S}" >> "$GITHUB_STEP_SUMMARY"
           echo "- Scope: ${SCOPE_NOTE}" >> "$GITHUB_STEP_SUMMARY"
           echo "- Report: download the **playwright-report** artifact above." >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ steps.playwright.outcome }}" != "success" ] || [ ! -f test-results.json ]; then
+            REPORT_STATE=$([ -f test-results.json ] && echo present || echo missing)
+            echo "- ⚠️ Playwright step outcome: \`${{ steps.playwright.outcome }}\`; report file **${REPORT_STATE}**." >> "$GITHUB_STEP_SUMMARY"
+          fi
           # ...and expose the one-line summary for the PR-comment step.
           echo "body=$LINE — see the run's *playwright-report* artifact for traces." >> "$GITHUB_OUTPUT"
+
+      - name: Fail workflow if tests did not pass
+        if: always() && steps.scope.outputs.mode != 'none'
+        run: |
+          if [ "${{ steps.playwright.outcome }}" != "success" ]; then
+            echo "Playwright step outcome: ${{ steps.playwright.outcome }}"
+            exit 1
+          fi
+          if [ ! -f test-results.json ]; then
+            echo "test-results.json missing after test run"
+            exit 1
+          fi
+          F=$(node -e 'const s=require("./test-results.json").stats;process.stdout.write(String(s.unexpected||0))')
+          if [ "$F" != "0" ]; then
+            echo "$F test(s) failed"
+            exit 1
+          fi
 
       - name: Comment on PR
         if: always() && github.event_name == 'pull_request'              # only when a PR exists (bare branch pushes just get the run summary)
