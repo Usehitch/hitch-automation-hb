@@ -23,7 +23,11 @@ export default defineConfig({
   timeout: 180000, // 3 min — finalization involves real API calls (credit pull, employment verify)
   reporter: [
     ['html', { open: 'never' }],
-    ['json', { outputFile: 'test-results.json' }]
+    ['json', { outputFile: 'test-results.json' }],
+    // Allure: writes raw results to ./allure-results, built into a report
+    // with `npm run allure:report` (locally) or in CI. detail:false keeps
+    // Playwright's internal setup steps out of each test's step tree.
+    ['allure-playwright', { resultsDir: 'allure-results', detail: false }]
   ],
   use: {
     baseURL: process.env.BASE_URL,

@@ -22,19 +22,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # -----------------------------
-      # Slack: Main branch push alert
-      # -----------------------------
-      - name: Slack Alert - Main Branch Push
-        if: github.event_name == 'push' && github.ref_name == 'main'
-        run: |
-          curl -X POST -H 'Content-type: application/json' \
-          --data "{
-            \"channel\": \"#automation-alerts\",
-            \"text\": \"📌 *Main Branch Updated*\n\n📦 Repository: ${{ github.repository }}\n🌿 Branch: ${{ github.ref_name }}\n👤 Actor: ${{ github.actor }}\n🔗 Commit: https://github.com/${{ github.repository }}/commit/${{ github.sha }}\"
-          }" \
-          ${{ secrets.SLACK_WEBHOOK_URL }}
-
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
@@ -127,6 +114,37 @@ jobs:
           } >> $GITHUB_ENV
 
       # -----------------------------
+      # Allure: restore history JSONL across runs (trends / flakiness)
+      # Allure 3 keeps ALL history in one file; restore-keys grabs the most
+      # recent cache, and the unique run_id key always saves the updated file.
+      # -----------------------------
+      - name: Restore Allure history
+        uses: actions/cache@v4
+        if: always()
+        with:
+          path: allure-history.jsonl
+          key: allure-history-${{ github.run_id }}
+          restore-keys: |
+            allure-history-
+
+      # -----------------------------
+      # Allure: strip spurious "skipped" twin results that allure-playwright's
+      # addSkippedResults() emits for this multi-project setup (otherwise the
+      # report can render every test as skipped). See scripts/allure-dedupe.js.
+      # -----------------------------
+      - name: Deduplicate Allure results
+        if: always()
+        run: node scripts/allure-dedupe.js allure-results
+
+      # -----------------------------
+      # Allure: generate report (reads + appends allure-history.jsonl;
+      # output dir + historyPath come from allurerc.mjs)
+      # -----------------------------
+      - name: Generate Allure report
+        if: always()
+        run: npx allure generate allure-results --name "Homebridge Nightly #${{ github.run_number }}"
+
+      # -----------------------------
       # Upload Playwright Report
       # -----------------------------
       - name: Upload Playwright Report
@@ -135,6 +153,17 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
+          retention-days: 30
+
+      # -----------------------------
+      # Upload Allure Report
+      # -----------------------------
+      - name: Upload Allure Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-report
+          path: allure-report/
           retention-days: 30
 
       # -----------------------------
@@ -150,36 +179,93 @@ jobs:
           keep_files: true
 
       # -----------------------------
-      # Slack Success Alert
+      # Deploy Allure Report to GitHub Pages (allure/<run_id>/)
+      # keep_files preserves the existing reports/ tree.
+      # -----------------------------
+      - name: Deploy Allure report to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: always()
+        with:
+          github_token: ${{ secrets.HB_TOKEN }}
+          publish_dir: allure-report/
+          destination_dir: allure/${{ github.run_id }}
+          keep_files: true
+
+      # -----------------------------
+      # Slack Success Alert — quiet one-line digest, nightly/main only.
+      # PR runs are intentionally skipped (GitHub PR checks already show status),
+      # which keeps the channel free of routine green pings.
       # -----------------------------
       - name: Slack Alert - Test Success
-        if: env.FAILED == '0'
+        if: env.FAILED == '0' && github.event_name != 'pull_request'
         run: |
-          RUN_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/${{ github.run_id }}/"
-          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-
-          curl -X POST -H 'Content-type: application/json' \
-          --data "{
-            \"channel\": \"#automation-alerts\",
-            \"text\": \"✅ *Nightly Regression Passed*\n\n📦 Repo: ${{ github.repository }}\n🌿 Branch: ${{ github.ref_name }}\n\n📈 Results:\n✅ Passed: ${PASSED}\n⏭️ Skipped: ${SKIPPED}\n❌ Failed: ${FAILED}\n\n📊 Report:\n${RUN_REPORT}\n\n🔍 GitHub Run:\n${RUN_URL}\"
-          }" \
-          ${{ secrets.SLACK_WEBHOOK_URL }}
+          ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure/${{ github.run_id }}/"
+          TEXT="✅ *Nightly Regression Passed* — ${PASSED} passed, ${SKIPPED} skipped on \`${{ github.ref_name }}\`. 🟣 <${ALLURE_REPORT}|Allure trends>"
+          jq -n --arg t "$TEXT" '{channel:"#automation-alerts", text:$t}' \
+          | curl -sS -X POST -H 'Content-type: application/json' -d @- ${{ secrets.SLACK_WEBHOOK_URL }}
 
       # -----------------------------
-      # Slack Failure Alert
+      # Slack Failure Alert — self-contained and actionable: includes the
+      # failed test names (already computed in FAILED_TESTS), @here, and links.
+      # Built with jq so test titles with quotes/newlines can't break the JSON.
+      # PR runs skipped (covered by GitHub PR checks).
       # -----------------------------
       - name: Slack Alert - Test Failed
-        if: env.FAILED != '0'
+        if: env.FAILED != '0' && github.event_name != 'pull_request'
         run: |
           RUN_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/${{ github.run_id }}/"
+          ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure/${{ github.run_id }}/"
           RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
-          curl -X POST -H 'Content-type: application/json' \
-          --data "{
-            \"channel\": \"#automation-alerts\",
-            \"text\": \"❌ *Nightly Regression Failed*\n\n📦 Repo: ${{ github.repository }}\n🌿 Branch: ${{ github.ref_name }}\n\n📈 Results:\n✅ Passed: ${PASSED}\n⏭️ Skipped: ${SKIPPED}\n❌ Failed: ${FAILED}\n\n🚨 Report:\n${RUN_REPORT}\n\n🔍 Logs:\n${RUN_URL}\"
-          }" \
-          ${{ secrets.SLACK_WEBHOOK_URL }}
+          # Prefix each failed test with a bullet for readability
+          FAILED_LIST=$(printf '%s\n' "$FAILED_TESTS" | sed 's/^/• /')
+
+          # Build the message with printf so every line stays indented inside
+          # the YAML block scalar (raw multiline strings dedented to column 0
+          # would terminate the block and break YAML parsing).
+          TEXT=$(printf '%s\n' \
+            "❌ *Nightly Regression Failed* <!here>" \
+            "📦 ${{ github.repository }} (\`${{ github.ref_name }}\`)" \
+            "📈 Passed: ${PASSED} | Failed: ${FAILED} | Skipped: ${SKIPPED}" \
+            "" \
+            "*Failed tests:*" \
+            "${FAILED_LIST}" \
+            "" \
+            "🚨 Playwright report: ${RUN_REPORT}" \
+            "🟣 Allure (trends/flakiness): ${ALLURE_REPORT}" \
+            "🔍 Run logs: ${RUN_URL}")
+
+          jq -n --arg t "$TEXT" '{channel:"#automation-alerts", text:$t}' \
+          | curl -sS -X POST -H 'Content-type: application/json' -d @- ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # -----------------------------
+      # Bug-report classifier (nightly schedule only — the confirmation
+      # threshold counts consecutive *nightly* runs). Filters flaky/infra,
+      # requires 2 consecutive nightly failures, dedups, and guards against
+      # environment outages. State persists across nights via actions/cache.
+      # -----------------------------
+      - name: Restore failure-tracking state
+        uses: actions/cache@v4
+        if: always() && github.event_name == 'schedule'
+        with:
+          path: failure-state.json
+          key: failure-state-${{ github.run_id }}
+          restore-keys: |
+            failure-state-
+
+      - name: Classify failures
+        if: always() && github.event_name == 'schedule'
+        run: node scripts/classify-failures.js test-results.json failure-state.json
+
+      - name: Slack Alert - Confirmed regressions
+        if: always() && github.event_name == 'schedule'
+        run: |
+          if [ -s slack-bug-report.json ]; then
+            curl -sS -X POST -H 'Content-type: application/json' \
+              -d @slack-bug-report.json ${{ secrets.SLACK_WEBHOOK_URL }}
+          else
+            echo "No confirmed regressions to report."
+          fi
 
       # -----------------------------
       # Mark Workflow Failed

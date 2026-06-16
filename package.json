@@ -6,7 +6,11 @@
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug",
-    "report": "playwright show-report"
+    "report": "playwright show-report",
+    "pretest": "node scripts/allure-clean.js allure-results",
+    "clean:allure": "node scripts/allure-clean.js allure-results allure-report",
+    "allure:report": "node scripts/allure-dedupe.js && node scripts/allure-clean.js allure-report && allure generate allure-results",
+    "allure:serve": "node scripts/allure-dedupe.js && node scripts/allure-clean.js allure-report && allure generate allure-results --open"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +19,8 @@
   "devDependencies": {
     "@playwright/test": "^1.59.1",
     "@types/node": "^25.6.0",
+    "allure": "^3.11.0",
+    "allure-playwright": "^3.10.0",
     "docx": "^9.6.1"
   },
   "dependencies": {
