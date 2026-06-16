@@ -1,0 +1,191 @@
+# Workflow display name — shown in the GitHub "Actions" tab and as the PR check name.
+name: PR / Dev Tests
+
+# Fast feedback for pull requests and feature branches — runs only the specs a
+# change touches, falling back to the full suite when shared infra changes.
+# The heavy full regression + Allure + Slack lives in nightly-test.yml.
+
+# "on:" lists the events that start this workflow.
+on:
+  # Run when a PR targeting main is opened/updated (synchronize) — gives the PR a check.
+  pull_request:
+    branches: [main]        # only PRs whose BASE branch is main
+  # Run on every push to any branch EXCEPT main (i.e. developer feature branches).
+  # main is excluded because post-merge validation is nightly-test.yml's job.
+  push:
+    branches-ignore: [main]
+  # Lets you start this workflow by hand from the Actions tab.
+  workflow_dispatch:
+
+# Concurrency groups serialize/cancel runs that share a "group" key.
+concurrency:
+  # One group per git ref (branch/PR), so each branch has its own lane.
+  group: pr-tests-${{ github.ref }}
+  # When a new run starts in a group, cancel any older in-progress run there —
+  # pushing twice quickly won't burn CI minutes on the stale commit.
+  cancel-in-progress: true
+
+# The GITHUB_TOKEN permissions this workflow is granted (least-privilege).
+permissions:
+  contents: read            # read the repo (checkout)
+  pull-requests: write      # needed to post/update the PR comment
+
+# A workflow is made of one or more jobs; jobs run in parallel unless chained with "needs:".
+jobs:
+  test:                                   # job id
+    timeout-minutes: 45                   # hard cap — kill the job if it runs longer
+    runs-on: ubuntu-latest                # the VM that hosts the container below
+    container:
+      # Run all steps inside Playwright's official image so browsers + OS deps
+      # are preinstalled and match the version we test with (1.59.1).
+      image: mcr.microsoft.com/playwright:v1.59.1-jammy
+
+    # Steps run top-to-bottom in the same container; each is a shell command or an action.
+    steps:
+      # Clone the repo into the workspace.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0                  # full history — needed so we can git-diff against main
+
+      # Install Node and enable npm's dependency cache for faster installs.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*             # latest LTS Node
+          cache: npm                      # cache ~/.npm keyed on package-lock.json
+
+      # Clean, reproducible install from package-lock.json.
+      - name: Install dependencies
+        run: npm ci
+
+      # Fail fast with a clear message if any required secret is missing, instead
+      # of a confusing error deep inside the tests.
+      - name: Validate required secrets
+        run: |
+          missing=""                                                      # accumulate names of missing secrets
+          [ -z "$BASE_URL" ] && missing="$missing BASE_URL"               # -z = "string is empty"
+          [ -z "$EMAIL" ] && missing="$missing EMAIL"
+          [ -z "$PASSWORD" ] && missing="$missing PASSWORD"
+          [ -z "$OTP_SECRET" ] && missing="$missing OTP_SECRET"
+          [ -z "$EMAIL_LO" ] && missing="$missing EMAIL_LO"
+          [ -z "$PASSWORD_LO" ] && missing="$missing PASSWORD_LO"
+          if [ -n "$missing" ]; then echo "❌ Missing required secrets:$missing"; exit 1; fi  # -n = "not empty" → abort
+          echo "✅ All required secrets are present"
+        env:
+          # Map repo/org secrets into env vars this step can read. Secrets are masked in logs.
+          BASE_URL: ${{ secrets.BASE_URL }}
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          OTP_SECRET: ${{ secrets.OTP_SECRET }}
+          EMAIL_LO: ${{ secrets.EMAIL_LO }}
+          PASSWORD_LO: ${{ secrets.PASSWORD_LO }}
+
+      # -----------------------------
+      # Decide what to run:
+      #   full   — a shared file (config / pages / fixtures / services / utils /
+      #            data / auth setup / scripts) changed → can affect any spec
+      #   scoped — only *.spec.js files changed → run just those (fast)
+      #   none   — nothing test-relevant changed (e.g. README) → skip
+      # -----------------------------
+      - name: Determine test scope
+        id: scope                                                         # id → other steps read its outputs as steps.scope.outputs.*
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"    # let git operate on the checkout dir (container owns it as a different user)
+          git fetch origin main >/dev/null 2>&1 || true                   # make sure we have main locally to diff against; ignore failure
+          BASE=$(git merge-base origin/main HEAD 2>/dev/null || true)     # find the commit where this branch diverged from main
+          if [ -z "$BASE" ]; then                                         # no common ancestor found (e.g. unrelated history)
+            echo "No merge-base with main — running full suite."
+            echo "mode=full" >> "$GITHUB_OUTPUT"; exit 0                  # write output "mode=full" and stop this step early
+          fi
+          CHANGED=$(git diff --name-only "$BASE" HEAD)                    # list files changed between the divergence point and the current commit
+          echo "Changed files:"; echo "$CHANGED"
+          # If any changed path matches shared infra, scoping isn't safe → run everything.
+          if echo "$CHANGED" | grep -qE '^(playwright\.config\.js|allurerc\.mjs|package(-lock)?\.json|pages/|fixtures/|services/|utils/|data/|scripts/|tests/auth\.setup)'; then
+            echo "Shared infra changed → full suite."
+            echo "mode=full" >> "$GITHUB_OUTPUT"
+          else
+            # Keep only changed *.spec.js files, reduce to basenames, dedupe, join with spaces.
+            #   sed 's#.*/##' strips the directory (avoids spaces in "Broker Flow/")
+            SPECS=$(echo "$CHANGED" | grep -E '^tests/.*\.spec\.js$' | sed 's#.*/##' | sort -u | tr '\n' ' ' || true)
+            if [ -z "$SPECS" ]; then                                      # no spec files changed at all
+              echo "No spec changes → skipping tests."
+              echo "mode=none" >> "$GITHUB_OUTPUT"
+            else
+              echo "Scoped run: $SPECS"
+              echo "mode=scoped" >> "$GITHUB_OUTPUT"                      # remember the mode...
+              echo "specs=$SPECS" >> "$GITHUB_OUTPUT"                     # ...and which spec basenames to run
+            fi
+          fi
+
+      - name: Run Playwright tests
+        if: steps.scope.outputs.mode != 'none'                           # skip entirely when nothing test-relevant changed
+        run: |
+          if [ "${{ steps.scope.outputs.mode }}" = "scoped" ]; then
+            npx playwright test ${{ steps.scope.outputs.specs }}         # Playwright treats each basename as a filename filter
+          else
+            npx playwright test                                          # mode=full → entire suite
+          fi
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          OTP_SECRET: ${{ secrets.OTP_SECRET }}
+          EMAIL_LO: ${{ secrets.EMAIL_LO }}
+          PASSWORD_LO: ${{ secrets.PASSWORD_LO }}
+
+      # Save the HTML report so failures can be debugged (with traces) after the run.
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always() && steps.scope.outputs.mode != 'none'               # always() → upload even when tests failed (that's when you need it)
+        with:
+          name: playwright-report                                        # artifact name shown on the run page
+          path: playwright-report/                                       # folder to upload
+          retention-days: 14                                             # auto-delete after 14 days
+
+      # -----------------------------
+      # PR-facing summary: a sticky comment + the run summary. No Slack (the
+      # channel is for the nightly; PR status is shown here + via the check).
+      # -----------------------------
+      - name: Build summary
+        if: always()                                                     # run even on failure so we still report results
+        id: summary
+        run: |
+          if [ "${{ steps.scope.outputs.mode }}" = "none" ]; then
+            echo "### 🟦 PR Tests: skipped (no spec changes)" >> "$GITHUB_STEP_SUMMARY"   # GITHUB_STEP_SUMMARY renders as markdown on the run page
+            echo "body=🟦 **PR Tests skipped** — no \`*.spec.js\` or shared-infra changes detected." >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Pull pass/fail/skip counts out of Playwright's JSON report (0 if unreadable).
+          P=$(node -e 'try{console.log(require("./test-results.json").stats.expected||0)}catch{console.log(0)}')
+          F=$(node -e 'try{console.log(require("./test-results.json").stats.unexpected||0)}catch{console.log(0)}')
+          S=$(node -e 'try{console.log(require("./test-results.json").stats.skipped||0)}catch{console.log(0)}')
+          MODE="${{ steps.scope.outputs.mode }}"
+          SCOPE_NOTE="$MODE"
+          [ "$MODE" = "scoped" ] && SCOPE_NOTE="scoped: ${{ steps.scope.outputs.specs }}"  # show which specs ran
+          ICON="✅"; [ "$F" != "0" ] && ICON="❌"                                            # red icon if anything failed
+          LINE="$ICON **PR Tests** — ${P} passed, ${F} failed, ${S} skipped (_${SCOPE_NOTE}_)"
+          # Write the run-page summary (markdown)...
+          echo "### $ICON PR Tests" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Passed: ${P} | Failed: ${F} | Skipped: ${S}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Scope: ${SCOPE_NOTE}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Report: download the **playwright-report** artifact above." >> "$GITHUB_STEP_SUMMARY"
+          # ...and expose the one-line summary for the PR-comment step.
+          echo "body=$LINE — see the run's *playwright-report* artifact for traces." >> "$GITHUB_OUTPUT"
+
+      - name: Comment on PR
+        if: always() && github.event_name == 'pull_request'              # only when a PR exists (bare branch pushes just get the run summary)
+        uses: actions/github-script@v7                                   # lets us call the GitHub API in JS
+        with:
+          script: |
+            // toJSON safely turns the step output into a quoted JS string literal.
+            const summary = ${{ toJSON(steps.summary.outputs.body) }};
+            // Hidden marker (<!-- pr-tests -->) lets us find & update our own comment instead of spamming new ones.
+            const body = `<!-- pr-tests -->\n${summary}`;
+            const { owner, repo } = context.repo;                        // current repo
+            const issue_number = context.payload.pull_request.number;    // a PR is an "issue" for the comments API
+            const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number });
+            const existing = comments.find(c => c.body && c.body.includes('<!-- pr-tests -->'));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });  // edit in place
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });             // first time → create
+            }
