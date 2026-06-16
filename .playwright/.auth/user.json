@@ -2,7 +2,7 @@
   "cookies": [
     {
       "name": "next-auth.applicant-csrf-token",
-      "value": "17addf6619b305ae30cb780e5c18be48c65bb8ca099d58881e19a597926d8468%7Cbc7b821e5e7967b9da5ad24fd26aae67a662f9bf6dc52927a8f13f5dac4674a1",
+      "value": "9ccd06697cfbf2d21b50efb37acbb26b6834e363ab56e85c1166ee1f33450c9e%7C4ce3891cabe22662f6a20a502200c1a19733a2315dc7376555dee9eb62f5e47e",
       "domain": "hb-staging-pos.onrender.com",
       "path": "/",
       "expires": -1,
@@ -22,80 +22,20 @@
     },
     {
       "name": "__cf_bm",
-      "value": "w.AulheHyasgkX6rGjO.4oyifrhDLwLBQM63.IyI07Q-1781604589.399796-1.0.1.1-ddt4Ijvg21pwp05QjN6DseZTzezk0saumF_6EAZPvCuZSwgxSqGakVdL8HfBsQXhj.JrvEBwCMk21L02HKTFavlmZDKn4Q6BbErKVexLkgy10uuDFuHpRjb8YnzNYkgN",
+      "value": "2J5ph2.CuQ4yG.bra2MJCaRgd7QHM2mqcSyOY0hBGOs-1781623421.579641-1.0.1.1-L3k.rbZR2SuCj9ftM8lt.pQSCI2IY2IJq7XK_Zm0OzhE6mNqhmDqACQH9ItPl4Drd9oCwQwp0Uh5nb3LK3Hq5ekODI0vjK60McgLceGDfOifIfix1Uz4r.N0rGpYy6Y4",
       "domain": ".argyle.com",
       "path": "/",
-      "expires": 1781606389.358831,
+      "expires": 1781625221.589075,
       "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "CLID",
-      "value": "f8eb972ec34c4d2ca6acbaf09f1e3d76.20260616.20270616",
-      "domain": "www.clarity.ms",
-      "path": "/",
-      "expires": 1813140590.026019,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "_clck",
-      "value": "1qj7p7e%5E2%5Eg6y%5E0%5E2358",
-      "domain": ".hb-staging-pos.onrender.com",
-      "path": "/",
-      "expires": 1813140590,
-      "httpOnly": false,
-      "secure": false,
-      "sameSite": "Lax"
-    },
-    {
-      "name": "__cf_bm",
-      "value": "sjwL1Jv4kSB2bi2dIiyRcX.IB2pjHvwBhKqDTewn734-1781604591.569808-1.0.1.1-1rzRH8vl_YIwBR0CvZNJf_fUiOI16ya1n85_YvXfHoCoYUp_sYwXlmPfhLBQ7M53AuJzrGwTpSOC3K5bKP3vvwAAjE_QfZaisSQMn.AL6AJ4AWncOBMlzo.uVZzV2vgG",
-      "domain": ".hs-scripts.com",
-      "path": "/",
-      "expires": 1781606391.701063,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "__cf_bm",
-      "value": "RM6.PNWj5nmAqGDe7UbAmfCmOD3ONZEd89kCGnLKUm0-1781604595.2799542-1.0.1.1-JlvYhrVog52jUQSxh0dRQHyaCVqS3QsF6xyS3gcSBA9nOniMGOHxAC7lvwTgeiJLmRyHmEQR6BoUbSahbsnv9pjpeKKULLXcu6lyaWOsqFzV8A_tD0GWNADEHeJeQXmF",
-      "domain": ".hs-analytics.net",
-      "path": "/",
-      "expires": 1781606395.442893,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "AWSALBCORS",
-      "value": "yUp+rh76HFFerZMuSsnqJhuXK3wU6FhKSgRhWRSSvEIlX+bV0Goszdfz2MzMjRe+HQ/1IsxAXBg850RdRhL3iW57Z1LCfX4VddQK68rNkdEzwtFIZHHruk0tkygi",
-      "domain": "app.usecanopy.com",
-      "path": "/",
-      "expires": 1782209395.52102,
-      "httpOnly": false,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "next-auth.portal-csrf-token",
-      "value": "ea0fd7f6c58239b436fe7f5273df73a70c2eb0c49d6dc169d5b5213238603dd6%7Cfd871a91a78cf5ca09f1f97a6306b72fd59bbb3699e239cdeb3b04e0cf4a45b2",
+      "value": "2fcdb7735d088b4de7d6facc14c7327b02cd72ec936652ebdcab20ed148259fe%7C2f1e59f7a91bde3a7cf32ddc946856aee24345c985f98ec48362bdf0522b494b",
       "domain": "hb-staging-pos.onrender.com",
       "path": "/",
       "expires": -1,
-      "httpOnly": false,
-      "secure": false,
-      "sameSite": "Lax"
-    },
-    {
-      "name": "_clsk",
-      "value": "1rnkze7%5E1781604605752%5E2%5E1%5Ei.clarity.ms%2Fcollect",
-      "domain": ".hb-staging-pos.onrender.com",
-      "path": "/",
-      "expires": 1781691005,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -112,10 +52,10 @@
     },
     {
       "name": "next-auth.portal-session-token",
-      "value": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..1Zqt_kuIMSUyWkdA.j4vvOrUdeMENrglBjEihX2ZmNpVsrJB26VbegJLmHcmR_XT7umiRl1HUV-6SxjLIlYcJaITd_za32b1oN6xaRG4dQT5xalyRVJ7XfOXeuUL5UlotxQ84IKMUl_iYO8gJ8r8xYHkhN0WV6-l3vQ2gc9KKfvGjnR84aZdRAFChe4ZVzg2eRbO91jhSVarm1qaiom7mhEcPU2Qk7O3vz2MaUYNvThrqPmqFny1QiWKBm0AOJN8c_mm37hKVZGxbMlZM3SwNLC592Tg-G_Pu2rK6GGMNqQjOvlzPKuYZCS_P-_to2YEOqGgr4HWcwGmoLLAkHn-SC3fJvV7tN6_efROYz6yoFHKR3CjERg8AB7HGAUTMkKOX4PG6ZkzG8tHlH7g.z6FRQHyBjtuHZjS3upph8Q",
+      "value": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..sD2mdldwhePgORQN.HmxfBO0tURTSkVJSrEDQMF73GH7qHnJItVdqqQZvu3l6R6AptqZ0jiR3st8fiHHeG3VSHzvpqY_gGLcszf8WU35XTEKtnTMM4ssDcUW9xPrk9276Kz4T7Ba6YpArgJeCjAVI-Sq9utS_wifuj1nVH-2-ZpD9q3Gh34dw0YWTOS5OT4p35jFwCd-idmC40G1nkE5AjX1S-KSzcKA1nDO-eU1AmVvsAdzgXm0NLorIlNQD5rc2fBmCQHn5_5G7My4gaBJKJ5F4-WP-QtEobAKu7gOZNQ-LSqyTIkfGcFf8XUNQdrOcmPKqiz0aJ3cq7kUJF31cgo0vZKSZG5LRSu6U4d05Z9oIjxDcuBxFZ7pnALtRmkbUymIUJuPBaEAGthg.7FhtMa0Em88LXMPsHeg7ig",
       "domain": "hb-staging-pos.onrender.com",
       "path": "/",
-      "expires": 1784196606.956807,
+      "expires": 1784215467.877003,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -127,15 +67,15 @@
       "localStorage": [
         {
           "name": "nextauth.message",
-          "value": "{\"event\":\"session\",\"data\":{\"trigger\":\"getSession\"},\"timestamp\":1781604591}"
+          "value": "{\"event\":\"session\",\"data\":{\"trigger\":\"getSession\"},\"timestamp\":1781623457}"
         },
         {
-          "name": "ZD-suid",
-          "value": "{\"id\":\"80ee9cec36f14ac484e47b1bdbec5c6e\",\"expiry\":1781605492031,\"tabs\":{\"count\":1,\"expiry\":0}}"
+          "name": "_cobrowse_window_id",
+          "value": "{\"value\":\"7fa452e1-c090-4cd4-aeca-ff8e73c2c7fe\"}"
         },
         {
           "name": "_cobrowse_device_id",
-          "value": "{\"value\":{\"id\":\"ca677227-4903-4268-a248-15a2e3e29478\",\"token\":\"43a9584f-5c48-48ad-a1c3-baec3e634c15\"}}"
+          "value": "{\"value\":{\"id\":\"f73958da-37b2-4e91-b94b-fd24b16edc33\",\"token\":\"0d827495-5b3a-44e2-91c5-cd2fcd03c182\"}}"
         },
         {
           "name": "email",
@@ -156,16 +96,7 @@
       "localStorage": [
         {
           "name": "rc::a",
-          "value": "YnV0bHpqMThhOXpkag=="
-        }
-      ]
-    },
-    {
-      "origin": "https://app.usecanopy.com",
-      "localStorage": [
-        {
-          "name": "_gcl_ls",
-          "value": "{\"schema\":\"gcl\",\"version\":1,\"gcl_ctr\":{\"value\":{\"value\":0,\"timeouts\":0,\"errors\":0,\"eopCount\":0,\"creationTimeMs\":1781604593753},\"expires\":1789380593753}}"
+          "value": "MXkxMHl6Z2p1c2hvdQ=="
         }
       ]
     }
