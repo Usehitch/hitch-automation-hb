@@ -1,55 +1,65 @@
+# Workflow display name (shown in the Actions tab).
 name: Nightly Regression Tests
 
+# Events that start this workflow.
 on:
+  # Scheduled run. Cron is in UTC: "minute hour day month weekday".
+  # '0 20 * * *' = every day at 20:00 UTC.
   schedule:
     - cron: '0 20 * * *'
+  # Also run on every push to main (post-merge full validation).
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches: [main]      # post-merge full validation
+  workflow_dispatch:      # manual full run
+  # NOTE: PRs and feature branches are handled by pr-tests.yml (scoped/fast),
+  # so this heavy full regression no longer runs on pull_request.
 
+# GITHUB_TOKEN permissions. "write" is required because the gh-pages deploy
+# steps push the generated reports to the gh-pages branch.
 permissions:
   contents: write
 
 jobs:
-  test:
-    timeout-minutes: 150
-    runs-on: ubuntu-latest
+  test:                                   # the single job
+    timeout-minutes: 150                  # generous cap — the full suite + real API calls is slow
+    runs-on: ubuntu-latest                # host VM
 
     container:
+      # Run inside Playwright's official image (browsers + OS deps preinstalled, version-matched).
       image: mcr.microsoft.com/playwright:v1.59.1-jammy
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4         # clone the repo
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4       # install Node + enable npm cache
         with:
           node-version: lts/*
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci                       # reproducible install from package-lock.json
 
       # -----------------------------
       # Validate Secrets
       # -----------------------------
       - name: Validate required secrets
         run: |
-          missing=""
-          [ -z "$BASE_URL" ] && missing="$missing BASE_URL"
+          missing=""                                          # collect names of any missing secrets
+          [ -z "$BASE_URL" ] && missing="$missing BASE_URL"   # -z = empty string
           [ -z "$EMAIL" ] && missing="$missing EMAIL"
           [ -z "$PASSWORD" ] && missing="$missing PASSWORD"
           [ -z "$OTP_SECRET" ] && missing="$missing OTP_SECRET"
           [ -z "$EMAIL_LO" ] && missing="$missing EMAIL_LO"
           [ -z "$PASSWORD_LO" ] && missing="$missing PASSWORD_LO"
 
-          if [ -n "$missing" ]; then
+          if [ -n "$missing" ]; then                          # -n = non-empty → something's missing
             echo "❌ Missing required secrets:$missing"
-            exit 1
+            exit 1                                            # abort the job early with a clear message
           fi
 
           echo "✅ All required secrets are present"
         env:
+          # Map repo secrets into env vars for this step (masked in logs).
           BASE_URL: ${{ secrets.BASE_URL }}
           EMAIL: ${{ secrets.EMAIL }}
           PASSWORD: ${{ secrets.PASSWORD }}
@@ -62,6 +72,9 @@ jobs:
       # -----------------------------
       - name: Run Playwright tests
         id: playwright
+        # continue-on-error: a failing suite does NOT stop the job here — the
+        # reporting/Allure/Slack steps below must still run. We fail the job at
+        # the very end (see "Fail workflow if tests failed").
         continue-on-error: true
         run: npx playwright test
         env:
@@ -78,8 +91,8 @@ jobs:
       # Install jq
       # -----------------------------
       - name: Install jq
-        if: always()
-        run: apt-get update -qq && apt-get install -y -qq jq
+        if: always()                                          # run even if tests failed (we need jq below)
+        run: apt-get update -qq && apt-get install -y -qq jq  # jq = CLI JSON processor (-qq = quiet)
 
       # -----------------------------
       # Extract Test Statistics
@@ -87,10 +100,12 @@ jobs:
       - name: Extract test results
         if: always()
         run: |
+          # Pull counts from Playwright's JSON report. "// 0" = default to 0 if the field is missing.
           PASSED=$(jq '.stats.expected // 0' test-results.json)
           FAILED=$(jq '.stats.unexpected // 0' test-results.json)
           SKIPPED=$(jq '.stats.skipped // 0' test-results.json)
 
+          # Persist to $GITHUB_ENV so later steps can read them as env.PASSED etc.
           echo "PASSED=$PASSED" >> $GITHUB_ENV
           echo "FAILED=$FAILED" >> $GITHUB_ENV
           echo "SKIPPED=$SKIPPED" >> $GITHUB_ENV
@@ -101,12 +116,15 @@ jobs:
       - name: Extract failed tests
         if: always()
         run: |
+          # jq -r (raw output): for every spec that has any failed result, print its title.
           FAILED_TESTS=$(jq -r '
             .suites[]?.specs[]? |
             select(any(.tests[]?.results[]?; .status=="failed")) |
             .title
           ' test-results.json)
 
+          # Write a possibly-multiline value to $GITHUB_ENV using heredoc syntax.
+          # "${FAILED_TESTS:-None}" prints "None" if the variable is empty.
           {
             echo "FAILED_TESTS<<EOF"
             echo "${FAILED_TESTS:-None}"
@@ -122,10 +140,10 @@ jobs:
         uses: actions/cache@v4
         if: always()
         with:
-          path: allure-history.jsonl
-          key: allure-history-${{ github.run_id }}
+          path: allure-history.jsonl                          # the single file Allure 3 stores history in
+          key: allure-history-${{ github.run_id }}            # unique per run → cache always saves a fresh copy at job end
           restore-keys: |
-            allure-history-
+            allure-history-                                   # prefix match → restores the most recent previous cache
 
       # -----------------------------
       # Allure: strip spurious "skipped" twin results that allure-playwright's
@@ -142,7 +160,7 @@ jobs:
       # -----------------------------
       - name: Generate Allure report
         if: always()
-        run: npx allure generate allure-results --name "Homebridge Nightly #${{ github.run_number }}"
+        run: npx allure generate allure-results --name "Homebridge Nightly #${{ github.run_number }}"  # run_number = incrementing run counter
 
       # -----------------------------
       # Upload Playwright Report
@@ -153,7 +171,7 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
-          retention-days: 30
+          retention-days: 30                                  # keep the artifact for 30 days
 
       # -----------------------------
       # Upload Allure Report
@@ -170,13 +188,13 @@ jobs:
       # Deploy Report to GitHub Pages
       # -----------------------------
       - name: Deploy report to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@v4                   # pushes a folder to the gh-pages branch
         if: always()
         with:
-          github_token: ${{ secrets.HB_TOKEN }}
-          publish_dir: playwright-report/
-          destination_dir: reports/${{ github.run_id }}
-          keep_files: true
+          github_token: ${{ secrets.HB_TOKEN }}               # PAT with push rights to gh-pages
+          publish_dir: playwright-report/                     # folder to publish
+          destination_dir: reports/${{ github.run_id }}       # publish under reports/<run_id>/ (one per run)
+          keep_files: true                                    # don't wipe other folders already on gh-pages
 
       # -----------------------------
       # Deploy Allure Report to GitHub Pages (allure/<run_id>/)
@@ -188,7 +206,7 @@ jobs:
         with:
           github_token: ${{ secrets.HB_TOKEN }}
           publish_dir: allure-report/
-          destination_dir: allure/${{ github.run_id }}
+          destination_dir: allure/${{ github.run_id }}        # publish under allure/<run_id>/
           keep_files: true
 
       # -----------------------------
@@ -197,10 +215,13 @@ jobs:
       # which keeps the channel free of routine green pings.
       # -----------------------------
       - name: Slack Alert - Test Success
+        # Only when zero failures AND not a PR event.
         if: env.FAILED == '0' && github.event_name != 'pull_request'
         run: |
           ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure/${{ github.run_id }}/"
+          # <url|label> is Slack's hyperlink syntax.
           TEXT="✅ *Nightly Regression Passed* — ${PASSED} passed, ${SKIPPED} skipped on \`${{ github.ref_name }}\`. 🟣 <${ALLURE_REPORT}|Allure trends>"
+          # jq -n --arg builds a safely-escaped JSON body; curl POSTs it (-d @- reads from stdin).
           jq -n --arg t "$TEXT" '{channel:"#automation-alerts", text:$t}' \
           | curl -sS -X POST -H 'Content-type: application/json' -d @- ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -211,6 +232,7 @@ jobs:
       # PR runs skipped (covered by GitHub PR checks).
       # -----------------------------
       - name: Slack Alert - Test Failed
+        # Only when there are failures AND not a PR event.
         if: env.FAILED != '0' && github.event_name != 'pull_request'
         run: |
           RUN_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/${{ github.run_id }}/"
@@ -246,23 +268,23 @@ jobs:
       # -----------------------------
       - name: Restore failure-tracking state
         uses: actions/cache@v4
-        if: always() && github.event_name == 'schedule'
+        if: always() && github.event_name == 'schedule'       # schedule-only: "consecutive nightlies" must mean nightly runs
         with:
-          path: failure-state.json
+          path: failure-state.json                            # per-test streak/notified state
           key: failure-state-${{ github.run_id }}
           restore-keys: |
             failure-state-
 
       - name: Classify failures
         if: always() && github.event_name == 'schedule'
-        run: node scripts/classify-failures.js test-results.json failure-state.json
+        run: node scripts/classify-failures.js test-results.json failure-state.json  # writes slack-bug-report.json when there's something to report
 
       - name: Slack Alert - Confirmed regressions
         if: always() && github.event_name == 'schedule'
         run: |
-          if [ -s slack-bug-report.json ]; then
+          if [ -s slack-bug-report.json ]; then               # -s = file exists and is non-empty
             curl -sS -X POST -H 'Content-type: application/json' \
-              -d @slack-bug-report.json ${{ secrets.SLACK_WEBHOOK_URL }}
+              -d @slack-bug-report.json ${{ secrets.SLACK_WEBHOOK_URL }}   # the classifier already built the payload
           else
             echo "No confirmed regressions to report."
           fi
@@ -270,6 +292,8 @@ jobs:
       # -----------------------------
       # Mark Workflow Failed
       # -----------------------------
+      # The test step used continue-on-error, so the job is still "green" here.
+      # Fail it explicitly if any test failed, so the run shows red.
       - name: Fail workflow if tests failed
         if: env.FAILED != '0'
         run: |

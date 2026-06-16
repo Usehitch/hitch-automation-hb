@@ -1,0 +1,167 @@
+# Workflow display name.
+name: E2E Deploy Gate
+
+# Reusable pre-deploy E2E gate. The APP repo calls this before deploying; the
+# deploy job `needs:` it, so deploy only proceeds when the suite is green.
+#
+# Caller (in the app repo's deploy workflow):
+#   jobs:
+#     e2e-gate:
+#       uses: Usehitch/homebridge/.github/workflows/e2e-gate.yml@main
+#       with:
+#         base_url: https://staging.example.com   # the to-be-deployed env
+#         grep: "@smoke"                            # optional; empty = full suite
+#       secrets: inherit
+#     deploy:
+#       needs: e2e-gate
+#       if: ${{ needs.e2e-gate.outputs.passed == 'true' }}
+#       runs-on: ubuntu-latest
+#       steps: [ ...your deploy steps... ]
+on:
+  # workflow_call = this workflow can be invoked by another workflow (the gate use case).
+  workflow_call:
+    # Inputs the caller passes via "with:". Typed, optional, with defaults.
+    inputs:
+      base_url:
+        description: "Target URL to test (falls back to the BASE_URL secret if empty)"
+        type: string
+        required: false
+        default: ""
+      grep:
+        description: "Playwright --grep filter to scope the gate (e.g. '@smoke'). Empty runs the full suite."
+        type: string
+        required: false
+        default: ""
+    # Secrets the caller must pass (via "secrets: inherit" or explicitly). For
+    # cross-repo calls these come from the CALLER repo, not this one.
+    secrets:
+      BASE_URL:    { required: false }    # optional: only needed if base_url input is empty
+      EMAIL:       { required: true }
+      PASSWORD:    { required: true }
+      OTP_SECRET:  { required: true }
+      EMAIL_LO:    { required: true }
+      PASSWORD_LO: { required: true }
+    # Values this workflow returns to the caller (readable as needs.<job>.outputs.*).
+    outputs:
+      passed:
+        description: "true when the gate passed (safe to deploy)"
+        value: ${{ jobs.e2e.outputs.passed }}     # forwards the job-level output below
+  # Allows manual runs from the Actions tab (with the same two inputs).
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Target URL to test (falls back to the BASE_URL secret if empty)"
+        type: string
+        required: false
+        default: ""
+      grep:
+        description: "Playwright --grep filter (e.g. '@smoke'). Empty = full suite."
+        type: string
+        required: false
+        default: ""
+  # Lets an EXTERNAL system trigger the gate via the REST API (event_type: pre-deploy-e2e).
+  # Note: this is asynchronous (fire-and-forget); the synchronous gate is workflow_call.
+  repository_dispatch:
+    types: [pre-deploy-e2e] # external trigger; payload: { base_url, grep }
+
+# Least-privilege token: this job only reads the repo.
+permissions:
+  contents: read
+
+jobs:
+  e2e:                                              # job id (referenced by outputs above)
+    timeout-minutes: 60                             # safety cap
+    runs-on: ubuntu-latest                          # host VM
+    container:
+      image: mcr.microsoft.com/playwright:v1.59.1-jammy   # browsers + deps preinstalled
+    # Job-level output, fed by the "Set gate result" step; surfaced to the caller via on.workflow_call.outputs.
+    outputs:
+      passed: ${{ steps.result.outputs.passed }}
+
+    steps:
+      - uses: actions/checkout@v4                   # clone the test suite
+
+      - uses: actions/setup-node@v4                 # install Node + npm cache
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci                                 # reproducible install from the lockfile
+
+      # The three triggers expose inputs differently (inputs.* for call/dispatch,
+      # client_payload.* for repository_dispatch). Normalize them into env vars
+      # written to $GITHUB_ENV so later steps can read them uniformly.
+      - name: Resolve gate inputs
+        run: |
+          BASE_URL="${{ inputs.base_url }}"                                  # set for workflow_call / workflow_dispatch
+          GREP="${{ inputs.grep }}"
+          # repository_dispatch carries its values in client_payload instead of inputs
+          [ -z "$BASE_URL" ] && BASE_URL="${{ github.event.client_payload.base_url }}"
+          [ -z "$GREP" ] && GREP="${{ github.event.client_payload.grep }}"
+          # last resort: use the BASE_URL secret if no explicit target was provided
+          [ -z "$BASE_URL" ] && BASE_URL="${{ secrets.BASE_URL }}"
+          if [ -z "$BASE_URL" ]; then echo "❌ No base_url input and no BASE_URL secret."; exit 1; fi
+          echo "BASE_URL=$BASE_URL" >> "$GITHUB_ENV"                         # persist to env for following steps
+          echo "GREP=$GREP" >> "$GITHUB_ENV"
+          echo "🎯 Gate target: $BASE_URL  ${GREP:+(grep: $GREP)}"          # ${VAR:+text} prints "text" only if VAR is set
+
+      # Abort early with a readable message if a required credential is missing.
+      - name: Validate required secrets
+        run: |
+          missing=""
+          [ -z "$EMAIL" ] && missing="$missing EMAIL"
+          [ -z "$PASSWORD" ] && missing="$missing PASSWORD"
+          [ -z "$OTP_SECRET" ] && missing="$missing OTP_SECRET"
+          [ -z "$EMAIL_LO" ] && missing="$missing EMAIL_LO"
+          [ -z "$PASSWORD_LO" ] && missing="$missing PASSWORD_LO"
+          if [ -n "$missing" ]; then echo "❌ Missing required secrets:$missing"; exit 1; fi
+          echo "✅ All required secrets present"
+        env:
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          OTP_SECRET: ${{ secrets.OTP_SECRET }}
+          EMAIL_LO: ${{ secrets.EMAIL_LO }}
+          PASSWORD_LO: ${{ secrets.PASSWORD_LO }}
+
+      # The gate itself. NO continue-on-error: if tests fail, this step fails →
+      # the job fails → the caller's `needs: e2e-gate` deploy job is skipped.
+      - name: Run E2E gate
+        id: gate                                                            # id so the next step can read steps.gate.outcome
+        run: |
+          if [ -n "$GREP" ]; then                                           # a filter was provided → scoped gate
+            echo "Running scoped gate: --grep \"$GREP\""
+            npx playwright test --grep "$GREP"
+          else
+            echo "Running full suite as the gate"
+            npx playwright test
+          fi
+        env:
+          BASE_URL: ${{ env.BASE_URL }}                                     # resolved target from the step above
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          OTP_SECRET: ${{ secrets.OTP_SECRET }}
+          EMAIL_LO: ${{ secrets.EMAIL_LO }}
+          PASSWORD_LO: ${{ secrets.PASSWORD_LO }}
+
+      # Compute the boolean "passed" output (a convenience for callers who prefer
+      # an explicit `if:` over relying on job success/failure).
+      - name: Set gate result
+        id: result
+        if: always()                                                        # run even if the gate step failed
+        run: |
+          F=$(node -e 'try{console.log(require("./test-results.json").stats.unexpected||0)}catch{console.log(1)}')  # failed count (1 if report unreadable)
+          if [ "${{ steps.gate.outcome }}" = "success" ] && [ "$F" = "0" ]; then   # gate step succeeded AND zero failures
+            echo "passed=true" >> "$GITHUB_OUTPUT"; echo "✅ Gate PASSED — safe to deploy"
+          else
+            echo "passed=false" >> "$GITHUB_OUTPUT"; echo "⛔ Gate FAILED — deploy should not proceed"
+          fi
+
+      # Keep the HTML report (with traces) so a failed gate can be investigated.
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()                                                        # upload even on failure (when you need it most)
+        with:
+          name: e2e-gate-report
+          path: playwright-report/
+          retention-days: 14
