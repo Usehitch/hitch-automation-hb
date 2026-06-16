@@ -144,17 +144,25 @@ jobs:
           EMAIL_LO: ${{ secrets.EMAIL_LO }}
           PASSWORD_LO: ${{ secrets.PASSWORD_LO }}
 
-      # Compute the boolean "passed" output (a convenience for callers who prefer
-      # an explicit `if:` over relying on job success/failure).
+      # Compute the boolean "passed" output for callers using needs.*.outputs.passed,
+      # then fail the job explicitly so callers gating on job success alone are safe too.
       - name: Set gate result
         id: result
         if: always()                                                        # run even if the gate step failed
         run: |
-          F=$(node -e 'try{console.log(require("./test-results.json").stats.unexpected||0)}catch{console.log(1)}')  # failed count (1 if report unreadable)
-          if [ "${{ steps.gate.outcome }}" = "success" ] && [ "$F" = "0" ]; then   # gate step succeeded AND zero failures
+          F=0
+          if [ -f test-results.json ]; then
+            F=$(node -e 'const s=require("./test-results.json").stats;process.stdout.write(String(s.unexpected||0))')
+          else
+            F=1
+          fi
+          if [ "${{ steps.gate.outcome }}" = "success" ] && [ -f test-results.json ] && [ "$F" = "0" ]; then
             echo "passed=true" >> "$GITHUB_OUTPUT"; echo "✅ Gate PASSED — safe to deploy"
           else
             echo "passed=false" >> "$GITHUB_OUTPUT"; echo "⛔ Gate FAILED — deploy should not proceed"
+            [ "${{ steps.gate.outcome }}" != "success" ] && echo "  Playwright step outcome: ${{ steps.gate.outcome }}"
+            [ ! -f test-results.json ] && echo "  test-results.json missing"
+            [ "$F" != "0" ] && echo "  unexpected failures: $F"
           fi
 
       # Keep the HTML report (with traces) so a failed gate can be investigated.
@@ -165,3 +173,13 @@ jobs:
           name: e2e-gate-report
           path: playwright-report/
           retention-days: 14
+
+      # Set gate result always exits 0 so passed=false is written before we fail.
+      # Without this, a green job + passed=false could let deploy proceed on job success alone.
+      - name: Fail gate if not passed
+        if: always()
+        run: |
+          if [ "${{ steps.result.outputs.passed }}" != "true" ]; then
+            echo "Gate did not pass (passed=${{ steps.result.outputs.passed }})"
+            exit 1
+          fi
