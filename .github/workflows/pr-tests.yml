@@ -19,8 +19,10 @@ on:
 
 # Concurrency groups serialize/cancel runs that share a "group" key.
 concurrency:
-  # One group per git ref (branch/PR), so each branch has its own lane.
-  group: pr-tests-${{ github.ref }}
+  # One group per source branch. github.ref differs by event (push → refs/heads/foo,
+  # pull_request → refs/pull/N/merge), so use head_ref || ref_name — both resolve
+  # to the branch name and dedupe the push + pull_request pair on the same commit.
+  group: pr-tests-${{ github.head_ref || github.ref_name }}
   # When a new run starts in a group, cancel any older in-progress run there —
   # pushing twice quickly won't burn CI minutes on the stale commit.
   cancel-in-progress: true
