@@ -160,7 +160,11 @@ jobs:
       # -----------------------------
       - name: Generate Allure report
         if: always()
-        run: npx allure generate allure-results --name "Homebridge Nightly #${{ github.run_number }}"  # run_number = incrementing run counter
+        # Block scalar (run: |) so the '#' in the --name value is treated as a
+        # literal, not a YAML comment. As a plain scalar, YAML truncates the line
+        # at " #...", producing an unterminated quoted string that crashes sh.
+        run: |
+          npx allure generate allure-results --name "Homebridge Nightly #${{ github.run_number }}"
 
       # -----------------------------
       # Upload Playwright Report
@@ -215,8 +219,10 @@ jobs:
       # which keeps the channel free of routine green pings.
       # -----------------------------
       - name: Slack Alert - Test Success
+        # always() so a failure in an earlier step (e.g. Allure/gh-pages) can't
+        # silently suppress the alert via the implicit success() gate.
         # Only when zero failures AND not a PR event.
-        if: env.FAILED == '0' && github.event_name != 'pull_request'
+        if: always() && env.FAILED == '0' && github.event_name != 'pull_request'
         run: |
           ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure/${{ github.run_id }}/"
           # <url|label> is Slack's hyperlink syntax.
@@ -232,8 +238,10 @@ jobs:
       # PR runs skipped (covered by GitHub PR checks).
       # -----------------------------
       - name: Slack Alert - Test Failed
+        # always() so a failure in an earlier step (e.g. Allure/gh-pages) can't
+        # silently suppress the alert via the implicit success() gate.
         # Only when there are failures AND not a PR event.
-        if: env.FAILED != '0' && github.event_name != 'pull_request'
+        if: always() && env.FAILED != '0' && github.event_name != 'pull_request'
         run: |
           RUN_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/${{ github.run_id }}/"
           ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure/${{ github.run_id }}/"
