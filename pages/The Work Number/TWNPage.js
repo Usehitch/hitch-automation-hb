@@ -176,7 +176,10 @@ class TWNPage {
         await test.step('Fill credit check fields (TWN)', async () => {
             const cc = data.creditCheck;
 
-            await this.ssnInput.waitFor({ state: 'visible', timeout: 30000 });
+            // The prior "Tell us about yourself" Continue submit goes to the
+            // staging POS backend, which can be slow to respond (Render). Allow
+            // extra time for it to process and render the credit-check page.
+            await this.ssnInput.waitFor({ state: 'visible', timeout: 60000 });
             await this.ssnInput.fill(cc.ssn);
             await this.ssnInput.press('Tab');
 

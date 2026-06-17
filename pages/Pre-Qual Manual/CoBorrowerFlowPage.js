@@ -1132,7 +1132,27 @@ class CoBorrowerFlowPage {
                     completeAppLink.click(),
                 ]);
 
-                await appTab.waitForLoadState('domcontentloaded', { timeout: 30000 });
+                // The invite link routes through an email-tracking redirect into
+                // the staging POS app (Render), which can cold-start and take well
+                // over 30 s to fire 'domcontentloaded'. Give it room, but don't
+                // hard-fail on the load state — popups make waitForLoadState flaky.
+                // The real readiness signal is the element waits below.
+                await appTab
+                    .waitForLoadState('domcontentloaded', { timeout: 90000 })
+                    .catch(() => { });
+
+                // -- Consumer interstitial --------------------------------------
+                // The link may first land on an "Are you a consumer?" page with a
+                // "CONTINUE APPLICATION" button before reaching Review Information.
+                const continueApplication = appTab
+                    .getByRole('button', { name: /Continue Application/i })
+                    .or(appTab.getByRole('link', { name: /Continue Application/i }))
+                    .first();
+                if (await continueApplication
+                    .isVisible({ timeout: 15000 })
+                    .catch(() => false)) {
+                    await continueApplication.click();
+                }
 
                 // -- Verify Review Information page -----------------------------
                 await expect(

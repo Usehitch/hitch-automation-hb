@@ -58,7 +58,7 @@
         "name": "chromium",
         "testDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/tests",
         "testIgnore": [
-          "/Co-Borrower|invitation\\.spec|certifications\\.spec|pipeline-management\\.spec|property-applicant-data\\.spec/"
+          "/Co-Borrower|invitation\\.spec|certifications\\.spec|pipeline-management\\.spec|property-applicant-data\\.spec|deal-optimization\\.spec/"
         ],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -77,7 +77,7 @@
         "testDir": "D:/Projects/Automation/Hitch-Playwright/homebridge/tests",
         "testIgnore": [],
         "testMatch": [
-          "/Co-Borrower|invitation\\.spec|certifications\\.spec|pipeline-management\\.spec|property-applicant-data\\.spec/"
+          "/Co-Borrower|invitation\\.spec|certifications\\.spec|pipeline-management\\.spec|property-applicant-data\\.spec|deal-optimization\\.spec/"
         ],
         "timeout": 180000
       }
@@ -136,10 +136,10 @@
               "projectName": "setup-lo",
               "results": [
                 {
-                  "workerIndex": 2,
+                  "workerIndex": 8,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 15313,
+                  "duration": 14810,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
@@ -147,14 +147,14 @@
                   "steps": [
                     {
                       "title": "Click the go to broker portal",
-                      "duration": 90
+                      "duration": 67
                     },
                     {
                       "title": "Submit email and password",
-                      "duration": 116
+                      "duration": 100
                     }
                   ],
-                  "startTime": "2026-06-16T15:33:19.073Z",
+                  "startTime": "2026-06-17T17:21:41.080Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -170,102 +170,145 @@
       ]
     },
     {
-      "title": "LO Flow\\certifications.spec.js",
-      "file": "LO Flow/certifications.spec.js",
+      "title": "LO Flow\\deal-optimization.spec.js",
+      "file": "LO Flow/deal-optimization.spec.js",
       "column": 0,
       "line": 0,
-      "specs": [
+      "specs": [],
+      "suites": [
         {
-          "title": "LO certifies the pending MLO application",
-          "ok": true,
-          "tags": [],
-          "tests": [
+          "title": "LO - Deal Optimization",
+          "file": "LO Flow/deal-optimization.spec.js",
+          "line": 26,
+          "column": 6,
+          "specs": [
             {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium-lo",
-              "projectName": "chromium-lo",
-              "results": [
+              "title": "LO optimizes the deal to improve DTI (loan amount + debt payoff)",
+              "ok": true,
+              "tags": [],
+              "tests": [
                 {
-                  "workerIndex": 3,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 19482,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "steps": [
+                  "timeout": 360000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-lo",
+                  "projectName": "chromium-lo",
+                  "results": [
                     {
-                      "title": "Open the portal pipeline",
-                      "duration": 6721
-                    },
-                    {
-                      "title": "Find the loan to certify (search \"4556 Eliot St, Denver, CO 80211\")",
-                      "duration": 2132,
+                      "workerIndex": 9,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 123152,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
                       "steps": [
                         {
-                          "title": "Search for \"4556 Eliot St, Denver, CO 80211\"",
-                          "duration": 2110
+                          "title": "Start manual pre-qual and reach Offer Review",
+                          "duration": 41843,
+                          "steps": [
+                            {
+                              "title": "Click the start app button",
+                              "duration": 111
+                            },
+                            {
+                              "title": "Click the start pre-qual manually button",
+                              "duration": 1965
+                            },
+                            {
+                              "title": "Fill application details",
+                              "duration": 2823,
+                              "steps": [
+                                {
+                                  "title": "Fill property address",
+                                  "duration": 399
+                                },
+                                {
+                                  "title": "Fill job details",
+                                  "duration": 209
+                                }
+                              ]
+                            },
+                            {
+                              "title": "Click Next to proceed to Mortgages & Liens",
+                              "duration": 22955,
+                              "steps": [
+                                {
+                                  "title": "Close soft credit consent PDF tab(s)",
+                                  "duration": 5
+                                }
+                              ]
+                            },
+                            {
+                              "title": "Fill mortgages & liens",
+                              "duration": 148
+                            },
+                            {
+                              "title": "Click Next to proceed to Offer Review",
+                              "duration": 13817
+                            }
+                          ]
+                        },
+                        {
+                          "title": "Lever 1 — adjust the requested loan amount",
+                          "duration": 436,
+                          "steps": [
+                            {
+                              "title": "Update requested loan amount",
+                              "duration": 411
+                            },
+                            {
+                              "title": "Verify reduced loan amount is reflected on the summary",
+                              "duration": 21
+                            }
+                          ]
+                        },
+                        {
+                          "title": "Lever 2 — select a debt to pay off and confirm DTI recalculates",
+                          "duration": 70820,
+                          "steps": [
+                            {
+                              "title": "Open Manage Debt Payoffs modal",
+                              "duration": 80
+                            },
+                            {
+                              "title": "Verify debt payoff modal contents",
+                              "duration": 15090
+                            },
+                            {
+                              "title": "Pay off a fundable debt and measure DTI change",
+                              "duration": 55313
+                            },
+                            {
+                              "title": "Save debt payoff plan",
+                              "duration": 334
+                            }
+                          ]
                         }
-                      ]
-                    },
-                    {
-                      "title": "Certify the pending MLO loan",
-                      "duration": 1108,
-                      "steps": [
-                        {
-                          "title": "Click Certify on first pending MLO loan",
-                          "duration": 154
-                        },
-                        {
-                          "title": "Wait for MLO Certification modal",
-                          "duration": 15
-                        },
-                        {
-                          "title": "Check all certification checkboxes",
-                          "duration": 393
-                        },
-                        {
-                          "title": "Fill Broker MLO Name",
-                          "duration": 65
-                        },
-                        {
-                          "title": "Submit MLO certification (capturing broker certification PDF)",
-                          "duration": 475
-                        }
-                      ]
-                    },
-                    {
-                      "title": "Verify certification succeeded",
-                      "duration": 8
-                    },
-                    {
-                      "title": "Verify the broker certification PDF",
-                      "duration": 7092
+                      ],
+                      "startTime": "2026-06-17T17:21:57.224Z",
+                      "annotations": [],
+                      "attachments": []
                     }
                   ],
-                  "startTime": "2026-06-16T15:33:35.992Z",
-                  "annotations": [],
-                  "attachments": []
+                  "status": "expected"
                 }
               ],
-              "status": "expected"
+              "id": "4518a63c3e098dda1dc1-f29b6a0d675f1740cb7a",
+              "file": "LO Flow/deal-optimization.spec.js",
+              "line": 32,
+              "column": 9
             }
-          ],
-          "id": "87f86bb926cc6b931a3b-4db75c9fd3b887e31be1",
-          "file": "LO Flow/certifications.spec.js",
-          "line": 36,
-          "column": 5
+          ]
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-16T15:33:17.366Z",
-    "duration": 38781.87799999863,
+    "startTime": "2026-06-17T17:21:39.667Z",
+    "duration": 141352.733,
     "expected": 2,
     "skipped": 0,
     "unexpected": 0,

@@ -11,13 +11,17 @@ class OfferReviewPage {
         // -- Loan amount section -----------------------------------------------
         this.changeLoanAmountBtn = this.page.getByRole('button', { name: /CHANGE/i });
 
-        // -- "Reduce Requested Loan Amount" modal ------------------------------
+        // -- "Change Requested Loan Amount" modal ------------------------------
+        // Heading reads "Change Requested Loan Amount" (opened via the CHANGE
+        // button). Match both wordings defensively in case the app copy changes.
         // Scoped to the dialog that contains the heading so the live-chat widget
         // (also role="dialog") is never accidentally matched.
         this.loanAmountModal = this.page.locator('[role="dialog"]').filter({
-            has: this.page.getByText('Reduce Requested Loan Amount'),
+            has: this.page.getByText(/(Change|Reduce) Requested Loan Amount/i),
         });
-        this.modalHeading = this.loanAmountModal.getByText('Reduce Requested Loan Amount');
+        this.modalHeading = this.loanAmountModal
+            .getByText(/(Change|Reduce) Requested Loan Amount/i)
+            .first();
         this.loanAmountInput = this.loanAmountModal.getByLabel(/Requested Loan Amount/i);
         this.modalCancelBtn = this.loanAmountModal.getByRole('button', { name: /CANCEL/i });
         this.modalSaveBtn = this.loanAmountModal.getByRole('button', { name: /^SAVE$/i });
@@ -101,6 +105,26 @@ class OfferReviewPage {
     };
 
     /**
+     * Asserts the reduced requested loan amount is reflected on the Offer Review
+     * summary after updateLoanAmount(). Skips when changeLoanAmount is falsy.
+     *
+     * newLoanAmount is a raw number string ('50000'); the summary renders it
+     * formatted ('$50,000'). The match requires a leading "$" so e.g. "$150,000"
+     * can never satisfy a "50,000" search by substring.
+     */
+    async verifyLoanAmountReduced(data) {
+        await test.step('Verify reduced loan amount is reflected on the summary', async () => {
+            const o = data.offerReview;
+            if (!o?.changeLoanAmount) return;
+
+            const grouped = Number(o.newLoanAmount).toLocaleString('en-US'); // '50,000'
+            await expect(
+                this.page.getByText(new RegExp(`\\$\\s?${grouped}\\b`)).first()
+            ).toBeVisible({ timeout: 15000 });
+        });
+    };
+
+    /**
      * Clicks MANAGE to open the debt payoff modal.
      * Skips if offerReview.debtPayoff.manage is falsy or the MANAGE button is absent.
      *
@@ -154,8 +178,13 @@ class OfferReviewPage {
     };
 
     /**
-     * Verifies DTI section, debts list, and summary inside the debt payoff modal.
-     * Skips if the modal was not successfully opened by clickManageDebtPayoffs.
+     * Verifies the Debt-to-Income (DTI) section, debts list, and summary inside
+     * the debt payoff modal. Skips if the modal was not opened.
+     *
+     * The DTI ratio (monthly debt ÷ monthly income) is income-based, so it renders
+     * whether or not there are debts to pay off — the debt list is the only
+     * conditional part. After the loading cycle this asserts an actual DTI
+     * percentage value is shown, not just the section label.
      */
     async verifyDebtPayoffModal(data) {
         await test.step('Verify debt payoff modal contents', async () => {
@@ -170,28 +199,147 @@ class OfferReviewPage {
 
             await expect(this.debtPayoffDtiSection).toBeVisible();
 
+            // DTI and debts load asynchronously from the underwriting API. Wait
+            // through the full loading cycle before verifying values, so a slow
+            // load isn't mistaken for "nothing shown": catch a late-appearing
+            // spinner, wait for it to clear, then let the network settle. (The
+            // spinner may never render — both waits are optional.)
+            const spinner = this.debtPayoffModal.locator('[role="progressbar"]');
+            await spinner.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {});
+            await spinner.waitFor({ state: 'hidden', timeout: 30000 }).catch(() => {});
+            await this.page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+
+            // Assert the Debt-to-Income ratio value is actually displayed — a
+            // percentage under "DTI After Proposed Payoff". This shows regardless
+            // of whether any debts exist to pay off.
             if (dp.expectedDti) {
                 await expect(
                     this.debtPayoffModal.getByText(dp.expectedDti).first()
                 ).toBeVisible();
+            } else {
+                await expect
+                    .poll(() => this.readProposedDti(), {
+                        message: 'Debt-to-Income (DTI) ratio value should be displayed in the debt payoff modal',
+                        timeout: 15000,
+                    })
+                    .not.toBeNull();
             }
-
-            // Debts load asynchronously — wait for the loading spinner to disappear
-            // before checking whether any debt checkboxes are present.
-            await this.debtPayoffModal
-                .locator('[role="progressbar"]')
-                .waitFor({ state: 'hidden', timeout: 15000 })
-                .catch(() => {}); // not all applications have debts; spinner may not appear
 
             // Checkbox assertion is conditional: some applications have no debts.
             const hasDebts = await this.debtPayoffCheckboxes.first()
-                .isVisible({ timeout: 3000 }).catch(() => false);
+                .isVisible({ timeout: 10000 }).catch(() => false);
             if (hasDebts) {
                 await expect(this.debtPayoffCheckboxes.first()).toBeVisible();
             }
 
             await expect(this.debtPayoffSummary).toBeVisible();
         });
+    };
+
+    /**
+     * Reads the live "DTI After Proposed Payoff" percentage from the debt payoff
+     * modal and returns it as a number (e.g. 45.2). Returns null when no value can
+     * be parsed (modal not open, or the section hasn't rendered yet).
+     *
+     * Reads the modal text and grabs the percentage immediately preceding "%" that
+     * follows the label, so it's resilient to the surrounding layout / markup.
+     */
+    async readProposedDti() {
+        const text = await this.debtPayoffModal.innerText().catch(() => '');
+        const match = text.match(/DTI After Proposed Payoff[^%]*?([\d.]+)\s*%/i);
+        return match ? parseFloat(match[1]) : null;
+    };
+
+    /**
+     * Waits for the Save button to become enabled (the selected payoff plan is
+     * valid / fundable). Returns true if it enables within the timeout, else false.
+     */
+    async _waitForSaveEnabled(timeout = 5000) {
+        try {
+            await expect(this.saveDebtPayoffBtn).toBeEnabled({ timeout });
+            return true;
+        } catch {
+            return false;
+        }
+    };
+
+    /**
+     * Deal Optimization — debt payoff lever.
+     *
+     * Establishes a no-payoff DTI (Debt-to-Income) baseline, then selects a
+     * *fundable* debt for payoff and measures the recalculated "DTI After Proposed
+     * Payoff". Large debts (e.g. mortgages) can't be funded by the loan proceeds,
+     * which leaves the Save button disabled — so this tries each debt in turn and
+     * keeps the first one that both produces a valid (saveable) plan and changes
+     * the DTI. Returns:
+     *   { debtsPresent: false }                              no debts for this SSN
+     *   { debtsPresent: true, fundable: false, before }      debts exist but none fundable
+     *   { debtsPresent: true, fundable: true, before, after} a debt was paid off
+     *
+     * The caller asserts the direction (paying off a debt should not raise DTI).
+     */
+    async payOffFundableDebtAndMeasureDti() {
+        let result = { debtsPresent: false, fundable: false, before: null, after: null };
+
+        await test.step('Pay off a fundable debt and measure DTI change', async () => {
+            if (!this._debtPayoffModalOpened) {
+                console.warn('payOffFundableDebtAndMeasureDti: skipping — debt payoff modal was not opened');
+                return;
+            }
+
+            // Debts load asynchronously from the underwriting API after the modal
+            // opens. Wait through the full loading cycle before deciding whether
+            // any debts exist, so a slow load isn't mistaken for "no debts":
+            //   1. the spinner may appear a beat later — wait for it to clear
+            //   2. let the network settle (the debts come from an API round-trip)
+            const spinner = this.debtPayoffModal.locator('[role="progressbar"]');
+            await spinner.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {});
+            await spinner.waitFor({ state: 'hidden', timeout: 30000 }).catch(() => {});
+            await this.page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+
+            const count = await this.debtPayoffCheckboxes.count().catch(() => 0);
+            if (count === 0) {
+                console.warn('payOffFundableDebtAndMeasureDti: no debts returned for this SSN — nothing to optimize');
+                return;
+            }
+            result.debtsPresent = true;
+
+            // Baseline = nothing selected for payoff. Clear any default selection.
+            for (let i = 0; i < count; i++) {
+                const cb = this.debtPayoffCheckboxes.nth(i);
+                if (await cb.isChecked().catch(() => false)) {
+                    await cb.uncheck({ force: true });
+                }
+            }
+            await expect.poll(() => this.readProposedDti(), { timeout: 10000 })
+                .not.toBeNull();
+            const before = await this.readProposedDti();
+            result.before = before;
+
+            // Try each debt until one yields a fundable plan (Save enables) AND a
+            // changed DTI. Skip debts the loan proceeds can't cover (Save stays
+            // disabled — e.g. a $210k mortgage against $50k of proceeds).
+            for (let i = 0; i < count; i++) {
+                const cb = this.debtPayoffCheckboxes.nth(i);
+                await cb.check({ force: true });
+
+                const saveEnabled = await this._waitForSaveEnabled(5000);
+                const after = await this.readProposedDti();
+
+                if (saveEnabled && after !== null && after !== before) {
+                    result.fundable = true;
+                    result.after = after;
+                    return; // leave this debt selected so saveDebtPayoffPlan can persist it
+                }
+
+                // Not fundable / no effect — deselect and try the next debt.
+                await cb.uncheck({ force: true });
+            }
+
+            console.warn('payOffFundableDebtAndMeasureDti: debts present but none fundable with the current loan amount — DTI-drop not asserted');
+        });
+
+        return result;
     };
 
     /**
@@ -205,6 +353,17 @@ class OfferReviewPage {
             // Skip if the modal did not open
             if (!this._debtPayoffModalOpened) {
                 console.warn('saveDebtPayoffPlan: skipping — debt payoff modal was not opened');
+                return;
+            }
+
+            // The Save button stays disabled when the selected payoff can't be
+            // funded by the loan proceeds (or nothing is selected). Clicking a
+            // disabled button would retry until the test times out — so only click
+            // when it's actually enabled, otherwise close the modal and move on.
+            if (!(await this._waitForSaveEnabled(5000))) {
+                console.warn('saveDebtPayoffPlan: SAVE DEBT PAYOFF PLAN is disabled (no fundable payoff selected) — skipping save');
+                await this.cancelDebtPayoffBtn.click({ force: true }).catch(() => {});
+                await this.debtPayoffModal.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
                 return;
             }
 

@@ -30,8 +30,12 @@ import { SHARED } from '../../data/shared';
 
 // Search key for the loan to certify. Full property address is stable and
 // non-PII; replace with a loan number or email to target a different
-// application. The portal search box matches on the full address as displayed.
-const LOAN_SEARCH = `${SHARED.street}, ${SHARED.city}, CO ${SHARED.zip}`; // '4556 Eliot St, Denver, CO 80211'
+// application. The portal search box matches on the full address as displayed,
+// and the Pending MLO Certification table renders the address in uppercase
+// (e.g. "4556 ELIOT ST, DENVER, CO 80211"), so the search term is uppercased
+// to match.
+const LOAN_SEARCH =
+    `${SHARED.street}, ${SHARED.city}, CO ${SHARED.zip}`.toUpperCase(); // '4556 ELIOT ST, DENVER, CO 80211'
 
 test('LO certifies the pending MLO application', async ({
     page,
