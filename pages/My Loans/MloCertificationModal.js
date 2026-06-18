@@ -94,11 +94,13 @@ class MloCertificationModal {
                 .catch(() => false);
 
             if (!succeeded) {
-                // First click most likely never registered (detach race) —
-                // re-click once and allow the full window for the cert to
-                // process. Do NOT loop-click: a submission may already be in
-                // flight.
-                await clickSubmit();
+                // Re-click only when SUBMIT is still enabled — a disabled button
+                // means the first click registered and a cert is in flight; on a
+                // slow staging backend re-clicking would duplicate that request.
+                const inFlight = await this.submitBtn.isDisabled().catch(() => false);
+                if (!inFlight) {
+                    await clickSubmit();
+                }
                 await waitForSuccess(60000);
             }
         });
