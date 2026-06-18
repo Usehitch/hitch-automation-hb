@@ -1,5 +1,5 @@
 import { expect, test } from '../../fixtures';
-import { coBorrowerApplicationData } from '../../data/newApplication';
+import { makeCoBorrowerApplicationData } from '../../data/newApplication';
 
 test.describe('E-Consent', () => {
     test.beforeEach(async ({ page }) => {
@@ -21,6 +21,10 @@ test.describe('E-Consent', () => {
         // Co-borrower flow: finalization (200 s) + summary (250 s) + consents (200 s) on CI.
         // Additional loan-detail + document navigation adds ~30 s.  12 min covers the worst case.
         test.setTimeout(720000);
+
+        // Fresh emails per attempt — a retry must not reuse the prior attempt's
+        // co-borrower email or it hits "already associated to a coborrower invitation".
+        const coBorrowerApplicationData = makeCoBorrowerApplicationData();
 
         // Step 1 — Application Details (includes co-borrower section)
         await preQualManualPage.clickStartApp();

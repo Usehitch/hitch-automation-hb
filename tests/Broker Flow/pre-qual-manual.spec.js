@@ -1,5 +1,5 @@
 import { expect, test } from '../../fixtures';
-import { applicationData, coBorrowerApplicationData } from '../../data/newApplication';
+import { applicationData, makeCoBorrowerApplicationData } from '../../data/newApplication';
 
 test.describe('Pre-Qual Manually', () => {
     test.beforeEach(async ({ page }) => {
@@ -71,6 +71,10 @@ test.describe('Pre-Qual Manually', () => {
         // Co-borrower flows run two credit pulls — finalization (200 s) + summary (250 s)
         // + consents (200 s) can stack on CI.  11 min covers the worst case.
         test.setTimeout(660000);
+
+        // Fresh emails per attempt — a retry must not reuse the prior attempt's
+        // co-borrower email or it hits "already associated to a coborrower invitation".
+        const coBorrowerApplicationData = makeCoBorrowerApplicationData();
 
         // Step 1 — Application Details (includes co-borrower section)
         await preQualManualPage.clickStartApp();

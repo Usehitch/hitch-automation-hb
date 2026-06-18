@@ -6,28 +6,53 @@ End-to-end tests for the **Hitch Broker Portal** (HomeBridge), covering the full
 
 ## Project Structure
 
+> Full per-spec test counts and the project (broker vs LO session) split live in
+> [TEST-COVERAGE.md](TEST-COVERAGE.md). The tree below is the file layout.
+
 ```
 homebridge/
-├── tests/                        # Test specs
-│   ├── auth.setup.js             # Login once, save session to .playwright/.auth/
-│   ├── login.spec.js             # Login flow
-│   ├── pre-qual-manual.spec.js   # Pre-Qual manual application flow (solo + co-borrower)
-│   ├── myloans.spec.js           # My Loans — Active tab: content, search, filter, certify, view
-│   ├── adversed.spec.js          # My Loans — Adversed tab: structure, search, filter, certify, view
-│   ├── inactive.spec.js          # My Loans — Inactive tab: structure, search, filter, certify, view
-│   ├── shadow-borrower-view.spec.js  # Shadow Borrower View — modal, cancel, read-only new-tab flow
-│   ├── econsent.spec.js          # E-Consent — co-borrower method consent document
-│   ├── twn-monitor.spec.js       # Vendor monitor — The Work Number income verification
-│   ├── quick-pricer.spec.js      # Quick Pricer — HELOC Rate Calculator structure, fill, run scenario, history
-│   ├── companies.spec.js         # Companies — structure, search, add modal, edit modal
-│   ├── company-branches.spec.js  # Company Branches — structure, search, add branch, edit branch
-│   └── Manage Users/
-│       ├── manage-users.spec.js      # Portal Users — structure, search, pagination, add user modal
-│       ├── add-user.spec.js          # Create Loan Officer, edit name, verify updated data
-│       ├── add-role.spec.js          # Add a second role to a user, verify in Role(s) column
-│       ├── reset-password.spec.js    # Reset Password icon — success toast smoke tests
-│       ├── deactivate-user.spec.js   # Deactivate User modal — cancel + full deactivation flow
-│       └── reactivate-user.spec.js   # Re-activate User modal — cancel + full deactivate→reactivate cycle
+├── tests/                        # Test specs (grouped by flow)
+│   ├── auth.setup.js             # Broker login once → .playwright/.auth/user.json
+│   ├── auth.setup.lo.js          # Loan Officer login once → .playwright/.auth/lo-user.json
+│   │
+│   ├── Broker Flow/              # Broker session (chromium project)
+│   │   ├── login.spec.js                 # Login — valid credentials
+│   │   ├── pre-qual-manual.spec.js       # Pre-Qual manual application (solo + co-borrower)
+│   │   ├── loandetail.spec.js            # Loan Detail — Borrowers/Property/Financials/Tracker/Conditions/Documents tabs
+│   │   ├── shadow-borrower-view.spec.js  # Shadow Borrower View — modal, cancel, read-only new-tab flow
+│   │   ├── econsent.spec.js              # E-Consent — co-borrower method consent document
+│   │   ├── twn-monitor.spec.js           # Vendor monitor — The Work Number income verification
+│   │   ├── quick-pricer.spec.js          # Quick Pricer — HELOC Rate Calculator, fill, run scenario, history
+│   │   ├── credit-and-income.spec.js     # Soft credit pull → DTI without a hard inquiry
+│   │   ├── companies.spec.js             # Companies — structure, search, add/edit modals
+│   │   ├── company-branches.spec.js      # Company Branches — structure, search, add/edit
+│   │   ├── My Loans/
+│   │   │   ├── active.spec.js             # Active tab — content, search, filter, certify, view
+│   │   │   ├── adversed.spec.js           # Adversed tab — structure, search, filter, certify, view
+│   │   │   └── inactive.spec.js           # Inactive tab — structure, search, filter, certify, view
+│   │   ├── Manage Emails/
+│   │   │   └── manage-emails.spec.js      # Email templates — table, editor, preview, send test, draft, CRUD
+│   │   └── Manage Users/
+│   │       ├── manage-users.spec.js       # Portal Users — structure, search, pagination, add user modal
+│   │       ├── add-user.spec.js           # Create Loan Officer, edit name, verify updated data
+│   │       ├── add-role.spec.js           # Add a second role to a user, verify in Role(s) column
+│   │       ├── reset-password.spec.js     # Reset Password icon — success toast smoke tests
+│   │       ├── deactivate-user.spec.js    # Deactivate User modal — cancel + full deactivation flow
+│   │       └── reactivate-user.spec.js    # Re-activate User modal — cancel + deactivate→reactivate cycle
+│   │
+│   ├── LO Flow/                  # Loan Officer session (chromium-lo project)
+│   │   ├── pipeline-management.spec.js     # Pipeline buckets + Pending MLO Certification
+│   │   ├── deal-optimization.spec.js       # Optimize DTI via loan amount + debt payoff
+│   │   ├── certifications.spec.js          # Certify a pending MLO application
+│   │   └── property-applicant-data.spec.js # Trust-type handling — block on irrevocable trust / LLC
+│   │
+│   └── Borrower Flow/           # Loan Officer session (chromium-lo project)
+│       ├── invitation.spec.js              # LO creates pre-qual, borrower(s) receive invitation
+│       ├── support.spec.js                 # Help desk widget — LO + borrower access
+│       └── Co-Borrower/
+│           ├── coborrower.spec.js                  # Co-borrower E2E via shareable link (married + unmarried)
+│           ├── verification-documentation.spec.js  # Borrower verifies income via Plaid
+│           └── loan-hub.spec.js                    # Loan Hub — to-do list, document center, loan tracker
 │
 ├── pages/                        # Page Object Models
 │   ├── LoginPage.js
@@ -37,7 +62,8 @@ homebridge/
 │   │   ├── MortgagesAndLiensPage.js
 │   │   ├── OfferReviewPage.js
 │   │   ├── ConsentsPage.js
-│   │   └── ConfirmationPage.js
+│   │   ├── ConfirmationPage.js
+│   │   └── CoBorrowerFlowPage.js
 │   ├── My Loans/
 │   │   ├── ActivePage.js
 │   │   ├── MloCertificationModal.js
@@ -49,14 +75,21 @@ homebridge/
 │   │   └── CompaniesPage.js
 │   ├── Company Branches/
 │   │   └── CompanyBranchesPage.js
-│   └── Manage Users/
-│       └── ManageUsersPage.js
+│   ├── Manage Emails/
+│   │   ├── ManageEmailsPage.js
+│   │   └── NewEmailTemplatePage.js
+│   ├── Manage Users/
+│   │   └── ManageUsersPage.js
+│   ├── Support/
+│   │   └── HelpDeskWidget.js
 │   └── The Work Number/
 │       └── TWNPage.js
 │
 ├── data/                         # Test data
 │   ├── shared.js                 # Shared property + borrower constants
 │   ├── newApplication.js         # Broker portal application data (solo + co-borrower)
+│   ├── coBorrowerDTCData.js      # Co-borrower direct-to-consumer flow data
+│   ├── dealOptimization.js       # LO deal-optimization scenario data
 │   ├── twnApplication.js         # TWN borrower flow data
 │   ├── companiesData.js          # Companies — create + edit data with realistic fields
 │   └── companyBranchesData.js    # Company Branches — create + edit data with realistic fields
@@ -103,14 +136,19 @@ npx playwright install chromium
 Run a single spec:
 
 ```bash
-npx playwright test tests/myloans.spec.js
+npx playwright test "tests/Broker Flow/My Loans/active.spec.js"
 ```
 
 ---
 
 ## Authentication
 
-`auth.setup.js` runs once before the test suite. It logs in with email/password + TOTP and saves the browser session to `.playwright/.auth/user.json`. All other tests reuse this session — no repeated logins.
+Two setup projects run once before the suite, each logging in with email/password + TOTP:
+
+- `auth.setup.js` → broker session at `.playwright/.auth/user.json` (used by the `chromium` project)
+- `auth.setup.lo.js` → loan officer session at `.playwright/.auth/lo-user.json` (used by the `chromium-lo` project)
+
+All other tests reuse the saved session for their project — no repeated logins. The `chromium-lo` project covers the Co-Borrower, invitation, certifications, pipeline-management, property-applicant-data, and deal-optimization specs; everything else runs under `chromium`. See [playwright.config.js](playwright.config.js).
 
 ---
 

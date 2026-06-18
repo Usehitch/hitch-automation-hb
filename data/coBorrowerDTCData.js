@@ -42,7 +42,18 @@ const BASE_PROPERTY = {
 // ---------------------------------------------------------------------------
 // Married co-borrower scenario
 // ---------------------------------------------------------------------------
-export const marriedCoBorrowerData = {
+/**
+ * Builds the Married-scenario payload with NEW borrower and co-borrower emails
+ * on every call.
+ *
+ * This MUST be a factory, not a module-level const: Node caches the module, so
+ * a const's emails are fixed for the worker's lifetime. On a Playwright retry
+ * the first (failed) attempt has already created those accounts/invitations, so
+ * reusing the same emails trips duplicate-account / "already associated" errors.
+ * Call this once inside each test body so every attempt (including retries) gets
+ * unused emails.
+ */
+export const makeMarriedCoBorrowerData = () => ({
     propertyType: SHARED.propertyType,   // 'Single Family'
     loanPurpose:  SHARED.loanPurpose,    // 'Home Improvement'
 
@@ -95,39 +106,35 @@ export const marriedCoBorrowerData = {
         selectFirstMortgage: true,   // check the first listed mortgage row
         requestedLoanAmount: '180000', // Requested Loan Amount field
     },
-};
+});
 
 // ---------------------------------------------------------------------------
 // Unmarried co-borrower scenario
 // ---------------------------------------------------------------------------
-export const unmarriedCoBorrowerData = {
-    ...marriedCoBorrowerData,
+/**
+ * Builds the Unmarried-scenario payload. Starts from a fresh Married payload
+ * (so emails are freshly generated) and overrides marital status, the
+ * scenario-specific loan amount, and the participants block. See
+ * makeMarriedCoBorrowerData for why this is a factory.
+ */
+export const makeUnmarriedCoBorrowerData = () => {
+    const base = makeMarriedCoBorrowerData();
+    return {
+        ...base,
 
-    borrower: {
-        ...marriedCoBorrowerData.borrower,
-        email:         randomEmail(),  // separate account — must be unique
-        maritalStatus: 'Unmarried',
-    },
+        borrower: {
+            ...base.borrower,
+            maritalStatus: 'Unmarried',
+        },
 
-    coBorrower: {
-        ...BASE_CO_BORROWER,
-        email:       randomEmail(),    // separate account — must be unique
-        ssn:         '500-60-2222',
-        dateOfBirth: '01/15/1985',
-        incomeSources:      ['Salary or hourly wages'],
-        companyName:        'Hitch',
-        annualCompensation: '200000',
-        startDate:          '12/29/2004',
-        livesWithBorrower:  true,
-    },
+        participants: {
+            marriedTo:        null,  // not applicable when Unmarried
+            otherTitleOwners: false,
+        },
 
-    participants: {
-        marriedTo:        null,  // not applicable when Unmarried
-        otherTitleOwners: false,
-    },
-
-    mortgages: {
-        selectFirstMortgage: true,
-        requestedLoanAmount: '250000',
-    },
+        mortgages: {
+            selectFirstMortgage: true,
+            requestedLoanAmount: '250000',
+        },
+    };
 };

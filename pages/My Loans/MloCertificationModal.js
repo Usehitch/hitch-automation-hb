@@ -60,13 +60,49 @@ class MloCertificationModal {
 
     async submit() {
         await test.step('Submit MLO certification', async () => {
-            // The modal can re-render after the last checkbox is ticked, detaching
-            // SUBMIT mid-click. Retry until the modal closes.
-            await expect(async () => {
-                await this.submitBtn.scrollIntoViewIfNeeded();
-                await this.submitBtn.click();
-                await expect(this.modal).toBeHidden({ timeout: 15000 });
-            }).toPass({ timeout: 60000, intervals: [1000, 2000] });
+            const successToast = this.page.getByText(/Certification completed successfully/i);
+
+            // Click SUBMIT, guarding ONLY the click action: the modal can
+            // re-render after the last checkbox is ticked and detach SUBMIT
+            // mid-click, so a bounded retry recovers a click that never landed.
+            const clickSubmit = async () => {
+                await expect(async () => {
+                    await this.submitBtn.scrollIntoViewIfNeeded();
+                    await this.submitBtn.click({ timeout: 5000 });
+                }).toPass({ timeout: 15000, intervals: [500, 1000] });
+            };
+
+            // Success is signalled by EITHER the "Certification completed
+            // successfully" toast (authoritative — every caller asserts it) OR
+            // the modal unmounting. Accept whichever appears first.
+            //
+            // The previous version waited on the modal closing ALONE and
+            // re-clicked SUBMIT every 1–2 s for 60 s. On a slow staging backend
+            // the cert succeeds but the modal unmounts well after the toast
+            // fires, so the modal-only wait timed out and falsely failed — and
+            // the repeated re-clicks could re-trigger or stall the in-flight
+            // cert request. Racing the toast in fixes both.
+            const waitForSuccess = (timeout) =>
+                Promise.race([
+                    successToast.waitFor({ state: 'visible', timeout }),
+                    this.modal.waitFor({ state: 'hidden', timeout }),
+                ]);
+
+            await clickSubmit();
+            const succeeded = await waitForSuccess(20000)
+                .then(() => true)
+                .catch(() => false);
+
+            if (!succeeded) {
+                // Re-click only when SUBMIT is still enabled — a disabled button
+                // means the first click registered and a cert is in flight; on a
+                // slow staging backend re-clicking would duplicate that request.
+                const inFlight = await this.submitBtn.isDisabled().catch(() => false);
+                if (!inFlight) {
+                    await clickSubmit();
+                }
+                await waitForSuccess(60000);
+            }
         });
     }
 
