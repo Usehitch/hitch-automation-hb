@@ -24,7 +24,7 @@
 import { test, expect } from '../../fixtures';
 import {
     applicationData,
-    coBorrowerApplicationData,
+    makeCoBorrowerApplicationData,
 } from '../../data/newApplication';
 
 // ---------------------------------------------------------------------------
@@ -179,6 +179,10 @@ test('Scenario B: LO creates pre-qual with co-borrower and both receive invitati
     confirmationPage,
 }) => {
     test.setTimeout(1260000);
+
+    // Fresh emails per attempt — a retry must not reuse the prior attempt's
+    // co-borrower email or it hits "already associated to a coborrower invitation".
+    const coBorrowerApplicationData = makeCoBorrowerApplicationData();
 
     await page.goto('/portal');
     await page.waitForLoadState('load');

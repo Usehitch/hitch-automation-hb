@@ -64,7 +64,18 @@ export const applicationData = {
     },
 };
 
-export const coBorrowerApplicationData = {
+/**
+ * Builds a fresh co-borrower application payload with NEW applicant and
+ * co-borrower emails on every call.
+ *
+ * This MUST be a factory, not a module-level const: Node caches the module, so
+ * a const's emails are fixed for the worker's lifetime. On a Playwright retry
+ * the first (failed) attempt has already created the co-borrower invitation, so
+ * reusing the same email trips "This email is already associated to a
+ * coborrower invitation" and the form can't finalize. Call this once inside
+ * each test body so every attempt (including retries) gets unused emails.
+ */
+export const makeCoBorrowerApplicationData = () => ({
     ...applicationData,
     applicant: {
         ...applicationData.applicant,
@@ -83,4 +94,4 @@ export const coBorrowerApplicationData = {
         ...applicationData.offerReview,
         // acknowledgeDtiLimit handled automatically — checkbox detected by visibility, not data flag
     },
-};
+});

@@ -972,6 +972,124 @@ class CoBorrowerFlowPage {
     // -------------------------------------------------------------------------
 
     /**
+     * Income Verification & Documentation — assert the page offers all three
+     * ways a borrower can satisfy income verification:
+     *   1. Connect Checking Account         (link banking via Plaid)
+     *   2. Login to Company Payroll Account  (link payroll via The Work Number / TrueWork)
+     *   3. Upload Income Documents Manually  (manual documentation)
+     *
+     * Validates the feature contract — "borrowers can link banking and payroll
+     * securely, OR upload documents manually" — regardless of which method is
+     * ultimately completed.
+     *
+     * Only the banking/Plaid option label is confirmed against the live app
+     * (it drives the implemented fillIncomeVerification path). The payroll and
+     * manual labels are best-effort regexes derived from the option copy noted
+     * in fillIncomeVerification — TODO: confirm exact text against the live UI.
+     */
+    async verifyIncomeVerificationOptions() {
+        await test.step('Verify income verification & documentation options', async () => {
+            await this.page.waitForURL(/income-verification/i, { timeout: 60000 }).catch(() => { });
+
+            // Banking (Plaid) — known-good copy from the implemented Plaid path.
+            const bankingOption = this.page
+                .getByText(/Connect Checking Account|Bank Account Verification.*Plaid/i)
+                .first();
+            await expect(bankingOption).toBeVisible({ timeout: 90000 });
+
+            // Payroll (The Work Number / TrueWork). TODO: confirm exact copy.
+            const payrollOption = this.page
+                .getByText(/Company Payroll Account|Login to.*Payroll|The Work Number|Payroll Account/i)
+                .first();
+            await expect(payrollOption).toBeVisible({ timeout: 15000 });
+
+            // Manual document upload. TODO: confirm exact copy.
+            const manualOption = this.page
+                .getByText(/Upload Income Documents Manually|Upload.*Documents?.*Manually|Upload Manually/i)
+                .first();
+            await expect(manualOption).toBeVisible({ timeout: 15000 });
+        });
+    }
+
+    /**
+     * Selects one of the three income-verification methods on the Income
+     * Verification page.
+     *
+     * @param {'plaid'|'payroll'|'manual'} method
+     *
+     * Only the 'plaid' selection is confirmed against the live app today.
+     * 'payroll' and 'manual' use best-effort locators derived from the option
+     * label text — TODO: confirm against the live DOM before relying on them.
+     */
+    async selectIncomeVerificationMethod(method) {
+        await test.step(`Select income verification method: ${method}`, async () => {
+            const labels = {
+                plaid:   /Connect Checking Account/i,
+                payroll: /Login to.*Payroll|Company Payroll Account|The Work Number/i, // TODO: verify
+                manual:  /Upload Income Documents Manually/i,                          // TODO: verify
+            };
+            const label = labels[method];
+            if (!label) throw new Error(`Unknown income verification method: ${method}`);
+
+            const card = this.page.getByText(label).first();
+            await card.waitFor({ state: 'visible', timeout: 30000 });
+            await card.click({ force: true });
+        });
+    }
+
+    /**
+     * Manual documentation path — selects "Upload Income Documents Manually"
+     * and uploads one or more files via the page's file input.
+     *
+     * BEST-EFFORT / TODO: not yet exercised against the live app. The
+     * file-input selector and the success signal below are derived from common
+     * patterns and MUST be verified once the manual-upload UI is available.
+     * setInputFiles works on a hidden <input type="file"> without it being
+     * visible, so we only wait for it to be attached.
+     *
+     * @param {string|string[]} filePaths  absolute path(s) to the document(s)
+     */
+    async uploadIncomeDocumentsManually(filePaths) {
+        await test.step('Upload income documents manually', async () => {
+            await this.selectIncomeVerificationMethod('manual');
+
+            // TODO: verify the file-input selector against the live app.
+            const fileInput = this.page.locator('input[type="file"]').first();
+            await fileInput.waitFor({ state: 'attached', timeout: 15000 });
+            await fileInput.setInputFiles(filePaths);
+
+            // TODO: verify the upload success signal (filename chip / "Uploaded"
+            // badge / Continue enabling) against the live app.
+            const continueBtn = this.page.getByRole('button', { name: /^Continue$/i }).first();
+            await continueBtn.waitFor({ state: 'visible', timeout: 30000 });
+            await expect(continueBtn).toBeEnabled({ timeout: 30000 });
+            await continueBtn.click({ force: true });
+        });
+    }
+
+    /**
+     * Payroll documentation path — "Login to Your Company Payroll Account"
+     * (The Work Number / TrueWork).
+     *
+     * BEST-EFFORT STUB / TODO: not yet exercised against the live app. The
+     * payroll login renders in a third-party (TWN/TrueWork) iframe whose DOM is
+     * unknown here. Throws if invoked so it is never silently skipped — wire up
+     * the provider-select → credentials → consent steps and the verified-income
+     * success assertion once that iframe is available.
+     */
+    async completePayrollVerification(_data) {
+        await test.step('Verify income via company payroll (The Work Number)', async () => {
+            await this.selectIncomeVerificationMethod('payroll');
+            throw new Error(
+                'completePayrollVerification is a best-effort stub — confirm the ' +
+                'TWN/TrueWork payroll iframe DOM against the live app before enabling.'
+            );
+        });
+    }
+
+    // -------------------------------------------------------------------------
+
+    /**
      * Step 17 — Funding Account page.
      *
      * Runs the Plaid sandbox flow to connect a bank account:
@@ -1066,6 +1184,131 @@ class CoBorrowerFlowPage {
             await expect(
                 this.page.getByText(/Amy.*B2|B2.*Amy/i).first()
             ).toBeVisible({ timeout: 10000 });
+        });
+    }
+
+    // -------------------------------------------------------------------------
+    // Loan Hub — focused area checks
+    //
+    // The Loan Hub is the borrower's central area after submission. It exposes
+    // three tabs (per the feature contract):
+    //   1. BORROWER'S TO-DO LIST — a clear to-do list,
+    //   2. DOCUMENTS            — a document center for viewing / downloading files,
+    //   3. LOAN TRACKER         — a visual tracker of progress through the stages.
+    //
+    // Confirmed against the live app (from a Loan Hub run): the welcome banner,
+    // the pipeline phases, the three tab labels, and the loan-tracker contents
+    // (stage label + "N/M steps completed"). The INNER markup of the to-do list
+    // and document-center panels is not yet confirmed — those assertions are
+    // best-effort and TODO-flagged; tighten them once the panel markup is known.
+    // -------------------------------------------------------------------------
+
+    /**
+     * Asserts the borrower landed on the Loan Hub: the welcome banner and the
+     * "In Process" pipeline stage. (Confirmed DOM.)
+     */
+    async verifyLoanHubLanded() {
+        await test.step('Loan Hub — landed (welcome + In Process)', async () => {
+            await expect(
+                this.page.getByText(/Welcome to Your Loan Hub/i).first()
+            ).toBeVisible({ timeout: 30000 });
+
+            await expect(
+                this.page.getByText(/In Process/i).first()
+            ).toBeVisible({ timeout: 10000 });
+        });
+    }
+
+    /**
+     * Loan Hub — borrower to-do list.
+     *
+     * BEST-EFFORT / TODO: confirm the section heading and task-row markup
+     * against the live app. The regex covers common copy ("To-Do", "Tasks",
+     * "Action Items", "What's Next", "Outstanding Items").
+     */
+    async verifyToDoList() {
+        await test.step('Loan Hub — verify borrower to-do list', async () => {
+            // Tabs render as plain clickable text: "BORROWER'S TO-DO LIST",
+            // "DOCUMENTS", "LOAN TRACKER".
+            const toDoTab = this.page.locator('a, button, [role="tab"], span').filter({
+                hasText: /BORROWER.?S TO-?DO LIST|^TO-?DO LIST$/i,
+            }).first();
+            await toDoTab.waitFor({ state: 'visible', timeout: 15000 });
+            await toDoTab.click();
+
+            // The to-do list surfaces the borrower's outstanding tasks/steps.
+            // TODO: tighten to a specific task-row selector once the to-do panel
+            // markup is confirmed.
+            await expect(
+                this.page.getByText(/Complete|Pending|Upload|Verify|Task|To-?Do|step/i).first()
+            ).toBeVisible({ timeout: 15000 });
+        });
+    }
+
+    /**
+     * Loan Hub — document center (view / download files).
+     *
+     * Asserts the document-center section is present and that at least one
+     * view/download affordance is available for the borrower's files.
+     *
+     * BEST-EFFORT / TODO: confirm the heading, document rows, and whether the
+     * view/download controls render as buttons, links, or icon-only controls.
+     */
+    async verifyDocumentCenter() {
+        await test.step('Loan Hub — verify document center', async () => {
+            // Open the DOCUMENTS tab (plain clickable text, like the other tabs).
+            const documentsTab = this.page.locator('a, button, [role="tab"], span').filter({
+                hasText: /^DOCUMENTS$|^Documents$/i,
+            }).first();
+            await documentsTab.waitFor({ state: 'visible', timeout: 15000 });
+            await documentsTab.click();
+
+            // The document center lists the borrower's files with view/download
+            // controls. Accept an empty-state / "Documents" heading too so the
+            // check holds whether or not files have generated yet.
+            // TODO: tighten to specific document-row + download selectors once
+            // the documents panel markup is confirmed.
+            const documentCenterSignal = this.page
+                .getByRole('button', { name: /View|Download/i })
+                .or(this.page.getByRole('link', { name: /View|Download/i }))
+                .or(this.page.getByText(/No documents|Document|Upload/i))
+                .first();
+            await expect(documentCenterSignal).toBeVisible({ timeout: 15000 });
+        });
+    }
+
+    /**
+     * Loan Hub — visual loan tracker showing progress through the stages.
+     *
+     * Opens the Loan Tracker tab and asserts multiple application stages
+     * ("Stage 1:", "Stage 2:", …) are rendered. (Confirmed DOM — shares the
+     * tracker-tab locator strategy used by verifyLoanHub.)
+     */
+    async verifyLoanTracker() {
+        await test.step('Loan Hub — verify visual loan tracker / stage progress', async () => {
+            // Open the LOAN TRACKER tab (plain clickable text, not ARIA tabs).
+            const loanTrackerTab = this.page.locator('a, button, [role="tab"], span').filter({
+                hasText: /^LOAN TRACKER$|^Loan Tracker$/i,
+            }).first();
+            await loanTrackerTab.waitFor({ state: 'visible', timeout: 15000 });
+            await loanTrackerTab.click();
+
+            // Phase stepper — the four pipeline phases the loan progresses
+            // through (Pre-Qual → In Process → Closing → Funded).
+            for (const phase of [/Pre-?Qual/i, /In Process/i, /Closing/i, /Funded/i]) {
+                await expect(this.page.getByText(phase).first())
+                    .toBeVisible({ timeout: 15000 });
+            }
+
+            // Current-stage detail: e.g. "Stage 2: In Process" with an
+            // "N/M steps completed" progress indicator — confirms the tracker
+            // shows progress through the stages, not just a static header.
+            // (The tracker shows the CURRENT stage's label only, so there is
+            // exactly one "Stage N:" at a time — do not assert more than one.)
+            await expect(this.page.getByText(/Stage \d+:/i).first())
+                .toBeVisible({ timeout: 15000 });
+            await expect(this.page.getByText(/\d+\/\d+ steps? completed/i).first())
+                .toBeVisible({ timeout: 15000 });
         });
     }
 

@@ -46,7 +46,7 @@
 import { test } from '../../../fixtures';
 import TWNPage from '../../../pages/The Work Number/TWNPage';
 import CoBorrowerFlowPage from '../../../pages/Pre-Qual Manual/CoBorrowerFlowPage';
-import { marriedCoBorrowerData, unmarriedCoBorrowerData } from '../../../data/coBorrowerDTCData';
+import { makeMarriedCoBorrowerData, makeUnmarriedCoBorrowerData } from '../../../data/coBorrowerDTCData';
 
 // ---------------------------------------------------------------------------
 // Shared flow runner
@@ -212,7 +212,9 @@ test.describe('Co-Borrower Flow — End-to-End via Shareable Link', () => {
          * Verifies the Married path shows "Who are you married to?" question
          * and that the full flow completes without blocking errors.
          */
-        await runCoBorrowerFlow(preQualManualPage, marriedCoBorrowerData);
+        // Fresh emails per attempt — a retry must not reuse the prior attempt's
+        // borrower/co-borrower emails or it hits duplicate-account errors.
+        await runCoBorrowerFlow(preQualManualPage, makeMarriedCoBorrowerData());
     });
 
     // -------------------------------------------------------------------------
@@ -228,7 +230,9 @@ test.describe('Co-Borrower Flow — End-to-End via Shareable Link', () => {
          * married to?" sub-question and that the flow completes without any
          * blocking errors specific to the Unmarried path.
          */
-        await runCoBorrowerFlow(preQualManualPage, unmarriedCoBorrowerData);
+        // Fresh emails per attempt — a retry must not reuse the prior attempt's
+        // borrower/co-borrower emails or it hits duplicate-account errors.
+        await runCoBorrowerFlow(preQualManualPage, makeUnmarriedCoBorrowerData());
     });
 
 });
