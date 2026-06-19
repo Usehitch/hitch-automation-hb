@@ -1,0 +1,191 @@
+name: Quick Pricer Monitor
+
+# Pricing-engine health check.
+#
+# The Quick Pricer "Run Scenario" path exercises the same pricing engine the
+# rest of the product relies on, so a failure here is a LEADING INDICATOR that
+# pricing is down — caught before it surfaces in live borrower flows.
+#
+# Runs every 15 minutes, asserts a valid offer (non-zero interest rate AND
+# monthly payment) comes back, and alerts on Slack + email if it does not.
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Cancel an in-flight run if a newer one starts — at a 15-min cadence we never
+# want overlapping runs piling up against staging.
+concurrency:
+  group: quick-pricer-monitor
+  cancel-in-progress: true
+
+jobs:
+  quick-pricer-monitor:
+    name: Quick Pricer — Pricing Engine Check
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+
+    container:
+      image: mcr.microsoft.com/playwright:v1.59.1-jammy
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # -----------------------------
+      # Setup Node
+      # -----------------------------
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # -----------------------------
+      # Validate secrets
+      # -----------------------------
+      - name: Validate required secrets
+        run: |
+          missing=""
+          [ -z "$BASE_URL" ] && missing="$missing BASE_URL"
+          [ -z "$EMAIL" ] && missing="$missing EMAIL"
+          [ -z "$PASSWORD" ] && missing="$missing PASSWORD"
+          [ -z "$OTP_SECRET" ] && missing="$missing OTP_SECRET"
+
+          if [ -n "$missing" ]; then
+            echo "❌ Missing required secrets:$missing"
+            exit 1
+          fi
+
+          echo "✅ All required secrets are present"
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          OTP_SECRET: ${{ secrets.OTP_SECRET }}
+
+      # -----------------------------
+      # Run Quick Pricer monitor test
+      # -----------------------------
+      - name: Run Quick Pricer monitor test
+        # Filename regex (not a path) — matches
+        # tests/Broker Flow/quick-pricer-monitor.spec.js. The chromium project's
+        # 'setup' dependency runs the broker login automatically.
+        run: npx playwright test quick-pricer-monitor
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          OTP_SECRET: ${{ secrets.OTP_SECRET }}
+
+      # -----------------------------
+      # Upload Playwright Report
+      # -----------------------------
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: quick-pricer-monitor-report-${{ github.run_number }}
+          path: playwright-report/
+          retention-days: 7
+
+      # -----------------------------
+      # Deploy Report to GitHub Pages
+      # -----------------------------
+      - name: Deploy report to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: ${{ !cancelled() }}
+        with:
+          github_token: ${{ secrets.HB_TOKEN }}
+          publish_dir: playwright-report/
+          destination_dir: quick-pricer-monitor/${{ github.run_id }}
+          keep_files: true
+
+      # -----------------------------
+      # Slack Success Alert
+      # -----------------------------
+      - name: Slack Alert - Quick Pricer Success
+        if: success()
+        run: |
+          RUN_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/quick-pricer-monitor/${{ github.run_id }}/"
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{
+            \"channel\": \"#automation-alerts\",
+            \"text\": \"✅ *Quick Pricer Check Passed* — pricing engine returned a valid offer\n\n📦 Repo: ${{ github.repository }}\n🌿 Event: ${{ github.event_name }}\n\n📊 Report:\n🔹 ${RUN_REPORT}\n\n🔍 GitHub Run: ${RUN_URL}\"
+          }" \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # -----------------------------
+      # Slack Failure Alert
+      # -----------------------------
+      - name: Slack Alert - Quick Pricer Failure
+        if: failure()
+        run: |
+          RUN_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/quick-pricer-monitor/${{ github.run_id }}/"
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{
+            \"channel\": \"#automation-alerts\",
+            \"text\": \"🚨 *Quick Pricer Check FAILED* — no valid offer generated (possible pricing-engine outage)\n\n📦 Repo: ${{ github.repository }}\n🌿 Event: ${{ github.event_name }}\n\n📊 Report:\n🔹 ${RUN_REPORT}\n\n🔍 Logs: ${RUN_URL}\"
+          }" \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # -----------------------------------------------------------------------
+      # Email alert — pricing-engine failure only.
+      # Fires when the check fails; does NOT send on success.
+      #
+      # Required secrets (Settings → Secrets and variables → Actions):
+      #   SMTP_SERVER    — e.g. smtp.office365.com
+      #   SMTP_PORT      — e.g. 587
+      #   SMTP_USERNAME  — sending address (e.g. alerts@homebridge.com)
+      #   SMTP_PASSWORD  — app password / service account password
+      #
+      # NOTE: recipient mirrors the TWN monitor (HELIX_Notification@homebridge.com).
+      # Change `to:` below if pricing-engine alerts should route elsewhere.
+      #
+      # continue-on-error: true so a bad SMTP config never masks the real failure.
+      # -----------------------------------------------------------------------
+      - name: Email Alert - Pricing Engine Failure
+        if: failure()
+        continue-on-error: true
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port:    ${{ secrets.SMTP_PORT }}
+          username:       ${{ secrets.SMTP_USERNAME }}
+          password:       ${{ secrets.SMTP_PASSWORD }}
+          to:             HELIX_Notification@homebridge.com
+          from:           ${{ secrets.SMTP_USERNAME }}
+          subject:        "🚨 [PRICING ENGINE] Quick Pricer failed to generate a valid offer — ${{ github.run_id }}"
+          body: |
+            The Quick Pricer (HELOC Rate Calculator) "Run Scenario" check FAILED.
+
+            A known-valid sample scenario did not return a valid offer — either no
+            pricing row rendered, or the interest rate / monthly payment came back
+            as $0. This is a LEADING INDICATOR that the pricing engine may be down.
+
+            ──────────────────────────────────────
+            Repository : ${{ github.repository }}
+            Triggered  : ${{ github.event_name }}
+            Run ID     : ${{ github.run_id }}
+            ──────────────────────────────────────
+
+            Test Report:
+            https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/quick-pricer-monitor/${{ github.run_id }}/
+
+            GitHub Actions Run:
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            ──────────────────────────────────────
+            This alert is sent only on failure.
+            No action needed if the next scheduled run passes.

@@ -61,6 +61,12 @@ class QuickPricerPage {
         this.yourAmountLabel        = this.page.getByText(/Your Amount/i).first();
         this.quoteEmptyState        = this.page.getByText(/Complete the form and click.*Run Scenario/i).first();
 
+        // Pricing results table — rendered as a real <table> with a thead
+        // (Points | Interest Rate | Monthly) and one or more tbody rows.
+        this.pricingTable      = this.page.locator('table').first();
+        this.pricingHeaderRow  = this.pricingTable.locator('thead th, [role="columnheader"]');
+        this.pricingDataRows   = this.pricingTable.locator('tbody tr');
+
         // -- History tab content area -----------------------------------------
         // The portal does not use role="tabpanel" — content swaps inside a
         // plain div.  We identify the History view by the absence of the
@@ -341,6 +347,12 @@ class QuickPricerPage {
                 this.page.locator('td, [role="cell"]').filter({ hasText: /%/ }).first()
             ).toBeVisible({ timeout: 10000 });
 
+            // The offer must be a *valid* one — a non-zero interest rate and a
+            // non-zero monthly payment.  A pricing-engine outage can still render
+            // the table shell (so the checks above pass) while every rate/payment
+            // comes back as 0; verifyValidOffer is what actually catches that.
+            await this.verifyValidOffer();
+
             // Action buttons
             await expect(
                 this.page.getByRole('button', { name: /Invite Borrower/i })
@@ -348,6 +360,75 @@ class QuickPricerPage {
             await expect(
                 this.page.getByRole('button', { name: /Download PDF/i })
             ).toBeVisible();
+        });
+    }
+
+    // -------------------------------------------------------------------------
+    // Valid-offer assertion (pricing-engine health signal)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Parses the pricing table and returns the rows as structured numbers:
+     *   [{ points, rate, monthly }, ...]
+     * Columns are resolved by header text ("Interest Rate", "Monthly") rather
+     * than by fixed index, so the parse survives column reordering.
+     */
+    async getOfferRows() {
+        const headers = (await this.pricingHeaderRow.allInnerTexts())
+            .map((h) => h.trim().toLowerCase());
+        const rateCol    = headers.findIndex((h) => h.includes('interest') || h.includes('rate'));
+        const monthlyCol = headers.findIndex((h) => h.includes('monthly') || h.includes('payment'));
+        const pointsCol  = headers.findIndex((h) => h.includes('point'));
+
+        const toNumber = (text) => {
+            if (text == null) return NaN;
+            // Strip $, %, commas and whitespace, keep digits and decimal point.
+            const cleaned = text.replace(/[^0-9.]/g, '');
+            return cleaned === '' ? NaN : parseFloat(cleaned);
+        };
+
+        const rowCount = await this.pricingDataRows.count();
+        const rows = [];
+        for (let i = 0; i < rowCount; i++) {
+            const cells = (await this.pricingDataRows.nth(i)
+                .locator('td, [role="cell"], [role="gridcell"]')
+                .allInnerTexts()).map((c) => c.trim());
+            if (!cells.filter(Boolean).length) continue;
+            rows.push({
+                points:  pointsCol  >= 0 ? toNumber(cells[pointsCol])  : NaN,
+                rate:    rateCol    >= 0 ? toNumber(cells[rateCol])    : NaN,
+                monthly: monthlyCol >= 0 ? toNumber(cells[monthlyCol]) : NaN,
+                raw: cells,
+            });
+        }
+        return rows;
+    }
+
+    /**
+     * Asserts the scenario produced at least one VALID offer row — one whose
+     * Interest Rate and Monthly payment are both greater than zero.
+     *
+     * This is the core pricing-engine health check: if the engine is down it
+     * may still render the table with $0 / 0.000% cells, which the structural
+     * checks would happily pass.  Requiring a real rate and payment is what
+     * makes this a meaningful leading indicator of a pricing outage.
+     */
+    async verifyValidOffer() {
+        await test.step('Verify a valid offer (non-zero rate & monthly payment) was generated', async () => {
+            await expect(this.pricingTable).toBeVisible({ timeout: 15000 });
+            await expect(this.pricingDataRows.first()).toBeVisible({ timeout: 15000 });
+
+            const rows = await this.getOfferRows();
+            expect(rows.length, 'Pricing table should render at least one offer row').toBeGreaterThan(0);
+
+            const validRows = rows.filter((r) => r.rate > 0 && r.monthly > 0);
+
+            expect(
+                validRows.length,
+                `Expected at least one offer with a non-zero interest rate AND monthly payment. ` +
+                `Parsed rows: ${JSON.stringify(rows.map((r) => r.raw))}. ` +
+                `A $0 / 0% result usually means the pricing engine is down or returned no eligible product.`
+            ).toBeGreaterThan(0);
         });
     }
 
