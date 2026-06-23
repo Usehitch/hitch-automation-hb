@@ -81,26 +81,46 @@ class NewApplicationPage {
         this.otherPurposeBtn = this.page.getByRole('button', { name: 'Other' });
 
         // -- Co-Borrower -------------------------------------------------------
-        // Accordion header — collapsed by default; must be clicked to reveal Yes/No cards
+        // Accordion header — its expanded/collapsed state varies between runs.
         this.coBorrowerAccordionHeader = this.page.getByText('Co-Borrower', { exact: true });
 
-        this.coBorrowerYesBtn = this.page.getByRole('button', { name: /I have a co-borrower/ });
-        this.coBorrowerNoBtn = this.page.getByRole('button', { name: /I am applying by myself/ });
+        // Expand toggle, scoped to the Co-Borrower accordion header row (the
+        // innermost div holding both the "Co-Borrower" label and an Expand/Collapse
+        // button). When the section is collapsed an "Expand" button is present; when
+        // expanded it shows "Collapse" instead, so this locator resolves to nothing.
+        // Decide expansion from THIS, not from the radios — the radios aren't
+        // rendered while collapsed, and a radio-based scope would fall back to the
+        // trust Yes/No group and silently target the wrong control.
+        this.coBorrowerExpandBtn = this.page.locator('div')
+            .filter({ has: this.page.getByText('Co-Borrower', { exact: true }) })
+            .filter({ has: this.page.getByRole('button', { name: 'Expand' }) })
+            .last()
+            .getByRole('button', { name: 'Expand' });
 
-        // Co-borrower confirmed data-testids (first two verified from error output)
+        // The co-borrower choice is a Yes/No radio group. Scope to the Co-Borrower
+        // accordion (the innermost div holding both the label and a radio) so its
+        // "Yes"/"No" don't collide with the trust Yes/No radios. Only valid once
+        // the section is expanded — callers must expand first.
+        this.coBorrowerSection = this.page.locator('div')
+            .filter({ has: this.page.getByText('Co-Borrower', { exact: true }) })
+            .filter({ has: this.page.getByRole('radio', { name: 'Yes' }) })
+            .last();
+        this.coBorrowerYesRadio = this.coBorrowerSection.getByRole('radio', { name: 'Yes' });
+        this.coBorrowerNoRadio = this.coBorrowerSection.getByRole('radio', { name: 'No' });
+
+        // First/Last name expose stable data-testids.
         this.coBorrowerFirstNameInput = this.page.getByTestId('coborrowerFirstName');
         this.coBorrowerLastNameInput = this.page.getByTestId('coborrowerLastName');
 
-        // Remaining fields: scope to the Applicant Information card that does NOT
-        // contain the main applicant's firstName — safely isolates the co-borrower sub-form
-        this.coBorrowerForm = this.page.locator('div').filter({
-            has: this.page.getByText('Applicant Information', { exact: true }),
-            hasNot: this.page.getByTestId('firstName'),
-        }).first();
-        this.coBorrowerEmailInput = this.coBorrowerForm.getByLabel(/Email Address/);
-        this.coBorrowerSsnInput = this.coBorrowerForm.getByLabel(/Social Security Number/);
-        this.coBorrowerDobInput = this.coBorrowerForm.getByLabel(/Date of Birth/);
-        this.coBorrowerPhoneInput = this.coBorrowerForm.getByLabel(/Phone Number/);
+        // Remaining fields have no testid, so match them by label scoped to the
+        // co-borrower accordion (which wraps the whole sub-form). This isolates
+        // them from the identically-labelled main-applicant fields, which live in
+        // a separate accordion. Note the SSN field is labelled "SSN" (not
+        // "Social Security Number").
+        this.coBorrowerEmailInput = this.coBorrowerSection.getByLabel(/Email Address/);
+        this.coBorrowerSsnInput = this.coBorrowerSection.getByLabel(/^SSN/);
+        this.coBorrowerDobInput = this.coBorrowerSection.getByLabel(/Date of Birth/);
+        this.coBorrowerPhoneInput = this.coBorrowerSection.getByLabel(/Phone Number/);
 
         // -- Consent -----------------------------------------------------------
         this.softCreditCheckConsent = this.page.getByRole('checkbox', { name: /Consent to Soft Credit Check/ });
@@ -206,21 +226,19 @@ class NewApplicationPage {
 
     async fillCoBorrowerDetails(coBorrower) {
         await test.step('Fill co-borrower details', async () => {
-            // On first attempt the accordion is collapsed — click to expand.
-            // On retry it may already be open; re-clicking would collapse it, so
-            // only click if the Yes button is not yet visible.
-            const alreadyOpen = await this.coBorrowerYesBtn
+            // The accordion's default state varies between runs. Expand only when
+            // an "Expand" button is present — re-clicking an open accordion would
+            // collapse it. Decide from the header button, not the radios (see the
+            // coBorrowerExpandBtn locator note).
+            const collapsed = await this.coBorrowerExpandBtn
                 .isVisible({ timeout: 2000 })
                 .catch(() => false);
-            if (!alreadyOpen) {
-                await this.coBorrowerAccordionHeader.click();
-                await this.coBorrowerYesBtn.waitFor({ state: 'visible', timeout: 10000 });
+            if (collapsed) {
+                await this.coBorrowerExpandBtn.click();
             }
+            await this.coBorrowerYesRadio.waitFor({ state: 'visible', timeout: 10000 });
 
-            // evaluate(el.click()) fires a native DOM click that React's event delegation
-            // picks up reliably — force: true was bypassing actionability checks but
-            // not reliably triggering the React synthetic event handler.
-            await this.coBorrowerYesBtn.evaluate(el => el.click());
+            await this.coBorrowerYesRadio.check();
 
             await this.coBorrowerFirstNameInput.waitFor({ state: 'visible', timeout: 10000 });
             await this.coBorrowerFirstNameInput.fill(coBorrower.firstName);
