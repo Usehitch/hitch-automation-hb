@@ -69,16 +69,29 @@ class HelpDeskWidget {
     }
 
     /**
+     * Best-effort dismiss of the proactive "Hi. Need any help?" bubble and its
+     * "Close message from company" (X) button. The bubble floats over the
+     * bottom-right corner and can intercept pointer events on page controls
+     * (e.g. "Get Started Now"), so the borrower flow closes it before
+     * interacting with the page. Never throws — absence of the bubble is fine.
+     */
+    async dismissProactiveBubble() {
+        await test.step('Help desk widget — dismiss proactive bubble', async () => {
+            const proactiveClose = await this.#findByRoleInAnyFrame(
+                'button', /Close message from company/i, { timeout: 3000 },
+            ).catch(() => null);
+            if (proactiveClose) await proactiveClose.click().catch(() => { });
+        });
+    }
+
+    /**
      * Open the messaging window via the launcher. Dismisses the proactive
      * "Hi. Need any help?" bubble first if it is overlaying the launcher.
      */
     async open() {
         await test.step('Help desk widget — open messaging window', async () => {
             // Best-effort: dismiss the proactive message bubble if present.
-            const proactiveClose = await this.#findByRoleInAnyFrame(
-                'button', /Close message from company/i, { timeout: 3000 },
-            ).catch(() => null);
-            if (proactiveClose) await proactiveClose.click().catch(() => { });
+            await this.dismissProactiveBubble();
 
             const launcher = await this.#findByRoleInAnyFrame(
                 'button', /Open messaging window/i,

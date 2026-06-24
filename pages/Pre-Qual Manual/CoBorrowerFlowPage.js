@@ -29,10 +29,12 @@
  */
 
 import { expect, test } from '../../fixtures';
+import HelpDeskWidget from '../Support/HelpDeskWidget';
 
 class CoBorrowerFlowPage {
     constructor(page) {
         this.page = page;
+        this.helpDesk = new HelpDeskWidget(page);
 
         // -- Landing page -------------------------------------------------------
         this.getStartedBtn = this.page.getByRole('button', { name: /Get Started Now/i }).first();
@@ -144,6 +146,9 @@ class CoBorrowerFlowPage {
     /** Step 1 — Click "Get Started Now" on the landing page */
     async clickGetStartedNow() {
         await test.step('Click Get Started Now', async () => {
+            // Close the "Hi. Need any help?" chat bubble first — it floats over
+            // the bottom-right corner and can intercept clicks on the page.
+            await this.helpDesk.dismissProactiveBubble();
             await this.getStartedBtn.waitFor({ state: 'visible', timeout: 20000 });
             await this.getStartedBtn.click();
         });

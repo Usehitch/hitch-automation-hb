@@ -1,8 +1,10 @@
 import { expect, test } from '../../fixtures';
+import HelpDeskWidget from '../Support/HelpDeskWidget';
 
 class TWNPage {
     constructor(page) {
         this.page = page;
+        this.helpDesk = new HelpDeskWidget(page);
 
         // -- Landing page ------------------------------------------------------
         this.getStartedNowBtn = this.page.getByRole('button', { name: /Get Started Now/i }).first();
@@ -66,6 +68,9 @@ class TWNPage {
 
     async clickGetStartedNow() {
         await test.step('Click Get Started Now', async () => {
+            // Close the "Hi. Need any help?" chat bubble first — it floats over
+            // the bottom-right corner and can intercept clicks on the page.
+            await this.helpDesk.dismissProactiveBubble();
             await this.getStartedNowBtn.waitFor({ state: 'visible', timeout: 15000 });
             await this.getStartedNowBtn.click();
         });
