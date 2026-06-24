@@ -1,7 +1,7 @@
 /**
  * Manage Users — Add Role flow.
  *
- * Creates a fresh Loan Officer user, then assigns a second role (Company Admin)
+ * Creates a fresh Loan Officer user, then assigns a second role (TPO Admin)
  * to that user via the person-plus (Add Role) icon in the Actions column.
  * Verifies that the Role(s) cell in the table reflects both roles after saving.
  *
@@ -9,7 +9,7 @@
  *   1. Create a new Loan Officer user with generated data
  *   2. Search by email to bring the row into view
  *   3. Click the Add Role (person-plus) icon in the Actions column
- *   4. Select Role = Company Admin and Company/Retail Branch = ABC Broker - Test
+ *   4. Select Role = TPO Admin and Company/Retail Branch = ABC Broker - Test
  *   5. Click ADD ROLE and wait for the modal to close
  *   6. Verify the user's Role(s) cell contains the newly assigned role
  *
@@ -68,10 +68,10 @@ test.describe('Manage Users — Add Role', () => {
         await manageUsersPage.clickAddRoleForUser(userEmail);
 
         // -----------------------------------------------------------------------
-        // Step 3 — Fill Role = Company Admin, Company = ABC Broker - Test
+        // Step 3 — Fill Role = TPO Admin, Company = ABC Broker - Test
         // -----------------------------------------------------------------------
         await manageUsersPage.fillAddRoleForm({
-            role:    'Company Admin',
+            role:    'TPO Admin',
             company: 'ABC Broker - Test',
         });
 
@@ -80,8 +80,8 @@ test.describe('Manage Users — Add Role', () => {
         // -----------------------------------------------------------------------
         await manageUsersPage.submitAddRole();
 
-        // The Role(s) cell should now contain "Company Admin"
-        await manageUsersPage.verifyUserHasRole(userEmail, 'Company Admin');
+        // The Role(s) cell should now contain "TPO Admin"
+        await manageUsersPage.verifyUserHasRole(userEmail, 'TPO Admin');
     });
 
     // -----------------------------------------------------------------------

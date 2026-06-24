@@ -49,11 +49,13 @@ class MloCertificationModal {
 
     async fillBrokerMloName(name) {
         await test.step('Fill Broker MLO Name', async () => {
-            // Wait for the field to exist in the DOM before trying to scroll to it.
-            // scrollIntoViewIfNeeded waits for visibility (not just attachment), so
-            // a missing element spins for the full test timeout without a clear error.
+            // Wait for the field to exist before acting, then let fill() do the
+            // work: it auto-scrolls, auto-waits for actionability, and — crucially
+            // — re-resolves the locator and retries if the modal re-renders and
+            // detaches the input mid-action. A standalone scrollIntoViewIfNeeded
+            // does NOT retry on detach, so it was throwing "Element is not
+            // attached to the DOM" whenever the cert modal re-rendered.
             await this.brokerMloNameInput.waitFor({ state: 'visible', timeout: 15000 });
-            await this.brokerMloNameInput.scrollIntoViewIfNeeded();
             await this.brokerMloNameInput.fill(name);
         });
     }
@@ -62,47 +64,63 @@ class MloCertificationModal {
         await test.step('Submit MLO certification', async () => {
             const successToast = this.page.getByText(/Certification completed successfully/i);
 
-            // Click SUBMIT, guarding ONLY the click action: the modal can
-            // re-render after the last checkbox is ticked and detach SUBMIT
-            // mid-click, so a bounded retry recovers a click that never landed.
+            // Click SUBMIT once, tolerating a mid-click detach. After the last
+            // checkbox is ticked the modal can re-render, and a successful click
+            // makes the modal start unmounting — Playwright then reports
+            // "element was detached from the DOM" for the in-flight click. That
+            // detachment means the click LANDED, not that it failed, so we
+            // swallow click errors here and let waitForSuccess be the authority.
+            //
+            // The previous version wrapped the click in expect(...).toPass():
+            // once submit started unmounting the modal, every retry hit the
+            // detached/absent button, toPass never saw a "successful" click, and
+            // it threw a false failure after 15 s — even though the cert had
+            // actually gone through.
             const clickSubmit = async () => {
-                await expect(async () => {
+                try {
                     await this.submitBtn.scrollIntoViewIfNeeded();
                     await this.submitBtn.click({ timeout: 5000 });
-                }).toPass({ timeout: 15000, intervals: [500, 1000] });
+                } catch {
+                    // Detached/absent button = modal already unmounting from a
+                    // click that registered. waitForSuccess confirms below.
+                }
             };
 
             // Success is signalled by EITHER the "Certification completed
             // successfully" toast (authoritative — every caller asserts it) OR
             // the modal unmounting. Accept whichever appears first.
-            //
-            // The previous version waited on the modal closing ALONE and
-            // re-clicked SUBMIT every 1–2 s for 60 s. On a slow staging backend
-            // the cert succeeds but the modal unmounts well after the toast
-            // fires, so the modal-only wait timed out and falsely failed — and
-            // the repeated re-clicks could re-trigger or stall the in-flight
-            // cert request. Racing the toast in fixes both.
             const waitForSuccess = (timeout) =>
                 Promise.race([
                     successToast.waitFor({ state: 'visible', timeout }),
                     this.modal.waitFor({ state: 'hidden', timeout }),
-                ]);
+                ])
+                    .then(() => true)
+                    .catch(() => false);
 
             await clickSubmit();
-            const succeeded = await waitForSuccess(20000)
-                .then(() => true)
-                .catch(() => false);
+            let succeeded = await waitForSuccess(20000);
 
             if (!succeeded) {
-                // Re-click only when SUBMIT is still enabled — a disabled button
-                // means the first click registered and a cert is in flight; on a
-                // slow staging backend re-clicking would duplicate that request.
-                const inFlight = await this.submitBtn.isDisabled().catch(() => false);
-                if (!inFlight) {
+                // Re-click only when SUBMIT is still present AND enabled — a
+                // disabled or absent button means the first click registered and
+                // a cert is in flight; on a slow staging backend re-clicking
+                // would duplicate that request.
+                const stillOpen = await this.submitBtn.isVisible().catch(() => false);
+                const inFlight  = stillOpen
+                    ? await this.submitBtn.isDisabled().catch(() => false)
+                    : true;
+                if (stillOpen && !inFlight) {
                     await clickSubmit();
                 }
-                await waitForSuccess(60000);
+                succeeded = await waitForSuccess(60000);
             }
+
+            // Surface genuine failures instead of letting a silent miss fall
+            // through to a confusing toast assertion in the caller.
+            expect(
+                succeeded,
+                'MLO certification did not complete: neither the success toast nor modal close was observed',
+            ).toBeTruthy();
         });
     }
 

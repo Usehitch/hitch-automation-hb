@@ -215,9 +215,24 @@ class NewApplicationPage {
                 await this.countyInput.press('Tab');
             }
 
-            // State is an MUI Autocomplete — fill then select from dropdown (no Tab needed)
+            // State is an MUI Autocomplete. Commit the choice via the keyboard
+            // rather than clicking the <li> option: a floating "TEST DATA"
+            // environment chip overlaps the dropdown and intercepts pointer
+            // events on the option, so a click intermittently fails ("...chip
+            // subtree intercepts pointer events" then the option detaches).
+            // Filling filters to the match; ArrowDown highlights it, Enter commits.
+            //
+            // Key the input via its combobox role, NOT this.stateInput
+            // (getByLabel(/^State/)): once the dropdown opens the listbox is
+            // aria-labelledby the same "State" label, so getByLabel matches two
+            // elements and press() trips strict mode.
+            const stateCombo = this.page.getByRole('combobox', { name: /^State/ });
             await this.stateInput.fill(address.state);
-            await this.page.getByRole('option', { name: address.state, exact: true }).click();
+            await this.page
+                .getByRole('option', { name: address.state, exact: true })
+                .waitFor({ state: 'visible', timeout: 10000 });
+            await stateCombo.press('ArrowDown');
+            await stateCombo.press('Enter');
 
             await this.zipInput.fill(address.zip);
             await this.zipInput.press('Tab');

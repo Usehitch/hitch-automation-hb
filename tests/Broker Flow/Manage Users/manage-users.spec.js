@@ -11,7 +11,7 @@
  *   • Pagination        — "Users per page" label and counter are visible;
  *                         Next Page button advances the list
  *   • Add User modal    — heading, all fields visible; Cancel closes cleanly
- *   • Role dropdown     — all 9 role options listed (Company Admin → Underwriter)
+ *   • Role dropdown     — selectable role options listed (TPO Admin → Account Executive)
  *   • Company dropdown  — populated with at least one company option
  *
  * Navigation: portal → Manage Users sidebar link.
@@ -164,9 +164,8 @@ test.describe('Manage Users', () => {
     }) => {
         await manageUsersPage.openAddNewUserModal();
         await manageUsersPage.verifyRoleDropdownOptions();
-        // Roles: Company Admin, Branch Manager, Loan Officer, Processor,
-        //        Lender Admin, Account Executive, Retail Admin,
-        //        Wholesale Admin, Underwriter
+        // Roles (grouped External / Internal): TPO Admin, Loan Officer,
+        //        Loan Officer Assistant, Platform Admin, Account Executive
         await manageUsersPage.cancelAddNewUser();
     });
 

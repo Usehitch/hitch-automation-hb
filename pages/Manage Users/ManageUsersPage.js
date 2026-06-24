@@ -485,16 +485,14 @@ class ManageUsersPage {
             const listbox = this.page.getByRole('listbox');
             await expect(listbox).toBeVisible({ timeout: 5000 });
 
+            // Roles are grouped under non-selectable "External" / "Internal"
+            // headers in the listbox; only the selectable options are asserted.
             const expectedRoles = [
-                'Company Admin',
-                'Branch Manager',
+                'TPO Admin',
                 'Loan Officer',
-                'Processor',
-                'Lender Admin',
+                'Loan Officer Assistant',
+                'Platform Admin',
                 'Account Executive',
-                'Retail Admin',
-                'Wholesale Admin',
-                'Underwriter',
             ];
             for (const role of expectedRoles) {
                 await expect(
@@ -769,7 +767,7 @@ class ManageUsersPage {
      * Fills the Add Role modal form.
      *
      * @param {object} roleData
-     * @param {string} roleData.role     — role option text, e.g. 'Company Admin'
+     * @param {string} roleData.role     — role option text, e.g. 'TPO Admin'
      * @param {string} roleData.company  — company/branch option text, e.g. 'ABC Broker - Test'
      */
     async fillAddRoleForm(roleData) {
