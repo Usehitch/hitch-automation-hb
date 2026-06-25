@@ -1,0 +1,5 @@
+clickManageDebtPayoffs: MANAGE button not visible — debt payoff section may not apply to this loan (no debts found by underwriting)
+verifyDebtPayoffModal: skipping — debt payoff modal was not opened
+payOffFundableDebtAndMeasureDti: skipping — debt payoff modal was not opened
+Deal Optimization: no debts returned for this SSN — DTI-drop assertion skipped (loan-amount lever still verified)
+saveDebtPayoffPlan: skipping — debt payoff modal was not opened
