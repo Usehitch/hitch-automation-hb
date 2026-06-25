@@ -1,0 +1,388 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: Broker Flow/My Loans/adversed.spec.js >> My Loans - Adversed >> Certify a pending MLO loan from the Adversed tab
+- Location: tests/Broker Flow/My Loans/adversed.spec.js:87:9
+
+# Error details
+
+```
+Test timeout of 180000ms exceeded.
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e8]:
+      - list [ref=e10]:
+        - listitem [ref=e11]:
+          - button "logo":
+            - generic:
+              - generic:
+                - img "logo"
+          - button "Toggle Sidebar" [ref=e12] [cursor=pointer]:
+            - img
+            - generic [ref=e13]: Toggle Sidebar
+        - listitem [ref=e14]:
+          - generic [ref=e15]: Homebridge Financial Services
+      - generic [ref=e16]:
+        - list [ref=e19]:
+          - listitem [ref=e20]:
+            - button "You're in Dev":
+              - img
+              - text: You're in Dev
+        - list [ref=e23]:
+          - listitem [ref=e24]:
+            - generic [ref=e25]:
+              - button "My Loans Chevron down" [expanded] [ref=e26] [cursor=pointer]:
+                - img [ref=e27]
+                - text: My Loans
+                - img [ref=e30]
+                - generic [ref=e32]: Chevron down
+              - list [ref=e34]:
+                - listitem [ref=e35]:
+                  - button "Active" [ref=e36] [cursor=pointer]:
+                    - img [ref=e37]
+                    - text: Active
+                - listitem [ref=e42]:
+                  - button "Adversed" [ref=e43] [cursor=pointer]:
+                    - img [ref=e44]
+                    - text: Adversed
+                - listitem [ref=e46]:
+                  - button "Inactive" [ref=e47] [cursor=pointer]:
+                    - img [ref=e48]
+                    - text: Inactive
+                - listitem [ref=e51]:
+                  - button "Funded" [ref=e52] [cursor=pointer]:
+                    - img [ref=e53]
+                    - text: Funded
+          - listitem [ref=e56]:
+            - button "Manage Users" [ref=e58] [cursor=pointer]:
+              - img [ref=e59]
+              - text: Manage Users
+          - listitem [ref=e64]:
+            - button "Companies" [ref=e66] [cursor=pointer]:
+              - img [ref=e67]
+              - text: Companies
+          - listitem [ref=e71]:
+            - button "Company Branches" [ref=e73] [cursor=pointer]:
+              - img [ref=e74]
+              - text: Company Branches
+          - listitem [ref=e79]:
+            - button "Quick Pricer" [ref=e81] [cursor=pointer]:
+              - img [ref=e82]
+              - text: Quick Pricer
+          - listitem [ref=e84]:
+            - button "Release Notes" [ref=e86] [cursor=pointer]:
+              - img [ref=e87]
+              - text: Release Notes
+        - generic [ref=e92]:
+          - generic [ref=e93]: Admin
+          - listitem [ref=e94]:
+            - button "Manage Emails" [ref=e96] [cursor=pointer]:
+              - img [ref=e97]
+              - text: Manage Emails
+          - listitem [ref=e100]:
+            - button "AUS Rules" [ref=e102] [cursor=pointer]:
+              - img [ref=e103]
+              - text: AUS Rules
+          - listitem [ref=e106]:
+            - button "Loan Configuration" [ref=e108] [cursor=pointer]:
+              - img [ref=e109]
+              - text: Loan Configuration
+        - listitem [ref=e111]:
+          - button "Show Old Design" [ref=e113] [cursor=pointer]:
+            - img [ref=e114]
+            - text: Show Old Design
+      - list [ref=e117]:
+        - listitem [ref=e118]:
+          - button "AS Ace Simon Gebilaguin ace@usehitch.com" [ref=e119] [cursor=pointer]:
+            - generic [ref=e121]: AS
+            - generic [ref=e122]:
+              - paragraph [ref=e123]: Ace Simon Gebilaguin
+              - paragraph [ref=e124]: ace@usehitch.com
+            - img [ref=e125]
+    - main [ref=e129]:
+      - generic [ref=e130]:
+        - generic [ref=e131]:
+          - heading "My Loans" [level=1] [ref=e132]
+          - generic [ref=e133]:
+            - button "Sharable App Link" [ref=e134] [cursor=pointer]:
+              - img
+              - text: Sharable App Link
+            - button "Start App" [ref=e135] [cursor=pointer]:
+              - img
+              - text: Start App
+        - generic [ref=e136]:
+          - heading "Overview" [level=2] [ref=e138]
+          - generic [ref=e139]:
+            - generic [ref=e141]:
+              - generic [ref=e143]: My Loans
+              - generic [ref=e144]:
+                - generic [ref=e145]: "1361"
+                - generic: / $89,166,769
+            - generic [ref=e147]:
+              - generic [ref=e148]:
+                - img [ref=e150]
+                - generic [ref=e155]: Pre-Qual
+              - generic [ref=e156]:
+                - generic [ref=e157]: "1128"
+                - generic: / $52,914,144
+            - generic [ref=e159]:
+              - generic [ref=e160]:
+                - img [ref=e162]
+                - generic [ref=e164]: In Process
+              - generic [ref=e165]:
+                - generic [ref=e166]: "233"
+                - generic [ref=e167]: / $36,252,625
+            - generic [ref=e169]:
+              - generic [ref=e170]:
+                - img [ref=e172]
+                - generic [ref=e174]: Closing
+              - generic [ref=e175]:
+                - generic [ref=e176]: "0"
+                - generic [ref=e177]: / $0
+            - generic [ref=e179]:
+              - generic [ref=e180]:
+                - img [ref=e182]
+                - generic [ref=e184]: Funded
+              - generic [ref=e185]:
+                - generic [ref=e186]: "0"
+                - generic [ref=e187]: / $0
+        - generic [ref=e188]:
+          - generic [ref=e189]:
+            - generic [ref=e190]:
+              - generic [ref=e191]:
+                - img [ref=e192]
+                - textbox "Search by email, name, full address or loan number" [ref=e195]
+              - button "Filter" [ref=e197] [cursor=pointer]:
+                - img
+                - text: Filter
+            - tablist "View mode" [ref=e198]:
+              - tab "List" [selected] [ref=e199] [cursor=pointer]:
+                - img [ref=e201]
+                - text: List
+          - generic [ref=e202]:
+            - generic [ref=e203]:
+              - button "0 Pending MLO Certification 883 applications / $41,242,441" [ref=e204] [cursor=pointer]:
+                - generic [ref=e205]:
+                  - generic [ref=e206]: "0"
+                  - heading "Pending MLO Certification" [level=3] [ref=e207]
+                  - generic [ref=e208]: 883 applications / $41,242,441
+                - img [ref=e209]
+              - generic [ref=e212]:
+                - table [ref=e214]:
+                  - rowgroup [ref=e215]:
+                    - row "Applicant Property Address Loan Amount Status LO Assistant Time in Stage" [ref=e216]:
+                      - columnheader "Applicant" [ref=e217]:
+                        - generic [ref=e218]: Applicant
+                      - columnheader "Property Address" [ref=e219]:
+                        - generic [ref=e220]: Property Address
+                      - columnheader "Loan Amount" [ref=e221]:
+                        - generic [ref=e222]: Loan Amount
+                      - columnheader "Status" [ref=e223]:
+                        - generic [ref=e224]: Status
+                      - columnheader "LO Assistant" [ref=e225]:
+                        - generic [ref=e226]: LO Assistant
+                      - columnheader "Time in Stage" [ref=e227]:
+                        - generic [ref=e228]: Time in Stage
+                      - columnheader [ref=e229]
+                  - rowgroup [ref=e230]:
+                    - row "Andy America 5121231113 4556 Eliot St, Denver, CO 80211 $100,000 Pending MLO Certification — 0d 0h Time since application was created Certify View" [ref=e231]:
+                      - cell "Andy America 5121231113" [ref=e232]:
+                        - generic [ref=e233]:
+                          - link "Andy America" [ref=e234] [cursor=pointer]:
+                            - /url: /portal/loan/6a3d84e61e173c5ebaa68dde/summary/overview
+                          - generic [ref=e235]: "5121231113"
+                      - cell "4556 Eliot St, Denver, CO 80211" [ref=e236]
+                      - cell "$100,000" [ref=e237]
+                      - cell "Pending MLO Certification" [ref=e238]:
+                        - generic [ref=e239]: Pending MLO Certification
+                      - cell "—" [ref=e240]
+                      - cell "0d 0h Time since application was created" [ref=e241]:
+                        - generic [ref=e242]:
+                          - text: 0d 0h
+                          - img "Time since application was created" [ref=e243]
+                      - cell "Certify View" [ref=e245]:
+                        - generic [ref=e246]:
+                          - button "Certify" [ref=e247] [cursor=pointer]
+                          - button "View" [ref=e248] [cursor=pointer]
+                    - row "Andy America 5121231113 4556 ELIOT ST, DENVER, CO 80211 $0 Pending MLO Certification — 0d 0h Time since application was created Certify View" [ref=e249]:
+                      - cell "Andy America 5121231113" [ref=e250]:
+                        - generic [ref=e251]:
+                          - link "Andy America" [ref=e252] [cursor=pointer]:
+                            - /url: /portal/loan/6a3d845d1e173c5ebaa68dcf/summary/overview
+                          - generic [ref=e253]: "5121231113"
+                      - cell "4556 ELIOT ST, DENVER, CO 80211" [ref=e254]
+                      - cell "$0" [ref=e255]
+                      - cell "Pending MLO Certification" [ref=e256]:
+                        - generic [ref=e257]: Pending MLO Certification
+                      - cell "—" [ref=e258]
+                      - cell "0d 0h Time since application was created" [ref=e259]:
+                        - generic [ref=e260]:
+                          - text: 0d 0h
+                          - img "Time since application was created" [ref=e261]
+                      - cell "Certify View" [ref=e263]:
+                        - generic [ref=e264]:
+                          - button "Certify" [ref=e265] [cursor=pointer]
+                          - button "View" [ref=e266] [cursor=pointer]
+                    - row "Andy America 5121231113 4556 Eliot St, Denver, CO 80211 $50,000 Pending MLO Certification — 0d 0h Time since application was created Certify View" [ref=e267]:
+                      - cell "Andy America 5121231113" [ref=e268]:
+                        - generic [ref=e269]:
+                          - link "Andy America" [ref=e270] [cursor=pointer]:
+                            - /url: /portal/loan/6a3d814f1e173c5ebaa68d34/summary/overview
+                          - generic [ref=e271]: "5121231113"
+                      - cell "4556 Eliot St, Denver, CO 80211" [ref=e272]
+                      - cell "$50,000" [ref=e273]
+                      - cell "Pending MLO Certification" [ref=e274]:
+                        - generic [ref=e275]: Pending MLO Certification
+                      - cell "—" [ref=e276]
+                      - cell "0d 0h Time since application was created" [ref=e277]:
+                        - generic [ref=e278]:
+                          - text: 0d 0h
+                          - img "Time since application was created" [ref=e279]
+                      - cell "Certify View" [ref=e281]:
+                        - generic [ref=e282]:
+                          - button "Certify" [ref=e283] [cursor=pointer]
+                          - button "View" [ref=e284] [cursor=pointer]
+                    - row "Andy America 3025614161 4556 ELIOT ST, DENVER, CO 80211 $0 Pending MLO Certification — 0d 0h Time since application was created Certify View" [ref=e285]:
+                      - cell "Andy America 3025614161" [ref=e286]:
+                        - generic [ref=e287]:
+                          - link "Andy America" [ref=e288] [cursor=pointer]:
+                            - /url: /portal/loan/6a3d81321e173c5ebaa68cf3/summary/overview
+                          - generic [ref=e289]: "3025614161"
+                      - cell "4556 ELIOT ST, DENVER, CO 80211" [ref=e290]
+                      - cell "$0" [ref=e291]
+                      - cell "Pending MLO Certification" [ref=e292]:
+                        - generic [ref=e293]: Pending MLO Certification
+                      - cell "—" [ref=e294]
+                      - cell "0d 0h Time since application was created" [ref=e295]:
+                        - generic [ref=e296]:
+                          - text: 0d 0h
+                          - img "Time since application was created" [ref=e297]
+                      - cell "Certify View" [ref=e299]:
+                        - generic [ref=e300]:
+                          - button "Certify" [ref=e301] [cursor=pointer]
+                          - button "View" [ref=e302] [cursor=pointer]
+                    - row "Andy America, Amy America 5121231113 4556 ELIOT ST, DENVER, CO 80211 $180,000 Pending MLO Certification — 0d 0h Time since application was created Certify View" [ref=e303]:
+                      - cell "Andy America, Amy America 5121231113" [ref=e304]:
+                        - generic [ref=e305]:
+                          - link "Andy America, Amy America" [ref=e306] [cursor=pointer]:
+                            - /url: /portal/loan/6a3d7f521e173c5ebaa68b87/summary/overview
+                          - generic [ref=e307]: "5121231113"
+                      - cell "4556 ELIOT ST, DENVER, CO 80211" [ref=e308]
+                      - cell "$180,000" [ref=e309]
+                      - cell "Pending MLO Certification" [ref=e310]:
+                        - generic [ref=e311]: Pending MLO Certification
+                      - cell "—" [ref=e312]
+                      - cell "0d 0h Time since application was created" [ref=e313]:
+                        - generic [ref=e314]:
+                          - text: 0d 0h
+                          - img "Time since application was created" [ref=e315]
+                      - cell "Certify View" [ref=e317]:
+                        - generic [ref=e318]:
+                          - button "Certify" [ref=e319] [cursor=pointer]
+                          - button "View" [ref=e320] [cursor=pointer]
+                    - row "Andy America 5121231113 4556 ELIOT ST, DENVER, CO 80211 $0 Pending MLO Certification — 0d 0h Time since application was created Certify View" [ref=e321]:
+                      - cell "Andy America 5121231113" [ref=e322]:
+                        - generic [ref=e323]:
+                          - link "Andy America" [ref=e324] [cursor=pointer]:
+                            - /url: /portal/loan/6a3d7f151e173c5ebaa68b77/summary/overview
+                          - generic [ref=e325]: "5121231113"
+                      - cell "4556 ELIOT ST, DENVER, CO 80211" [ref=e326]
+                      - cell "$0" [ref=e327]
+                      - cell "Pending MLO Certification" [ref=e328]:
+                        - generic [ref=e329]: Pending MLO Certification
+                      - cell "—" [ref=e330]
+                      - cell "0d 0h Time since application was created" [ref=e331]:
+                        - generic [ref=e332]:
+                          - text: 0d 0h
+                          - img "Time since application was created" [ref=e333]
+                      - cell "Certify View" [ref=e335]:
+                        - generic [ref=e336]:
+                          - button "Certify" [ref=e337] [cursor=pointer]
+                          - button "View" [ref=e338] [cursor=pointer]
+                - generic [ref=e339]:
+                  - button "Previous" [disabled]:
+                    - img
+                    - text: Previous
+                  - button "1" [ref=e340] [cursor=pointer]
+                  - button "2" [ref=e341] [cursor=pointer]
+                  - generic [ref=e342]: ...
+                  - button "148" [ref=e343] [cursor=pointer]
+                  - button "Next" [ref=e344] [cursor=pointer]:
+                    - text: Next
+                    - img
+            - generic [ref=e345]:
+              - button "1 Pre-Qual 0 applications / $0" [ref=e346] [cursor=pointer]:
+                - generic [ref=e347]:
+                  - generic [ref=e348]: "1"
+                  - heading "Pre-Qual" [level=3] [ref=e349]
+                  - generic [ref=e350]: 0 applications / $0
+                - img [ref=e351]
+              - generic [ref=e354]:
+                - table [ref=e356]:
+                  - rowgroup [ref=e357]:
+                    - row "Applicant Property Address Loan Amount Processor / LOA Time in Stage" [ref=e358]:
+                      - columnheader "Applicant" [ref=e359]:
+                        - generic [ref=e360]: Applicant
+                      - columnheader "Property Address" [ref=e361]:
+                        - generic [ref=e362]: Property Address
+                      - columnheader "Loan Amount" [ref=e363]:
+                        - generic [ref=e364]: Loan Amount
+                      - columnheader "Processor / LOA" [ref=e365]:
+                        - generic [ref=e366]: Processor / LOA
+                      - columnheader "Time in Stage" [ref=e367]:
+                        - generic [ref=e368]: Time in Stage
+                      - columnheader [ref=e369]
+                  - rowgroup [ref=e370]:
+                    - row "No results" [ref=e371]:
+                      - cell "No results" [ref=e372]:
+                        - paragraph [ref=e374]: No results
+                - generic [ref=e375]:
+                  - button "Previous" [disabled]:
+                    - img
+                    - text: Previous
+                  - button "1" [ref=e376] [cursor=pointer]
+                  - button "Next" [disabled]:
+                    - text: Next
+                    - img
+            - button "2 In Process 0 applications / $0" [ref=e378] [cursor=pointer]:
+              - generic [ref=e379]:
+                - generic [ref=e380]: "2"
+                - heading "In Process" [level=3] [ref=e381]
+                - generic [ref=e382]: 0 applications / $0
+              - img [ref=e383]
+            - button "3 Closing 0 applications / $0" [ref=e386] [cursor=pointer]:
+              - generic [ref=e387]:
+                - generic [ref=e388]: "3"
+                - heading "Closing" [level=3] [ref=e389]
+                - generic [ref=e390]: 0 applications / $0
+              - img [ref=e391]
+            - button "4 Funded 0 applications / $0" [ref=e394] [cursor=pointer]:
+              - generic [ref=e395]:
+                - generic [ref=e396]: "4"
+                - heading "Funded" [level=3] [ref=e397]
+                - generic [ref=e398]: 0 applications / $0
+              - img [ref=e399]
+  - alert [ref=e401]: Applications Portal - Adversed
+  - generic:
+    - generic:
+      - generic [ref=e403]:
+        - iframe [ref=e404]:
+          - button "Close message from company" [ref=f10e4] [cursor=pointer]:
+            - img [ref=f10e5]
+        - iframe [ref=e405]:
+          - button "Hi. Need any help?" [ref=f11e5] [cursor=pointer]
+      - iframe [ref=e406]:
+        - button "Open messaging window" [ref=f12e5] [cursor=pointer]:
+          - img [ref=f12e7]
+          - img [ref=f12e10]
+```
