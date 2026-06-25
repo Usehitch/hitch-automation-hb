@@ -2,7 +2,7 @@
   "cookies": [
     {
       "name": "next-auth.applicant-csrf-token",
-      "value": "5f4852b0b056e5a6cd90c38d2b38310319c588a843241c5b34d83b243e6f5ca9%7Cbe5c169bbf8704fbd7d75be568687bde45d806867dac0aee5f26b7f9e2fbb2e1",
+      "value": "dfed5c32c126a441fd971359947a4ab3924080b63b2b12f30fc0628dfc531f77%7Ccbd377e94824752d7eceae38d08df4149ad72859b2e3b0385affefb4e8187c9f",
       "domain": "hb-staging-pos.onrender.com",
       "path": "/",
       "expires": -1,
@@ -21,61 +21,51 @@
       "sameSite": "Lax"
     },
     {
-      "name": "__cf_bm",
-      "value": "4LbwOyLDMWgiRpZCRbz4h5wRDXmhFZH7SVcqRoNIXE8-1782313071.285747-1.0.1.1-ACQnKSBAI..kk0bkmhT1CL3jqmXR7dXqwxK6nB1L_J03Zw200ZATgxfJUf.Vo.HDy9taI5Am.X1Nf6.Qz_3LbMJtyDzsj9PKR8z1_AJ5Wv8HHrmVfOCqJViNhQBjf5ji",
-      "domain": ".argyle.com",
-      "path": "/",
-      "expires": 1782314871.246912,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
       "name": "CLID",
-      "value": "a0fb86fa9b2646b888c107c4436fee13.20260624.20270624",
+      "value": "2cead56219354f5cbb0ed193f66e27f7.20260625.20270625",
       "domain": "www.clarity.ms",
       "path": "/",
-      "expires": 1813849071.466437,
+      "expires": 1813950286.506082,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "_clck",
-      "value": "tubqmj%5E2%5Eg76%5E0%5E2366",
+      "value": "lc97hz%5E2%5Eg77%5E0%5E2367",
       "domain": ".hb-staging-pos.onrender.com",
       "path": "/",
-      "expires": 1813849072,
+      "expires": 1813950286,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
     },
     {
       "name": "__cf_bm",
-      "value": "Zd5NItfheERf1HGlP2rrWZw1Wnm.xJ5UKi4RmKtGdRc-1782313072.6618786-1.0.1.1-pizXiHVWUbn_ejibKdJDppWOjrlayXmvQdHVBqgTsJ0KW84vdAGgE5f_kNoL3W6dqt4GiXC6BRvvpXxu6nsa9GXaV30pql9ohZPf7zIIjUxRGEvUdt._jCuOxsO8ui99",
-      "domain": ".hs-scripts.com",
+      "value": "NdjOgXav1VBzGlPaasZ8yWSARrosypiAzwDIUfruwWM-1782414286.5419073-1.0.1.1-SdALzvmdcFD8nXmtkmX.kv_pj.MFQFuW2MVeuZX_QbF1BXI_8Uadti9oHiL0VwRKKUc6R.ugOzQxLlMhS.juUIX._tYiHtzcGIp7qVH4miG3FDqKDRic5JK1jP8w08mf",
+      "domain": ".argyle.com",
       "path": "/",
-      "expires": 1782314873.554149,
+      "expires": 1782416087.282316,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "__cf_bm",
-      "value": "ShfQJ..UmnV5Imf8JizQ8X8u0ovGHtdjCdLLH28H_zw-1782313075.1818728-1.0.1.1-Cb0WOm0s_jYKKPNJFph5YZhIHoUNOZBr5vYJ8zinyXxsY9GrK3CuusrulG2mORQOJNa7QKcm0KElG1rkor1YmyjjWQMJCgN48LeLLp6ig.C7HxrMpBxJto9qn_R7szr3",
-      "domain": ".hs-analytics.net",
+      "value": "5nTJA26fX8y5vIZ7K90.JrQNk7kTiRt0K8ih4E1QK3E-1782414288.285548-1.0.1.1-U7nAlw76tEWM7TV2AEJ_nx92T7em6TWvCwLs8FbXJBITLCK4m1G4wvUS09va0UKIPDwixK5PZdFYOACFb4IMJ980Gr14coqk8R5ZUevZL7INj4mhUGsNNL.7nnWA7Rwk",
+      "domain": ".hs-scripts.com",
       "path": "/",
-      "expires": 1782314875.134078,
+      "expires": 1782416089.135961,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "MUID",
-      "value": "038627164A1760B619E030944B0361DA",
+      "value": "28628C9F1205636014C19B1C1311627E",
       "domain": ".bing.com",
       "path": "/",
-      "expires": 1816009076.276236,
+      "expires": 1816110292.516491,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
@@ -85,18 +75,28 @@
       "value": "0",
       "domain": ".c.bing.com",
       "path": "/",
-      "expires": 1782917876.276308,
+      "expires": 1783019092.516608,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "SRM_B",
-      "value": "038627164A1760B619E030944B0361DA",
+      "value": "28628C9F1205636014C19B1C1311627E",
       "domain": ".c.bing.com",
       "path": "/",
-      "expires": 1816009076.276326,
+      "expires": 1816110292.516637,
       "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "__cf_bm",
+      "value": "Tf.s_TBj1iIekrziI75kFXl7jLSzMWsH652PR9F8zBU-1782414292.5300686-1.0.1.1-gYhFV8ifFafP9RtkJmRtKlo3SJMZBtiPZrCmr_00j8Qj5yKj_ZVQ7sBgFaQnlRbQueRxPcpt_kXwprmOYdXt7pYHkQW.kjgiBrTfrQhUa4sD7a8EMwyygmFbKTt2woHb",
+      "domain": ".hs-analytics.net",
+      "path": "/",
+      "expires": 1782416092.535504,
+      "httpOnly": true,
       "secure": true,
       "sameSite": "None"
     },
@@ -112,10 +112,10 @@
     },
     {
       "name": "MUID",
-      "value": "038627164A1760B619E030944B0361DA",
+      "value": "28628C9F1205636014C19B1C1311627E",
       "domain": ".clarity.ms",
       "path": "/",
-      "expires": 1816009075.339007,
+      "expires": 1816110292.587013,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
@@ -125,7 +125,7 @@
       "value": "0",
       "domain": ".c.clarity.ms",
       "path": "/",
-      "expires": 1782917875.339124,
+      "expires": 1783019092.58705,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
@@ -135,27 +135,37 @@
       "value": "0",
       "domain": ".c.clarity.ms",
       "path": "/",
-      "expires": 1782313675.339167,
+      "expires": 1782414892.587066,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "AWSALBCORS",
-      "value": "lH9hdYzNmb8UxhCIJBgeyGoZB68X2jJIxcrgDq2snzhr/rssUqiGVzKdomD9OTYurB+06hVCNOLBGKrGSZPaAeGr6IJJO4v7M1clB8PbSopWPdGpiWPhNuqdqLj5",
+      "value": "OhnPNchy9UXLDpabdc1b+c27QxuB3u25yXPrd8wLdk1kZu/LLScXreB6fStMm6swIhb83y1C8CJ8nSHLjkja+wUdjJbK/fUJDLwn1uV9AloYPkArEFDATNkFSUlD",
       "domain": "app.usecanopy.com",
       "path": "/",
-      "expires": 1782917875.470451,
+      "expires": 1783019092.779083,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "next-auth.portal-csrf-token",
-      "value": "f29b58c9b2b4121cff25c8d182bd5947d86b462150c7279d0e5ff9181b1cc6c3%7Cec249d7463810674f2a557e1b1ba35c1946f3a321bbe7a0c8bfcd14c1c3ae09a",
+      "value": "062381e127c059763b0d80db012b5587f8b52b309c79b517020619988187efa1%7Cb93e737ba9f8f9e590e78a87c8b385a159aaa8c2b822966842f5d081c80579c2",
       "domain": "hb-staging-pos.onrender.com",
       "path": "/",
       "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_clsk",
+      "value": "150ad6r%5E1782414295324%5E2%5E1%5Ea.clarity.ms%2Fcollect",
+      "domain": ".hb-staging-pos.onrender.com",
+      "path": "/",
+      "expires": 1782500695,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -172,20 +182,10 @@
     },
     {
       "name": "next-auth.portal-session-token",
-      "value": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..zJxM1Jdioy6PicPN.93S7SFW_GbfiXkif5ViW7tkfifRVrz4GQn5IuGuQtiFdhCzOIuHaGy11jVSiKpd7YAKip5aGy4Ug1nMjYErMw9MWyZZoCTFSySoo3LY7UXLZRCJXSX8i6c4Lv4C-el2RS9OhAQVYLxjXL48u3-dIFo0dN6CbL1MQ1RQ-AX2l-jE_tsDuNmIYawUxVqqf8dgkTn3U-sfWgNiHLrDIkWpHI3KM2U5u6DKva6HNv34FcsTieTbrH0xeXlFLYYLbKfoNIJinYTJVa-lXR3eMJhf3jDuv7mQSbHooL1xYMSemaKWQ3HXm593x4t45xNlnkyrH31GWzot8gVEk-7PCoRr3YpXA2ZVEncwx9vYuw10ehSr8KxKDDUGP_zlgnd2_UpY.SfT3HXmhMOd5WS8GS6YdFA",
+      "value": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..kWS4rCVjx1ipP5Kn.QJvQOqs1qE5A0vQzF9tdDb1z0ZViqt5n6qlkv4GHpSuJAV3JE5wRrM65K3P1zcZnX6KYyLOlrQV0hE7clUrVADplUzpOqYsD3RDAjY3DxTkDJUC0b-kqQATmXswunLDnXDG0ldWmdVyNHLB6FO8BHUoS3ofywp5rO22bJRC7dfqeR_aKXPQd2XJwJE2r901YZOO9hTGEtiKxzSm0iBiGHWnZ1zFJKvQpmaCbxeHMuWXt-EYa9JaY_aRWKvLj4exsfTMNdAYFVrTzOkvNJDhjtoamExCMq3TclwfieyUjgmSgzWdW6TNKYw2HZt01XVPDzUxyZRzOL60LCvhbEyz5DiEyt22YycKZ_X6bFYoVRbFTLm1WMIlw5WSpuJf76G8.PEo_gR8YoF0Y44h5EuaPvA",
       "domain": "hb-staging-pos.onrender.com",
       "path": "/",
-      "expires": 1784905080.369116,
-      "httpOnly": false,
-      "secure": false,
-      "sameSite": "Lax"
-    },
-    {
-      "name": "_clsk",
-      "value": "112e918%5E1782313080978%5E3%5E1%5Er.clarity.ms%2Fcollect",
-      "domain": ".hb-staging-pos.onrender.com",
-      "path": "/",
-      "expires": 1782399480,
+      "expires": 1785006298.161421,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -197,15 +197,15 @@
       "localStorage": [
         {
           "name": "nextauth.message",
-          "value": "{\"event\":\"session\",\"data\":{\"trigger\":\"getSession\"},\"timestamp\":1782313072}"
+          "value": "{\"event\":\"session\",\"data\":{\"trigger\":\"getSession\"},\"timestamp\":1782414288}"
         },
         {
           "name": "ZD-suid",
-          "value": "{\"id\":\"16a4dc0089eb45658cb177e5b8350cc8\",\"expiry\":1782313973163,\"tabs\":{\"count\":1,\"expiry\":0}}"
+          "value": "{\"id\":\"568b9386de2d4835beba19a6f2fe206d\",\"expiry\":1782415188775,\"tabs\":{\"count\":1,\"expiry\":0}}"
         },
         {
           "name": "_cobrowse_device_id",
-          "value": "{\"value\":{\"id\":\"91686df3-986f-4dde-b90b-a52ad1411f73\",\"token\":\"a7e88b92-5f60-4d8e-ac55-1f0238b8b2db\"}}"
+          "value": "{\"value\":{\"id\":\"43c155f9-8f79-41ad-a178-54e9c27486c4\",\"token\":\"fe207d63-ce20-4b0e-b928-861675d13e92\"}}"
         },
         {
           "name": "email",
@@ -217,7 +217,7 @@
         },
         {
           "name": "custom-settings",
-          "value": "{\"state\":{\"fetched\":true,\"settings\":{\"address\":\"99 Wood Avenue South. Suite 301, Iselin, NJ, 08830\",\"displayName\":\"Homebridge Financial Services\",\"fullCompanyName\":\"Homebridge Financial Services\",\"logoUrl\":\"https://res.cloudinary.com/de4ir4skp/image/upload/v1777497400/homebridge-logo.png_uncbjd.png\",\"darkLogoUrl\":null,\"site\":\"homebridge\",\"id\":\"69245371526fcb0c0af422a6\",\"licenseNumber\":\"958425\",\"email\":\"info@homebridge.com\",\"privacyPolicyUrl\":\"https://usehitch.com/privacy-policy\",\"termsUrl\":\"https://usehitch.com/terms-conditions/\",\"validStates\":[\"AL\",\"AK\",\"AZ\",\"AR\",\"CA\",\"CO\",\"CT\",\"DE\",\"DC\",\"FL\",\"GA\",\"GU\",\"HI\",\"ID\",\"IL\",\"IN\",\"IA\",\"KS\",\"KY\",\"LA\",\"ME\",\"MD\",\"MI\",\"MN\",\"MS\",\"MO\",\"MT\",\"NE\",\"NV\",\"NH\",\"NJ\",\"NM\",\"NC\",\"ND\",\"OH\",\"OK\",\"OR\",\"PA\",\"RI\",\"SC\",\"SD\",\"UT\",\"VT\",\"VA\",\"WA\",\"WI\",\"WY\"],\"primaryColor\":\"#0047bb\",\"lightColor\":\"rgb(229, 236, 248)\",\"darkColor\":\"rgb(0, 35, 93)\",\"branch\":null,\"broker\":null,\"brokerPartner\":null,\"logoWidth\":132,\"logoHeight\":42,\"shortName\":\"Homebridge Financial Services, Inc.\",\"fullName\":\"Homebridge Financial Services, Inc.\",\"phone\":\"8009830457\",\"supportEmail\":\"info@hitch.com\",\"minStatedFICO\":\"under620\",\"maxStatedCLTV\":80,\"minStatedLoanAmount\":25000,\"minLoanAmount\":25000,\"maxLoanAmount\":750000,\"minEstimatedPropertyValue\":100000,\"alternativeHardStopText\":null,\"manualReviewText\":null,\"useManualReview\":false,\"offerPageDisclosures\":\"*This is NOT a commitment to lend. Rates and terms are not guaranteed and may change before account opening without notice. Rates and terms may vary based on requested line amount, credit history and available equity. Final initial rate will be set at the time application is fully underwritten. To check the rates and terms to which you may qualify, we will conduct a soft credit pull that will not impact your credit score. If you continue and submit an inquiry, however, we will request your full credit report from one or more consumer reporting agencies which is considered a hard credit pull and may affect your credit score. Offer based on a 30 day payment convention. Final payment based on final terms.\",\"footerDisclosures\":\"1. This site is not authorized by the New York State Department of Financial Services. No mortgage solicitation activity or loan applications for properties located in the State of New York can be facilitated through this site.\\n\\n2. This content provided is for informational purposes only. This does not constitute a lock, a commitment to make a loan, or an offer for the extension of credit. Programs and rates are subject to change without notice. Programs not available in all states. All loans are subject to credit approval. Other restrictions may apply.\",\"softCreditCheckConsentText\":null,\"aboutUsUrl\":\"https://usehitch.com/terms-conditions/\",\"canCreateConditionsFromPortal\":true},\"defaultSettings\":{\"address\":\"99 Wood Avenue South, Suite 301. Iselin, NJ 08830\",\"displayName\":\"Homebridge Financial Services\",\"fullCompanyName\":\"Homebridge Financial Services\",\"logoUrl\":\"https://res.cloudinary.com/de4ir4skp/image/upload/v1777497400/homebridge-logo.png_uncbjd.png\",\"darkLogoUrl\":null,\"site\":\"https://hb-staging-pos.onrender.com\",\"id\":\"homebridge\",\"licenseNumber\":\"12312\",\"email\":\"info@homebridge.com\",\"privacyPolicyUrl\":\"\",\"termsUrl\":\"\",\"validStates\":[],\"primaryColor\":\"#0047bb\",\"lightColor\":\"rgb(229, 236, 248)\",\"darkColor\":\"rgb(0, 35, 93)\",\"branch\":null,\"broker\":null},\"isPortal\":false},\"version\":2}"
+          "value": "{\"state\":{\"fetched\":true,\"settings\":{\"address\":\"99 Wood Avenue South. Suite 301, Iselin, NJ, 08830\",\"displayName\":\"Homebridge Financial Services\",\"fullCompanyName\":\"Homebridge Financial Services\",\"logoUrl\":\"https://res.cloudinary.com/de4ir4skp/image/upload/v1777497400/homebridge-logo.png_uncbjd.png\",\"darkLogoUrl\":\"https://res.cloudinary.com/de4ir4skp/image/upload/v1778272604/Homebridge_Wholesale_Logo_Stacked_Dark_Background-RGB_1_rco9s5.svg\",\"site\":\"homebridge\",\"id\":\"69245371526fcb0c0af422a6\",\"licenseNumber\":\"958425\",\"email\":\"info@homebridge.com\",\"privacyPolicyUrl\":\"https://usehitch.com/privacy-policy\",\"termsUrl\":\"https://usehitch.com/terms-conditions/\",\"validStates\":[\"AL\",\"AK\",\"AZ\",\"AR\",\"CA\",\"CO\",\"CT\",\"DE\",\"DC\",\"FL\",\"GA\",\"GU\",\"HI\",\"ID\",\"IL\",\"IN\",\"IA\",\"KS\",\"KY\",\"LA\",\"ME\",\"MD\",\"MI\",\"MN\",\"MS\",\"MO\",\"MT\",\"NE\",\"NV\",\"NH\",\"NJ\",\"NM\",\"NC\",\"ND\",\"OH\",\"OK\",\"OR\",\"PA\",\"RI\",\"SC\",\"SD\",\"UT\",\"VT\",\"VA\",\"WA\",\"WI\",\"WY\"],\"primaryColor\":\"#0047bb\",\"lightColor\":\"rgb(229, 236, 248)\",\"darkColor\":\"rgb(0, 35, 93)\",\"branch\":null,\"broker\":null,\"brokerPartner\":null,\"logoWidth\":132,\"logoHeight\":42,\"shortName\":\"Homebridge Financial Services, Inc.\",\"fullName\":\"Homebridge Financial Services, Inc.\",\"phone\":\"8009830457\",\"supportEmail\":\"info@hitch.com\",\"minStatedFICO\":\"under620\",\"maxStatedCLTV\":80,\"minStatedLoanAmount\":25000,\"minLoanAmount\":25000,\"maxLoanAmount\":750000,\"minEstimatedPropertyValue\":100000,\"alternativeHardStopText\":null,\"manualReviewText\":null,\"useManualReview\":false,\"offerPageDisclosures\":\"*This is NOT a commitment to lend. Rates and terms are not guaranteed and may change before account opening without notice. Rates and terms may vary based on requested line amount, credit history and available equity. Final initial rate will be set at the time application is fully underwritten. To check the rates and terms to which you may qualify, we will conduct a soft credit pull that will not impact your credit score. If you continue and submit an inquiry, however, we will request your full credit report from one or more consumer reporting agencies which is considered a hard credit pull and may affect your credit score. Offer based on a 30 day payment convention. Final payment based on final terms.\",\"footerDisclosures\":\"1. This site is not authorized by the New York State Department of Financial Services. No mortgage solicitation activity or loan applications for properties located in the State of New York can be facilitated through this site.\\n\\n2. This content provided is for informational purposes only. This does not constitute a lock, a commitment to make a loan, or an offer for the extension of credit. Programs and rates are subject to change without notice. Programs not available in all states. All loans are subject to credit approval. Other restrictions may apply.\",\"softCreditCheckConsentText\":null,\"aboutUsUrl\":\"https://usehitch.com/terms-conditions/\",\"canCreateConditionsFromPortal\":true},\"defaultSettings\":{\"address\":\"99 Wood Avenue South, Suite 301. Iselin, NJ 08830\",\"displayName\":\"Homebridge Financial Services\",\"fullCompanyName\":\"Homebridge Financial Services\",\"logoUrl\":\"https://res.cloudinary.com/de4ir4skp/image/upload/v1777497400/homebridge-logo.png_uncbjd.png\",\"darkLogoUrl\":null,\"site\":\"https://hb-staging-pos.onrender.com\",\"id\":\"homebridge\",\"licenseNumber\":\"12312\",\"email\":\"info@homebridge.com\",\"privacyPolicyUrl\":\"\",\"termsUrl\":\"\",\"validStates\":[],\"primaryColor\":\"#0047bb\",\"lightColor\":\"rgb(229, 236, 248)\",\"darkColor\":\"rgb(0, 35, 93)\",\"branch\":null,\"broker\":null},\"isPortal\":false},\"version\":2}"
         }
       ]
     },
@@ -226,7 +226,7 @@
       "localStorage": [
         {
           "name": "rc::a",
-          "value": "d3E1NGN0MXk3bGhudw=="
+          "value": "ZnppOGdmeXN2bmpt"
         }
       ]
     },
@@ -235,7 +235,7 @@
       "localStorage": [
         {
           "name": "_gcl_ls",
-          "value": "{\"schema\":\"gcl\",\"version\":1,\"gsid_dc\":{\"value\":{\"joinId\":\"luD4qkK_Ejjp_hKiLIFnigshoWAaQIbgEQ\",\"lastJoinedTimeMs\":1782313073549},\"expires\":1782313373549},\"gcl_ctr\":{\"value\":{\"value\":0,\"timeouts\":0,\"errors\":0,\"eopCount\":0,\"creationTimeMs\":1782313073551},\"expires\":1790089073551}}"
+          "value": "{\"schema\":\"gcl\",\"version\":1,\"gsid_dc\":{\"value\":{\"joinId\":\"L0FvnO8QBhqOGiejoNCeOQQFlGnEdnjd9A\",\"lastJoinedTimeMs\":1782414289790},\"expires\":1782414589790},\"gcl_ctr\":{\"value\":{\"value\":0,\"timeouts\":0,\"errors\":0,\"eopCount\":0,\"creationTimeMs\":1782414289793},\"expires\":1790190289793}}"
         }
       ]
     }

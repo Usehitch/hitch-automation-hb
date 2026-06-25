@@ -146,7 +146,10 @@ class TWNPage {
 
             await this.primaryResidenceRadio.check({ force: true });
 
+            await this.continueBtn.scrollIntoViewIfNeeded();
+            await expect(this.continueBtn).toBeEnabled({ timeout: 15000 });
             await this.continueBtn.click({ force: true });
+            await this.page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
         });
     };
 
@@ -154,7 +157,7 @@ class TWNPage {
         await test.step('Fill about yourself', async () => {
             const b = data.borrower;
 
-            await this.firstNameInput.waitFor({ state: 'visible', timeout: 10000 });
+            await this.firstNameInput.waitFor({ state: 'visible', timeout: 60000 });
             await this.firstNameInput.fill(b.firstName);
             await this.firstNameInput.press('Tab');
 

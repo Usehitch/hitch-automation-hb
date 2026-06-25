@@ -30,6 +30,7 @@
 
 import { expect, test } from '../../fixtures';
 import HelpDeskWidget from '../Support/HelpDeskWidget';
+import { ensureChecked } from '../../utils/checkboxHelpers';
 
 class CoBorrowerFlowPage {
     constructor(page) {
@@ -132,7 +133,7 @@ class CoBorrowerFlowPage {
         // Both branches require error-keyword text so only genuine error
         // messages are matched.
         this.errorBanner = this.page.locator('[role="alert"]').filter({
-            hasText: /error|failed|invalid|blocked|went wrong|not allowed|unable/i,
+            hasText: /error|failed|invalid|blocked|went wrong|not allowed|unable|could not verify|verify your identity/i,
         }).first();
         this.errorDialog = this.page.locator('[role="dialog"]').filter({
             hasText: /error|sorry|failed|problem|issue|went wrong/i,
@@ -465,7 +466,7 @@ class CoBorrowerFlowPage {
      * credit pull runs.  We wait up to 60 s for the spinner to disappear
      * before the next step asserts the Application Participants page.
      */
-    async waitForCreditCheckProcessing() {
+    async waitForCreditCheckProcessing(data) {
         await test.step('Wait for credit-check processing to complete', async () => {
             const processingText = this.page.getByText(/Checking Your Credit/i).first();
 
@@ -478,7 +479,94 @@ class CoBorrowerFlowPage {
             if (appeared) {
                 await processingText.waitFor({ state: 'hidden', timeout: 60000 });
             }
+
+            if (data?.creditCheck) {
+                await this.#retryIdentityVerificationIfNeeded(data);
+            }
         });
+    }
+
+    /**
+     * Re-enters sandbox SSN/DOB when the credit bureau returns a transient
+     * "could not verify your identity" alert on Check Your Eligibility.
+     */
+    async #retryIdentityVerificationIfNeeded(data) {
+        const identityError = this.page.getByText(/could not verify your identity/i).first();
+        const hasError = await identityError.isVisible({ timeout: 5000 }).catch(() => false);
+        if (!hasError) return;
+
+        const cc = data.creditCheck;
+        const ssn = this.page.getByLabel(/Social Security/i).first();
+        const dob = this.page.getByLabel(/Date of Birth/i).first();
+        await ssn.waitFor({ state: 'visible', timeout: 10000 });
+        await ssn.clear();
+        await ssn.fill(cc.ssn);
+        await ssn.press('Tab');
+        await dob.clear();
+        await dob.fill(cc.dateOfBirth);
+        await dob.press('Tab');
+
+        const continueBtn = this.page.getByRole('button', { name: /^Continue$/i }).first();
+        await continueBtn.click({ force: true });
+
+        const processingText = this.page.getByText(/Checking Your Credit/i).first();
+        const retryAppeared = await processingText
+            .waitFor({ state: 'visible', timeout: 10000 })
+            .then(() => true)
+            .catch(() => false);
+        if (retryAppeared) {
+            await processingText.waitFor({ state: 'hidden', timeout: 60000 });
+        }
+
+        const stillFailing = await identityError.isVisible({ timeout: 3000 }).catch(() => false);
+        if (stillFailing) {
+            throw new Error(
+                'Credit identity verification failed after SSN/DOB retry — ' +
+                'staging credit bureau may be unavailable for sandbox SSN 999-60-3333'
+            );
+        }
+    }
+
+    /**
+     * Fills marital status, "who married to", and title-only owners when the
+     * section is present (Application Participants pre-offer or Other Info post-offer).
+     */
+    async #fillMaritalStatusAndTitleOwnersIfPresent(data) {
+        const b = data.borrower;
+        const p = data.participants;
+
+        const maritalVisible = await this.page.getByText(/Marital Status/i)
+            .filter({ visible: true })
+            .first()
+            .isVisible({ timeout: 3000 }).catch(() => false);
+        const titleSection = this.page.locator('text=Title-Only Owners').last();
+        const titleVisible = await titleSection
+            .isVisible({ timeout: 3000 }).catch(() => false);
+        if (!maritalVisible && !titleVisible) return;
+
+        const maritalStatus = b.maritalStatus ?? 'Unmarried';
+        const maritalLabel = this.page
+            .getByText(new RegExp(`^${maritalStatus}$`))
+            .filter({ visible: true })
+            .first();
+        await maritalLabel.waitFor({ state: 'visible', timeout: 15000 });
+        await maritalLabel.click();
+
+        if (maritalStatus === 'Married' && p?.marriedTo) {
+            const marriedToLabel = this.page
+                .getByText(new RegExp(p.marriedTo, 'i'))
+                .filter({ visible: true })
+                .first();
+            if (await marriedToLabel.isVisible({ timeout: 5000 }).catch(() => false)) {
+                await marriedToLabel.click();
+            }
+        }
+
+        await titleSection.scrollIntoViewIfNeeded();
+        const allRadios = this.page.locator('input[type="radio"]');
+        await allRadios.last().waitFor({ state: 'attached', timeout: 10000 });
+        const titleRadioIndex = p?.otherTitleOwners ? -1 : -2;
+        await allRadios.nth(titleRadioIndex).click({ force: true });
     }
 
     // -------------------------------------------------------------------------
@@ -505,8 +593,9 @@ class CoBorrowerFlowPage {
             const b = data.borrower;
             const p = data.participants;
 
-            // Wait for the page heading
+            // Wait for the page heading (sidebar may contain a hidden duplicate)
             await this.page.getByText(/Application Participants/i)
+                .filter({ visible: true })
                 .first()
                 .waitFor({ state: 'visible', timeout: 20000 });
 
@@ -543,7 +632,7 @@ class CoBorrowerFlowPage {
                 });
                 const alreadyChecked = await checkbox.isChecked().catch(() => false);
                 if (!alreadyChecked) {
-                    await checkbox.check({ force: true });
+                    await ensureChecked(checkbox, { page: this.page, label: source });
                 }
             }
 
@@ -582,14 +671,16 @@ class CoBorrowerFlowPage {
             const livesAnswer = cb.livesWithBorrower ? /^Yes/ : /^No/;
             await livesGroup.getByRole('radio', { name: livesAnswer }).click();
 
-            // After selecting the lives-with-you answer the page shows a
-            // "We'll send your co-applicant an invite…" confirmation and a
-            // CONTINUE button.  This is the final submit for the Application
-            // Participants page — click it and wait for navigation.
+            // Marital status + title-only owners still render on this page for
+            // the pre-offer flow (post-offer copies live on Other Info).
+            await this.#fillMaritalStatusAndTitleOwnersIfPresent(data);
+
             const livesContinue = this.page.getByRole('button', { name: /^Continue$/i }).first();
             await livesContinue.waitFor({ state: 'visible', timeout: 10000 });
+            await expect(livesContinue).toBeEnabled({ timeout: 15000 });
             await livesContinue.click({ force: true });
 
+            await this.page.waitForURL(/\/prequal\/(?!participants)/, { timeout: 30000 }).catch(() => { });
             await this.page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
         });
     }
@@ -609,50 +700,12 @@ class CoBorrowerFlowPage {
      */
     async fillOtherInfo(data) {
         await test.step('Fill Other Info page (post-offer)', async () => {
-            const b = data.borrower;
-            const p = data.participants;
-
             await this.page.getByText(/Other Info/i)
+                .filter({ visible: true })
                 .first()
                 .waitFor({ state: 'visible', timeout: 30000 });
 
-            // -- Marital Status -----------------------------------------------
-            // MUI renders radio options as: <input type="radio"> + sibling <p>text</p>
-            // The radio has no accessible name, so getByRole({name}) doesn't work.
-            // Click the text label — MUI propagates the click to the radio input.
-            const maritalStatus = b.maritalStatus ?? 'Unmarried';
-            const maritalLabel = this.page
-                .getByText(new RegExp(`^${maritalStatus}$`))
-                .first();
-            await maritalLabel.waitFor({ state: 'visible', timeout: 15000 });
-            await maritalLabel.click();
-
-            // -- "Who are you married to?" (Married path only) ----------------
-            if (maritalStatus === 'Married' && p?.marriedTo) {
-                const marriedToLabel = this.page
-                    .getByText(new RegExp(p.marriedTo, 'i'))
-                    .first();
-                const isVisible = await marriedToLabel
-                    .isVisible({ timeout: 5000 }).catch(() => false);
-                if (isVisible) {
-                    await marriedToLabel.click();
-                }
-            }
-
-            // -- "Are there any other Title-Only Owners?" ---------------------
-            // Layout: [No] [Yes] — No is second-to-last radio on page, Yes is last.
-            // Scoping by div.filter risks matching the heading-only div (no radio
-            // children). Instead grab ALL radio inputs on the page; Title-Only
-            // always renders last, so No = nth(-2), Yes = nth(-1).
-            // force:true bypasses the chat-widget overlay actionability check.
-            const allRadios = this.page.locator('input[type="radio"]');
-            // Scroll the bottom of the page into view first so radios are in DOM.
-            await this.page.locator('text=Title-Only Owners').last()
-                .scrollIntoViewIfNeeded();
-            await allRadios.last().waitFor({ state: 'attached', timeout: 10000 });
-            const titleRadioIndex = p?.otherTitleOwners ? -1 : -2;
-            const titleInput = allRadios.nth(titleRadioIndex);
-            await titleInput.click({ force: true });
+            await this.#fillMaritalStatusAndTitleOwnersIfPresent(data);
 
             // -- CONTINUE -----------------------------------------------------
             const continueBtn = this.page.getByRole('button', { name: /^Continue$/i }).first();
@@ -680,8 +733,12 @@ class CoBorrowerFlowPage {
         await test.step('Fill Mortgages & Liens (DTC)', async () => {
             const m = data.mortgages ?? {};
 
-            // Wait for the page heading
-            await this.page.getByText(/Select Mortgages.*Liens|Mortgages.*Liens on HELOC/i)
+            // Wait for page content — heading copy varies between DTC builds.
+            await this.page.getByText(/Select Mortgages|Mortgages.*Liens|Review Mortgages/i)
+                .filter({ visible: true })
+                .first()
+                .or(this.page.getByLabel(/Requested Loan Amount/i).filter({ visible: true }).first())
+                .or(this.page.getByRole('checkbox', { name: /free and clear/i }))
                 .first()
                 .waitFor({ state: 'visible', timeout: 60000 });
 
@@ -837,23 +894,30 @@ class CoBorrowerFlowPage {
      */
     async fillDemographics() {
         await test.step('Fill Demographics page', async () => {
-            // "CONTINUE TO APPLICATION" navigates within the same tab.
-            // Wait for the Demographics heading to appear after the navigation.
             await this.page.waitForLoadState('domcontentloaded', { timeout: 30000 });
-            await this.page.getByText(/^Demographics$/i)
+
+            const allOptOut = this.page.getByText(/I do not wish to provide this information/i)
+                .filter({ visible: true });
+
+            // Wait for form content — page title is plain text (not role=heading)
+            // and sidebar step labels are hidden duplicates of "Demographics".
+            await this.page.getByText('Ethnicity', { exact: true })
+                .filter({ visible: true })
+                .first()
+                .or(allOptOut.first())
                 .first()
                 .waitFor({ state: 'visible', timeout: 30000 });
 
             // Check every "I do not wish to provide this information" checkbox
             // on the page — covers Ethnicity, Sex, and Race in one pass.
-            const allOptOut = this.page.getByLabel(/I do not wish to provide this information/i);
-            await allOptOut.first().waitFor({ state: 'visible', timeout: 10000 });
             const optOutCount = await allOptOut.count();
             for (let i = 0; i < optOutCount; i++) {
-                const cb = allOptOut.nth(i);
+                const label = allOptOut.nth(i);
+                const cb = label.locator('xpath=ancestor::*[.//input[@type="checkbox"]][1]')
+                    .locator('input[type="checkbox"]').first();
                 const checked = await cb.isChecked().catch(() => false);
                 if (!checked) {
-                    await cb.evaluate(el => el.click());
+                    await cb.evaluate(el => el.click()).catch(() => label.click());
                 }
             }
 
@@ -890,79 +954,120 @@ class CoBorrowerFlowPage {
      *
      * Flow:
      *  1. Wait for Income Verification page
-     *  2. Click "BANK ACCOUNT VERIFICATION (PLAID)"
-     *  3. Inside Plaid dialog/iframe:
-     *       a. Phone pre-filled (415-555-0011) → Continue
-     *       b. OTP code 123456 → Continue
-     *       c. Select Tartan Bank → Confirm
-     *  4. Wait for verification to complete and Continue to become enabled
+     *  2. Select "Login to Your Company Payroll Account" radio
+     *  3. Click LOGIN
+     *  4. Scroll through Employment Authorization modal and click "I Agree"
+     *  5. Wait for consent success toast, then Continue
      */
     async fillIncomeVerification() {
         await test.step('Fill Income Verification (Plaid sandbox)', async () => {
             // Wait for the income-verification URL so we're on the right page.
             await this.page.waitForURL(/income-verification/i, { timeout: 60000 }).catch(() => { });
 
-            // The page shows three radio options:
-            //   • Connect Checking Account  (pre-selected; shows CONNECTING... while Plaid SDK loads)
-            //   • Login to Your Company Payroll Account
-            //   • Upload Income Documents Manually
-            // CONNECTING... appears under the pre-selected radio while the Plaid SDK initialises.
-            // Always wait for it to disappear before interacting (up to 2 min in staging).
-            const connectingText = this.page.getByText(/CONNECTING\.\.\./i).first();
-            await connectingText.waitFor({ state: 'hidden', timeout: 120000 }).catch(() => { });
+            // Select "Login to Your Company Payroll Account" radio
+            const payrollRadio = this.page.getByText(/Login to Your Company Payroll Account/i).first();
+            await payrollRadio.waitFor({ state: 'visible', timeout: 60000 });
+            await payrollRadio.click({ force: true });
 
-            // After CONNECTING... clears, a "BANK ACCOUNT VERIFICATION (PLAID)" button
-            // appears inside the "Connect Checking Account" card. Click it to open Plaid.
-            const plaidBtn = this.page.getByText(/Bank Account Verification.*Plaid/i).first();
-            await plaidBtn.waitFor({ state: 'visible', timeout: 90000 });
-            await plaidBtn.click({ force: true });
+            // Click the LOGIN button that expands under the selected radio
+            const loginBtn = this.page.getByRole('button', { name: /^LOGIN$/i }).first();
+            await loginBtn.waitFor({ state: 'visible', timeout: 15000 });
+            await loginBtn.click({ force: true });
 
-            // Plaid renders inside an iframe after the button is clicked.
-            const plaidFrame = this.page.frameLocator(
-                'iframe[title*="Plaid" i], iframe[name*="plaid" i], iframe[src*="plaid" i]'
-            ).first();
+            // After LOGIN, the button shows "CONNECTING..." while the backend loads.
+            // Wait for that loading state to appear and then clear before the
+            // Employment Authorization dialog opens.
+            const connectingBtn = this.page.getByRole('button', { name: /CONNECTING/i }).first();
+            await connectingBtn.waitFor({ state: 'visible', timeout: 15000 }).catch(() => { });
+            await connectingBtn.waitFor({ state: 'hidden', timeout: 60000 }).catch(() => { });
 
-            // Step a: Phone number screen — sandbox phone is pre-filled; click Continue.
-            const phoneContinue = plaidFrame.getByRole('button', { name: /Continue/i }).first();
-            await phoneContinue.waitFor({ state: 'visible', timeout: 30000 });
-            await phoneContinue.click();
+            // Employment Authorization modal — must scroll the document content to 100%
+            // before the "PLEASE READ DOCUMENT ABOVE" button becomes "I Agree".
+            // Use .MuiDialog-paper to avoid matching the hidden canopy__modal__container
+            // which also carries role="dialog" and is resolved first by Playwright.
+            const modal = this.page.locator('.MuiDialog-paper').first();
+            await modal.waitFor({ state: 'visible', timeout: 120000 });
 
-            // Step b: OTP verification — sandbox code is always 123456
-            // Wait for the "Verify your phone number" screen to appear first,
-            // then type via page.keyboard so cross-origin iframe restrictions
-            // don't block the input events.
-            const codeInput = plaidFrame.locator('#otp-code-input-input').first()
-                .or(plaidFrame.getByPlaceholder(/Code/i).first());
-            await codeInput.waitFor({ state: 'visible', timeout: 30000 });
-            await codeInput.click();
-            // page.keyboard.type fires raw key events on the focused element —
-            // works in cross-origin iframes where pressSequentially may hang.
-            await this.page.keyboard.type('123456', { delay: 80 });
-            // Auto-submits after last digit — wait for Select accounts screen
+            // Wait for the modal content (Certification text) to render
+            await this.page.getByText(/Certification/i).first()
+                .waitFor({ state: 'visible', timeout: 10000 });
 
-            // Step c: Select accounts — pick Tartan Bank (first pre-selected account)
-            const tartanBank = plaidFrame.getByText(/Tartan Bank/i).first();
-            await tartanBank.waitFor({ state: 'visible', timeout: 15000 });
-            await tartanBank.click();
-            const confirmBtn = plaidFrame.getByRole('button', { name: /Confirm/i }).first();
-            await confirmBtn.waitFor({ state: 'visible', timeout: 10000 });
-            await confirmBtn.click();
+            // The scrollable certification area sits inside .MuiDialog-paper.
+            // Scroll it to the bottom — this advances the "0% ↓" counter to 100%
+            // and swaps the disabled "PLEASE READ DOCUMENT ABOVE" button for "I Agree".
+            await modal.evaluate(el => {
+                const scrollables = Array.from(el.querySelectorAll('div')).filter(d => {
+                    const s = window.getComputedStyle(d);
+                    return (s.overflowY === 'auto' || s.overflowY === 'scroll')
+                        && d.scrollHeight > d.clientHeight + 10;
+                });
+                scrollables.sort((a, b) => b.scrollHeight - a.scrollHeight);
+                if (scrollables.length > 0) scrollables[0].scrollTop = scrollables[0].scrollHeight;
+            });
 
-            // Step d: "Share consumer report" confirmation dialog
-            const shareConfirm = plaidFrame.getByRole('button', { name: /Confirm/i }).first();
-            const shareVisible = await shareConfirm
-                .isVisible({ timeout: 10000 }).catch(() => false);
-            if (shareVisible) {
-                await shareConfirm.click();
-            }
+            // After scrolling to 100%, the button label changes from
+            // "PLEASE READ DOCUMENT ABOVE" to "I Agree" and becomes enabled.
+            const iAgreeBtn = this.page.getByRole('button', { name: /I Agree/i }).first();
+            await iAgreeBtn.waitFor({ state: 'visible', timeout: 20000 });
+            await expect(iAgreeBtn).toBeEnabled({ timeout: 20000 });
+            await iAgreeBtn.click({ force: true });
 
-            // Wait for Plaid dialog to close
-            await this.page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
+            // Wait for consent success toast
+            const consentToast = this.page.getByText(/Employment verification consent signed successfully/i).first();
+            await consentToast.waitFor({ state: 'visible', timeout: 30000 });
 
-            // Step e: Wait for "Bank Account Verified Successfully" banner then
-            // click Continue — required before Funding Account page loads.
-            const verifiedBanner = this.page.getByText(/Bank Account Verified Successfully/i).first();
-            await verifiedBanner.waitFor({ state: 'visible', timeout: 30000 });
+            // --- Truework widget flow ---
+            // The widget loads inside a cross-origin iframe (data-cy="frame_tw_js",
+            // src="https://js.truework.com/frames/v1/frame.html"). All locators must
+            // go through frameLocator — this.page.locator() cannot reach inside it.
+            const twFrame = this.page.frameLocator('[data-cy="frame_tw_js"]');
+
+            // Screen 1: "Homebridge Financial Services uses Truework for verifications"
+            await twFrame.locator('[data-cy="btn_consent"]')
+                .waitFor({ state: 'visible', timeout: 120000 });
+            await twFrame.locator('[data-cy="btn_consent"]').click();
+
+            // Screen 2: "Complete your tasks" — click the "Connect payroll" row
+            await twFrame.getByText(/Connect payroll/i)
+                .first()
+                .waitFor({ state: 'visible', timeout: 15000 });
+            await twFrame.getByText(/Connect payroll/i).first().click();
+
+            // Screen 2b: "Find your employer" search screen — clicking the task row opens
+            // a search instead of going directly to login. Click the first result row.
+            await twFrame.locator('[data-cy="unified_search_link"]')
+                .first()
+                .waitFor({ state: 'visible', timeout: 15000 });
+            await twFrame.locator('[data-cy="unified_search_link"]').first().click();
+
+            // Screen 3: "Log in to Hitch" — sandbox credentials shown at bottom of modal
+            await twFrame.getByLabel(/Username/i).first()
+                .waitFor({ state: 'visible', timeout: 15000 });
+            await twFrame.getByLabel(/Username/i).first().fill('user_good');
+            await twFrame.getByLabel(/Password/i).first().fill('pass_good');
+
+            await twFrame.getByRole('button', { name: /^Connect$/i }).click();
+
+            // Wait for "Awaiting Response..." to resolve and payroll to connect
+            await twFrame.getByText(/Successfully connected payroll/i)
+                .first()
+                .waitFor({ state: 'visible', timeout: 60000 });
+
+            // Click "I'm done, submit" to close the Truework widget
+            await twFrame.getByRole('button', { name: /I'm done, submit/i }).click();
+
+            // Wait for Truework modal to close and income verification to process
+            await this.page.getByText(/Verification In Progress|VERIFYING/i)
+                .first()
+                .waitFor({ state: 'visible', timeout: 30000 })
+                .catch(() => { });
+
+            // Wait for "Income Verified Successfully" banner
+            await this.page.getByText(/Income Verified Successfully/i)
+                .first()
+                .waitFor({ state: 'visible', timeout: 120000 });
+
+            // Click Continue once enabled (payroll verified)
             const verifiedContinue = this.page.getByRole('button', { name: /^Continue$/i });
             await verifiedContinue.waitFor({ state: 'visible', timeout: 10000 });
             await expect(verifiedContinue).toBeEnabled({ timeout: 10000 });

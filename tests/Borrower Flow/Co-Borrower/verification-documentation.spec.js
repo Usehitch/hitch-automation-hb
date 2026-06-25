@@ -85,7 +85,7 @@ async function driveToIncomeVerification(preQualManualPage, data) {
     await flow.assertNoBlockingError('Review & Confirm consents');
 
     // -- Step 10: "Checking Your Credit…" processing -------------------------
-    await flow.waitForCreditCheckProcessing();
+    await flow.waitForCreditCheckProcessing(data);
     await flow.assertNoBlockingError('Credit check processing');
 
     // -- Step 11: Application Participants (co-borrower details) --------------

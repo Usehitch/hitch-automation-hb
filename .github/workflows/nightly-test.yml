@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   test:                                   # the single job
-    timeout-minutes: 150                  # generous cap — the full suite + real API calls is slow
+    timeout-minutes: 200                  # generous cap — the full suite + real API calls is slow
     runs-on: ubuntu-latest                # host VM
 
     container:

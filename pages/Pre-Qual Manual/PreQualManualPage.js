@@ -57,6 +57,10 @@ class PreQualManualPage {
             await newTab.goto(`https://${shareableUrl.replace(/^https?:\/\//, '')}`);
             await newTab.waitForLoadState('domcontentloaded');
 
+            // Dismiss the modal on the LO tab so the next test starts clean.
+            await this.page.getByRole('button', { name: 'close' })
+                .click({ force: true }).catch(() => { });
+
             return newTab;
         });
     };

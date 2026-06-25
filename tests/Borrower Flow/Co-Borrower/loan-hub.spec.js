@@ -75,7 +75,7 @@ async function driveToLoanHub(preQualManualPage, data) {
     await flow.assertNoBlockingError('Review & Confirm consents');
 
     // -- Step 10: "Checking Your Credit…" processing -------------------------
-    await flow.waitForCreditCheckProcessing();
+    await flow.waitForCreditCheckProcessing(data);
     await flow.assertNoBlockingError('Credit check processing');
 
     // -- Step 11: Application Participants (co-borrower details) --------------
@@ -122,7 +122,12 @@ test.describe('Borrower Flow — Loan Hub', () => {
     // the Plaid sandbox verification.  Matches the co-borrower E2E timeout.
     test.setTimeout(480000);
 
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({ page, context }) => {
+        for (const openPage of context.pages()) {
+            if (openPage !== page) {
+                await openPage.close().catch(() => { });
+            }
+        }
         await page.goto('/portal');
         await page.waitForLoadState('load');
     });

@@ -107,7 +107,7 @@ async function runCoBorrowerFlow(preQualManualPage, data) {
     await flow.assertNoBlockingError('Review & Confirm consents');
 
     // -- Step 10: Wait for "Checking Your Credit…" processing -----------------
-    await flow.waitForCreditCheckProcessing();
+    await flow.waitForCreditCheckProcessing(data);
     await flow.assertNoBlockingError('Credit check processing');
 
     // -- Step 11: Application Participants page --------------------------------
@@ -195,7 +195,13 @@ test.describe('Co-Borrower Flow — End-to-End via Shareable Link', () => {
     // The default 3-minute timeout is not enough for CI.
     test.setTimeout(480000); // 8 min — full flow includes 2× Plaid + credit pull + offer calc
 
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({ page, context }) => {
+        // Close borrower tabs left open by the prior test in this serial file.
+        for (const openPage of context.pages()) {
+            if (openPage !== page) {
+                await openPage.close().catch(() => { });
+            }
+        }
         await page.goto('/portal');
         await page.waitForLoadState('load');
     });
