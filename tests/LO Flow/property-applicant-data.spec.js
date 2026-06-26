@@ -19,7 +19,7 @@
  */
 
 import { test, expect } from '../../fixtures';
-import { applicationData } from '../../data/newApplication';
+import { makeApplicationData } from '../../data/newApplication';
 
 test.describe('LO - Property and Applicant Data', () => {
     test.beforeEach(async ({ page }) => {
@@ -34,6 +34,7 @@ test.describe('LO - Property and Applicant Data', () => {
     async function fillAppHeldInTrust(preQualManualPage, newApplicationPage, trustType) {
         await preQualManualPage.clickStartApp();
         await preQualManualPage.clickStartPreQualManually();
+        const applicationData = makeApplicationData();
         await newApplicationPage.fillApplicationDetails({
             ...applicationData,
             property: { ...applicationData.property, heldInTrust: true, trustType },

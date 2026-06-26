@@ -18,6 +18,28 @@ import ManageEmailsPage from '../pages/Manage Emails/ManageEmailsPage';
 import NewEmailTemplatePage from '../pages/Manage Emails/NewEmailTemplatePage';
 
 export const test = base.extend({
+    // Fail fast on a staging outage instead of hanging for the full test timeout.
+    // Render serves a 502/503/504 Bad Gateway during cold starts and outages; the
+    // document response carries that status, so any `page.goto('/portal…')` that
+    // lands on it throws immediately with a clear message rather than letting a
+    // downstream waitFor hang up to the test timeout (we saw 16-min hangs).
+    // The Mailinator helper uses its own browser context, so it is unaffected.
+    page: async ({ page }, use) => {
+        const originalGoto = page.goto.bind(page);
+        page.goto = async (url, options) => {
+            const response = await originalGoto(url, options);
+            if (response && response.status() >= 500) {
+                throw new Error(
+                    `Navigation to "${url}" returned HTTP ${response.status()} — ` +
+                    `staging is unavailable (likely a Render 502/cold start). Failing fast ` +
+                    `instead of waiting for the test timeout.`
+                );
+            }
+            return response;
+        };
+        await use(page);
+    },
+
     loginPage: async ({ page }, use) => {
         await use(new LoginPage(page));
     },

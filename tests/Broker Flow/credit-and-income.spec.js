@@ -22,7 +22,7 @@
  */
 
 import { test, expect } from '../../fixtures';
-import { applicationData } from '../../data/newApplication';
+import { makeApplicationData } from '../../data/newApplication';
 
 test.describe('LO - Credit and Income', () => {
     test.beforeEach(async ({ page }) => {
@@ -41,13 +41,17 @@ test.describe('LO - Credit and Income', () => {
         // SSN, which can take minutes on CI.
         test.setTimeout(360000);
 
+        // Fresh email per run — avoids "already associated" collisions with other
+        // create-flow specs sharing this worker (and on retries).
+        const appData = makeApplicationData();
+
         await test.step('Start manual pre-qual', async () => {
             await preQualManualPage.clickStartApp();
             await preQualManualPage.clickStartPreQualManually();
         });
 
         await test.step('Application Details states a soft inquiry with no score impact', async () => {
-            await newApplicationPage.fillApplicationDetails(applicationData);
+            await newApplicationPage.fillApplicationDetails(appData);
 
             // The Soft Credit Check consent on this step is the product's own
             // statement that the inquiry is SOFT and does not affect the score —
@@ -64,7 +68,7 @@ test.describe('LO - Credit and Income', () => {
             await newApplicationPage.clickNext();
 
             await expect(newApplicationPage.mortgagesHeading).toBeVisible({ timeout: 15000 });
-            await mortgagesAndLiensPage.fillMortgagesAndLiens(applicationData);
+            await mortgagesAndLiensPage.fillMortgagesAndLiens(appData);
             await mortgagesAndLiensPage.clickNext();
 
             await expect(offerReviewPage.pageHeading).toBeVisible({ timeout: 15000 });
@@ -85,8 +89,8 @@ test.describe('LO - Credit and Income', () => {
             // (the section only renders when debts exist), so this asserts the DTI
             // calculation when present without failing on the no-debt case. The
             // soft-pull basis above is the always-on guarantee.
-            await offerReviewPage.clickManageDebtPayoffs(applicationData);
-            await offerReviewPage.verifyDebtPayoffModal(applicationData);
+            await offerReviewPage.clickManageDebtPayoffs(appData);
+            await offerReviewPage.verifyDebtPayoffModal(appData);
         });
     });
 });

@@ -1,7 +1,20 @@
 import { randomEmail } from '../utils/dataGenerator';
 import { SHARED } from './shared';
 
-export const applicationData = {
+/**
+ * Builds a fresh single-borrower application payload with a NEW applicant email
+ * on every call.
+ *
+ * This MUST be a factory, not a module-level const: Node caches the module, so a
+ * const's email is frozen for the worker's lifetime. Any spec that FINALIZES a
+ * pre-qual with a reused email trips "This email is already associated with an
+ * existing application" and the form can't advance past Application Details.
+ * That happens two ways: (1) two create-flow specs sharing a worker reuse the
+ * same frozen email, and (2) a Playwright retry reuses the prior attempt's
+ * email. Call this once inside each create-flow test body so every run
+ * (including retries) gets an unused email. See [[makeCoBorrowerApplicationData]].
+ */
+export const makeApplicationData = () => ({
     property: {
         address: {
             street:  SHARED.street,
@@ -62,25 +75,28 @@ export const applicationData = {
         },
         // acknowledgeDtiLimit handled automatically — checkbox detected by visibility, not data flag
     },
-};
+});
+
+/**
+ * Frozen single-borrower instance for specs that only READ static fields (e.g.
+ * `consent.brokerMloName`) or fill the form WITHOUT finalizing a new pre-qual.
+ * Any spec that creates an application must call [[makeApplicationData]] instead
+ * so it gets a unique email — see the factory comment above.
+ */
+export const applicationData = makeApplicationData();
 
 /**
  * Builds a fresh co-borrower application payload with NEW applicant and
  * co-borrower emails on every call.
  *
- * This MUST be a factory, not a module-level const: Node caches the module, so
- * a const's emails are fixed for the worker's lifetime. On a Playwright retry
- * the first (failed) attempt has already created the co-borrower invitation, so
- * reusing the same email trips "This email is already associated to a
- * coborrower invitation" and the form can't finalize. Call this once inside
- * each test body so every attempt (including retries) gets unused emails.
+ * Same factory rationale as [[makeApplicationData]] — a module-cached const's
+ * emails are fixed for the worker's lifetime, so on a Playwright retry the first
+ * (failed) attempt has already created the co-borrower invitation and reusing the
+ * same email trips "This email is already associated to a coborrower invitation".
+ * Call this once inside each test body so every attempt gets unused emails.
  */
 export const makeCoBorrowerApplicationData = () => ({
-    ...applicationData,
-    applicant: {
-        ...applicationData.applicant,
-        email: randomEmail(),  // fresh email — avoids "already associated" error when solo test ran first
-    },
+    ...makeApplicationData(), // fresh applicant email
     coBorrower: {
         hasCoBorrower: true,
         firstName:    'Amy',
@@ -89,9 +105,5 @@ export const makeCoBorrowerApplicationData = () => ({
         ssn:          '500-22-2000',   // Method Fi sandbox test SSN for co-borrower
         dateOfBirth:  '05/10/1978',
         phoneNumber:  '5121231114',
-    },
-    offerReview: {
-        ...applicationData.offerReview,
-        // acknowledgeDtiLimit handled automatically — checkbox detected by visibility, not data flag
     },
 });

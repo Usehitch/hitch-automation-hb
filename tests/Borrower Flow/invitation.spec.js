@@ -5,17 +5,18 @@
  * verification steps:
  *
  *  Scenario A — Borrower Only (no co-borrower)
- *    A1. LO creates pre-qual manually (applicationData — hasCoBorrower: false)
- *    A2. B1 receives invitation email → opens application
+ *    A1. LO creates pre-qual manually (makeApplicationData — hasCoBorrower: false)
+ *    A2. B1 receives invitation email (asserted via Mailinator)
  *
  *  Scenario B — With Co-Borrower
- *    B1. LO creates pre-qual manually (coBorrowerApplicationData — hasCoBorrower: true)
- *    B2. B1 receives invitation email → opens application
- *    B3. B2 (co-borrower) receives invitation email → opens application
+ *    B1. LO creates pre-qual manually (makeCoBorrowerApplicationData — hasCoBorrower: true)
+ *    B2. B1 receives invitation email (asserted via Mailinator)
+ *    B3. B2 (co-borrower) receives invitation email (asserted via Mailinator)
  *
- * randomEmail() is called at module load — each scenario has its own data
- * object so emails are generated once and shared across the serial tests
- * within that scenario.
+ * Each test builds its data from a factory (makeApplicationData /
+ * makeCoBorrowerApplicationData) so every run and retry gets fresh, unused
+ * emails — a reused email trips "already associated with an existing
+ * application". Email receipt is asserted by expectInvitationEmailReceived.
  *
  * Emails use Mailinator public inboxes — no real PII.
  * SSNs are Method Fi sandbox values.
@@ -23,64 +24,14 @@
 
 import { test, expect } from '../../fixtures';
 import {
-    applicationData,
+    makeApplicationData,
     makeCoBorrowerApplicationData,
 } from '../../data/newApplication';
+import { expectInvitationEmailReceived } from '../../utils/emailHelpers';
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-/**
- * Open a Mailinator public inbox in an isolated browser context, wait for
- * the invitation email, click "COMPLETE APPLICATION" inside the email body
- * iframe, and assert the Review Information / Start Application landing page.
- *
- * Uses a fresh browser context so the LO portal session is never affected.
- * Returns the app tab + context so the caller can continue or close.
- *
- * @param {import('@playwright/test').BrowserContext} sourceContext
- * @param {string} email   full mailinator address
- * @param {string} label   prefix for test.step names
- * @returns {{ appPage: Page, ctx: BrowserContext }}
- */
-async function verifyInviteEmail(sourceContext, email, label) {
-    const inboxName = email.split('@')[0];
-    const mailinatorUrl =
-        `https://www.mailinator.com/v4/public/inboxes.jsp?to=${encodeURIComponent(inboxName)}`;
-
-    const ctx = await sourceContext.browser().newContext();
-
-    try {
-        await test.step(`${label}: verify invitation email in Mailinator`, async () => {
-            const mailinatorTab = await ctx.newPage();
-            await mailinatorTab.goto(mailinatorUrl, { waitUntil: 'domcontentloaded' });
-
-            // Poll with page refresh — email delivery can take 30–120 s.
-            // Actual subject from staging: "You've been prequalified for a HELOC!"
-            const emailSubjectPattern =
-                /prequalified|invited to apply|apply for a loan|loan application|started.*application/i;
-            let emailRow = mailinatorTab.getByText(emailSubjectPattern).first();
-            const deadline = Date.now() + 120000;
-            while (!(await emailRow.isVisible().catch(() => false))) {
-                if (Date.now() > deadline) break;
-                await mailinatorTab.reload({ waitUntil: 'domcontentloaded' });
-                await mailinatorTab.waitForTimeout(5000);
-                emailRow = mailinatorTab.getByText(emailSubjectPattern).first();
-            }
-
-            // Assert the subject row is visible — that's sufficient to confirm delivery.
-            await expect(emailRow).toBeVisible({ timeout: 10000 });
-
-            await mailinatorTab.close();
-        });
-    } catch (err) {
-        await ctx.close().catch(() => { });
-        throw err;
-    }
-
-    return { ctx };
-}
 
 /**
  * Shared LO pre-qual steps — runs the full portal flow and lands on the
@@ -145,6 +96,10 @@ test('Scenario A: LO creates pre-qual and borrower receives invitation', async (
 }) => {
     test.setTimeout(960000);
 
+    // Fresh email per run — a reused email (another create-flow spec sharing this
+    // worker, or a retry) trips "already associated with an existing application".
+    const applicationData = makeApplicationData();
+
     await page.goto('/portal');
     await page.waitForLoadState('load');
 
@@ -157,12 +112,11 @@ test('Scenario A: LO creates pre-qual and borrower receives invitation', async (
         confirmationPage,
     });
 
-    const { ctx } = await verifyInviteEmail(
+    await expectInvitationEmailReceived(
         page.context(),
         applicationData.applicant.email,
         'A — B1 (borrower)'
     );
-    await ctx.close().catch(() => { });
 });
 
 // ---------------------------------------------------------------------------
@@ -196,17 +150,15 @@ test('Scenario B: LO creates pre-qual with co-borrower and both receive invitati
         confirmationPage,
     });
 
-    const { ctx: ctxB1 } = await verifyInviteEmail(
+    await expectInvitationEmailReceived(
         page.context(),
         coBorrowerApplicationData.applicant.email,
         'B — B1 (borrower)'
     );
-    await ctxB1.close().catch(() => { });
 
-    const { ctx: ctxB2 } = await verifyInviteEmail(
+    await expectInvitationEmailReceived(
         page.context(),
         coBorrowerApplicationData.coBorrower.email,
         'B — B2 (co-borrower)'
     );
-    await ctxB2.close().catch(() => { });
 });
