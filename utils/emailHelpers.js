@@ -27,12 +27,14 @@ export async function expectInvitationEmailReceived(sourceContext, email, label)
             const inboxTab = await ctx.newPage();
             await inboxTab.goto(mailinatorUrl, { waitUntil: 'domcontentloaded' });
 
-            // Poll with page refresh — email delivery can take 30–120 s.
+            // Poll with page refresh — email delivery can take 30 s to a few
+            // minutes on staging (free Mailinator public inboxes are slow/rate-
+            // limited). 180 s window matches observed worst-case delivery.
             // Actual subject from staging: "You've been prequalified for a HELOC!"
             const emailSubjectPattern =
                 /prequalified|invited to apply|apply for a loan|loan application|started.*application/i;
             let emailRow = inboxTab.getByText(emailSubjectPattern).first();
-            const deadline = Date.now() + 120000;
+            const deadline = Date.now() + 180000;
             while (!(await emailRow.isVisible().catch(() => false))) {
                 if (Date.now() > deadline) break;
                 await inboxTab.reload({ waitUntil: 'domcontentloaded' });
@@ -43,7 +45,7 @@ export async function expectInvitationEmailReceived(sourceContext, email, label)
             // Assert the subject row is visible — confirms the email was delivered.
             await expect(
                 emailRow,
-                `No invitation email arrived for ${email} within 120s`
+                `No invitation email arrived for ${email} within 180s`
             ).toBeVisible({ timeout: 10000 });
 
             await inboxTab.close();

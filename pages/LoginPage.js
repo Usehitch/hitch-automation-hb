@@ -36,6 +36,15 @@ class LoginPage {
     };
     async clickGoToBrokerPortal() {
         await test.step('Click the go to broker portal', async () => {
+            // Wait for the portal page to settle and the button to attach. If it
+            // never renders, the page came up cold (staging cold-start) — reload
+            // once and re-wait rather than failing/hanging the whole LO suite.
+            try {
+                await this.goToBrokerPortal_btn.waitFor({ state: 'visible', timeout: 45000 });
+            } catch {
+                await this.page.reload({ waitUntil: 'domcontentloaded' });
+                await this.goToBrokerPortal_btn.waitFor({ state: 'visible', timeout: 45000 });
+            }
             await this.goToBrokerPortal_btn.click();
         });
     };

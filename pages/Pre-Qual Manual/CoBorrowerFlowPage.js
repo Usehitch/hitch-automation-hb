@@ -972,20 +972,45 @@ class CoBorrowerFlowPage {
             // Click the LOGIN button that expands under the selected radio
             const loginBtn = this.page.getByRole('button', { name: /^LOGIN$/i }).first();
             await loginBtn.waitFor({ state: 'visible', timeout: 15000 });
-            await loginBtn.click({ force: true });
 
-            // After LOGIN, the button shows "CONNECTING..." while the backend loads.
-            // Wait for that loading state to appear and then clear before the
-            // Employment Authorization dialog opens.
+            // After LOGIN, the button shows "CONNECTING..." while the backend loads,
+            // then the Employment Authorization dialog opens. Sometimes the first
+            // click doesn't register (the dialog never appears) — re-click LOGIN if
+            // the modal hasn't shown up yet, up to a few attempts.
             const connectingBtn = this.page.getByRole('button', { name: /CONNECTING/i }).first();
-            await connectingBtn.waitFor({ state: 'visible', timeout: 15000 }).catch(() => { });
-            await connectingBtn.waitFor({ state: 'hidden', timeout: 60000 }).catch(() => { });
+            const modal = this.page.locator('.MuiDialog-paper').first();
+
+            const MAX_LOGIN_ATTEMPTS = 3;
+            for (let attempt = 1; attempt <= MAX_LOGIN_ATTEMPTS; attempt++) {
+                // Click LOGIN only if it's still visible (it's replaced by CONNECTING
+                // / the dialog once the click takes effect).
+                if (await loginBtn.isVisible().catch(() => false)) {
+                    await loginBtn.click({ force: true });
+                }
+
+                // Wait for the CONNECTING loading state to appear and clear.
+                await connectingBtn.waitFor({ state: 'visible', timeout: 15000 }).catch(() => { });
+                await connectingBtn.waitFor({ state: 'hidden', timeout: 60000 }).catch(() => { });
+
+                // If the Employment Authorization dialog showed up, the click worked.
+                const modalShown = await modal.isVisible().catch(() => false)
+                    || await modal.waitFor({ state: 'visible', timeout: 20000 })
+                        .then(() => true).catch(() => false);
+                if (modalShown) break;
+
+                // Dialog didn't appear — the LOGIN click likely didn't trigger.
+                if (attempt === MAX_LOGIN_ATTEMPTS) {
+                    throw new Error(
+                        'Employment Authorization dialog did not open after ' +
+                        `${MAX_LOGIN_ATTEMPTS} LOGIN attempts on the payroll income-verification step.`
+                    );
+                }
+            }
 
             // Employment Authorization modal — must scroll the document content to 100%
             // before the "PLEASE READ DOCUMENT ABOVE" button becomes "I Agree".
             // Use .MuiDialog-paper to avoid matching the hidden canopy__modal__container
             // which also carries role="dialog" and is resolved first by Playwright.
-            const modal = this.page.locator('.MuiDialog-paper').first();
             await modal.waitFor({ state: 'visible', timeout: 120000 });
 
             // Wait for the modal content (Certification text) to render
@@ -1062,10 +1087,48 @@ class CoBorrowerFlowPage {
                 .waitFor({ state: 'visible', timeout: 30000 })
                 .catch(() => { });
 
-            // Wait for "Income Verified Successfully" banner
-            await this.page.getByText(/Income Verified Successfully/i)
-                .first()
-                .waitFor({ state: 'visible', timeout: 120000 });
+            // Payroll verification can intermittently stall — the card then shows
+            // "Verification is taking longer than expected. Please try again." with a
+            // RETRY VERIFICATION button. If that happens, click retry and wait again;
+            // otherwise the success banner appears and we fall straight through.
+            const incomeVerified = this.page.getByText(/Income Verified Successfully/i).first();
+            const retryBtn = this.page.getByRole('button', { name: /RETRY VERIFICATION/i }).first();
+
+            // Bound the loop so it can't consume the whole test budget: worst case is
+            // MAX_RETRIES races of RACE_TIMEOUT each (~4.5 min), after which we fail
+            // fast and let Playwright's test-level retry recover from staging stalls.
+            const MAX_RETRIES = 2;
+            const RACE_TIMEOUT = 90000;
+            let verified = false;
+            for (let attempt = 0; attempt <= MAX_RETRIES && !verified; attempt++) {
+                // Race the success banner against the retry button appearing.
+                const outcome = await Promise.race([
+                    incomeVerified.waitFor({ state: 'visible', timeout: RACE_TIMEOUT })
+                        .then(() => 'verified').catch(() => 'timeout'),
+                    retryBtn.waitFor({ state: 'visible', timeout: RACE_TIMEOUT })
+                        .then(() => 'retry').catch(() => 'timeout'),
+                ]);
+
+                if (outcome === 'verified') {
+                    // Success — break out and continue.
+                    verified = true;
+                } else if (outcome === 'retry' && attempt < MAX_RETRIES) {
+                    // Verification stalled — click RETRY VERIFICATION and loop again.
+                    await retryBtn.click({ force: true });
+                    await this.page.getByText(/Verification In Progress|VERIFYING/i)
+                        .first()
+                        .waitFor({ state: 'visible', timeout: 30000 })
+                        .catch(() => { });
+                }
+                // outcome === 'timeout' (neither appeared): fall through and let the
+                // loop exit, then the final assertion below reports a clear failure.
+            }
+
+            if (!verified) {
+                // Exhausted retries (or neither state appeared) — fail with a clear,
+                // short-budget assertion against the success banner.
+                await expect(incomeVerified).toBeVisible({ timeout: 30000 });
+            }
 
             // Click Continue once enabled (payroll verified)
             const verifiedContinue = this.page.getByRole('button', { name: /^Continue$/i });

@@ -246,6 +246,10 @@ class ActivePage {
      */
     async search(query) {
         await test.step(`Search for "${query}"`, async () => {
+            // Wait for the loan-list page to hydrate before filling — on a cold
+            // staging start the search input isn't attached yet, and fill() would
+            // otherwise burn the full test timeout waiting for actionability.
+            await this.searchInput.waitFor({ state: 'visible', timeout: 45000 });
             await this.searchInput.fill(query);
             // waitForLoadState('load') resolves instantly on a SPA because the
             // 'load' event already fired on initial page load.  waitForLoadState

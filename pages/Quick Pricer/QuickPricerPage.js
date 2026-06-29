@@ -104,8 +104,18 @@ class QuickPricerPage {
 
     async navigateToQuickPricer() {
         await test.step('Navigate to Quick Pricer via sidebar', async () => {
-            // Wait for the sidebar to be fully hydrated before clicking.
-            await expect(this.quickPricerNav).toBeVisible({ timeout: 30000 });
+            // Wait for the sidebar container to hydrate before reaching for the
+            // specific nav item — on a cold staging start the exact "Quick Pricer"
+            // item isn't rendered yet. If the sidebar never hydrates, the page came
+            // up cold: reload once and re-wait rather than failing outright.
+            const sidebar = this.page.locator('[data-sidebar]').first();
+            try {
+                await sidebar.waitFor({ state: 'visible', timeout: 30000 });
+                await expect(this.quickPricerNav).toBeVisible({ timeout: 15000 });
+            } catch {
+                await this.page.reload({ waitUntil: 'domcontentloaded' });
+                await expect(this.quickPricerNav).toBeVisible({ timeout: 30000 });
+            }
             await this.quickPricerNav.click();
             // waitForLoadState('networkidle') hangs indefinitely on CI for SPAs
             // that keep background polling/websocket connections alive.  Wait for

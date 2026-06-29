@@ -1,6 +1,7 @@
 # Environment — never commit secrets
 .env
 .env.local
+.env.example
 
 # Playwright
 node_modules/
@@ -19,4 +20,3 @@ node_modules/
 /failure-state.json
 /failure-classification.json
 /slack-bug-report.json
-/.env.example

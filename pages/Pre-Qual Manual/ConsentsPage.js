@@ -44,11 +44,15 @@ class ConsentsPage {
     async clickNext() {
         await test.step('Click Next to submit consents', async () => {
             await this.nextBtn.click({ force: true });
-            // Wait for the confirmation banner to confirm submission succeeded
+            // Wait for the confirmation banner to confirm submission succeeded.
+            // Submitting consents kicks off backend finalization (credit pull +
+            // offer calc) which can take ~200 s on staging, so this banner is
+            // slow to appear — 30 s was too tight and flaked. Callers set an
+            // 11-min test timeout, so a 4-min wait here is well within budget.
             await this.page
                 .getByText('Pre-Qualified — Ready for Borrower Review')
                 .first()
-                .waitFor({ state: 'visible', timeout: 30000 });
+                .waitFor({ state: 'visible', timeout: 240000 });
         });
     };
 };
