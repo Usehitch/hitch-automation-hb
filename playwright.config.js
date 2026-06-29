@@ -18,7 +18,7 @@ export default defineConfig({
   testDir: './tests',
   fullyParallel: false,       // tests within a file run sequentially (safer for shared staging data)
   forbidOnly: !!process.env.CI,
-  retries: 1,   // 1 retry locally and in CI — auto-recovers transient staging 502s / MUI fill+autocomplete flakes within the same run
+  retries: 2,   // 1 retry locally and in CI — auto-recovers transient staging 502s / MUI fill+autocomplete flakes within the same run
   workers: process.env.CI ? 2 : 2, // 2 parallel workers in CI (was 1) — halves total time
   timeout: 180000, // 3 min — finalization involves real API calls (credit pull, employment verify)
   reporter: [

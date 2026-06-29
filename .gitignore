@@ -19,3 +19,4 @@ node_modules/
 /failure-state.json
 /failure-classification.json
 /slack-bug-report.json
+/.env.example
