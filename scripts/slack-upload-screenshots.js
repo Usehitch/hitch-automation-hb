@@ -1,8 +1,17 @@
 // Upload failed-test screenshots to Slack via the files.uploadV2 flow.
 //
-// Reads Playwright's JSON report, pulls one screenshot per failed spec (the
-// final attempt's image), caps the count, and posts them as a SINGLE Slack
-// message with all images attached and a caption.
+// Reads Playwright's JSON report and, for each failed spec, pulls EVERY
+// screenshot from the final attempt (multi-context flows produce one per open
+// page), caps the total, and posts them as a SINGLE Slack message with a
+// summary that names each failing test, its first error line, and file:line.
+//
+// Why every screenshot, not one: flows that open more than one browser context
+// (e.g. an LO tab idling on the My Loans dashboard + a borrower tab running the
+// flow via a shareable link) emit one screenshot per page — test-failed-1.png,
+// test-failed-2.png, … Playwright does NOT tell us which page the assertion
+// threw on, and the first context is often the idle one. Uploading only a single
+// image reliably showed the idle dashboard and never the page that actually
+// failed. We upload all pages and let the labels + summary disambiguate.
 //
 // Usage:
 //   node scripts/slack-upload-screenshots.js <results.json> [maxImages]
@@ -11,7 +20,7 @@
 //   SLACK_BOT_TOKEN  — xoxb-… token with files:write (and chat:write); bot
 //                      must be a member of the target channel.
 //   SLACK_CHANNEL_ID — numeric channel ID (e.g. C0123ABCD), NOT the #name.
-//   SLACK_CAPTION    — optional initial_comment for the upload message.
+//   SLACK_CAPTION    — optional initial_comment prefix for the upload message.
 //
 // Best-effort: any failure here logs and exits 0 so a Slack hiccup never masks
 // the real test failure (the workflow fails the job separately).
@@ -20,7 +29,7 @@ const fs = require('fs');
 const path = require('path');
 
 const RESULTS = process.argv[2] || 'test-results.json';
-const MAX = parseInt(process.argv[3] || '10', 10);
+const MAX = parseInt(process.argv[3] || '12', 10);
 const TOKEN = process.env.SLACK_BOT_TOKEN;
 const CHANNEL = process.env.SLACK_CHANNEL_ID;
 const CAPTION = process.env.SLACK_CAPTION || 'Failure screenshots';
@@ -32,32 +41,62 @@ function bail(msg) {
   process.exit(0); // never fail the job over screenshot delivery
 }
 
-// Walk suites/specs recursively and collect ONE screenshot per failed spec:
-// the last image attachment from a failed/timedOut result (i.e. the final
-// attempt), so retries don't flood the channel with duplicates.
-function collectScreenshots(report) {
-  const found = []; // { title, file }
-  const visit = (node) => {
-    (node.suites || []).forEach(visit);
+// Strip ANSI colour codes Playwright embeds in error messages so the Slack
+// summary reads as plain text.
+const stripAnsi = (s) => String(s).replace(/\x1b\[[0-9;]*m/g, '');
+
+// Walk suites/specs recursively. For each FAILED spec collect, from its final
+// failed/timedOut attempt: the full test path, the first error line, the
+// failing file:line, and ALL existing screenshot files (deduped).
+function collectFailures(report) {
+  const failures = []; // { title, errLine, location, files: [absPath] }
+  const visit = (node, trail) => {
+    const here = node.title ? [...trail, node.title] : trail;
+    (node.suites || []).forEach((s) => visit(s, here));
     (node.specs || []).forEach((spec) => {
       if (spec.ok) return; // only failing specs
-      let shot = null;
+
+      // The last failed/timedOut result across the spec's tests is the final
+      // attempt — earlier results are superseded retries.
+      let result = null;
       (spec.tests || []).forEach((t) =>
         (t.results || []).forEach((r) => {
-          if (r.status !== 'failed' && r.status !== 'timedOut') return;
-          (r.attachments || []).forEach((a) => {
-            if ((a.contentType || '').startsWith('image/') && a.path) {
-              const p = path.isAbsolute(a.path) ? a.path : path.resolve(a.path);
-              if (fs.existsSync(p)) shot = p; // keep the latest → final attempt
-            }
-          });
+          if (r.status === 'failed' || r.status === 'timedOut') result = r;
         })
       );
-      if (shot) found.push({ title: spec.title, file: shot });
+      if (!result) return;
+
+      const files = [];
+      const seen = new Set();
+      (result.attachments || []).forEach((a) => {
+        if (!(a.contentType || '').startsWith('image/') || !a.path) return;
+        const p = path.isAbsolute(a.path) ? a.path : path.resolve(a.path);
+        if (!fs.existsSync(p) || seen.has(p)) return;
+        seen.add(p);
+        files.push(p);
+      });
+      if (files.length === 0) return;
+
+      const errRaw =
+        (result.error && result.error.message) ||
+        (result.errors && result.errors[0] && result.errors[0].message) ||
+        '';
+      const errLine =
+        stripAnsi(errRaw).split('\n').map((l) => l.trim()).filter(Boolean)[0] || '';
+      const loc = result.errorLocation
+        ? `${result.errorLocation.file}:${result.errorLocation.line}`
+        : '';
+
+      failures.push({
+        title: [...here, spec.title].filter(Boolean).join(' › '),
+        errLine,
+        location: loc,
+        files,
+      });
     });
   };
-  (report.suites || []).forEach(visit);
-  return found;
+  (report.suites || []).forEach((s) => visit(s, []));
+  return failures;
 }
 
 async function slack(method, body, isJson) {
@@ -106,12 +145,31 @@ async function uploadOne({ title, file }) {
     bail(`could not read ${RESULTS}: ${e.message}`);
   }
 
-  const all = collectScreenshots(report);
-  if (all.length === 0) bail('no failure screenshots found — nothing to upload.');
+  const failures = collectFailures(report);
+  if (failures.length === 0) bail('no failure screenshots found — nothing to upload.');
 
-  const shots = all.slice(0, MAX);
-  const dropped = all.length - shots.length;
-  console.log(`[slack-screenshots] uploading ${shots.length} of ${all.length} failure screenshot(s).`);
+  // Round-robin the per-spec images so every failing spec contributes its first
+  // page before any spec contributes a second — under the cap, no failing spec
+  // is left without a screenshot. Each image is tagged with its spec so the
+  // labels stay meaningful, and with "(page N/M)" when a spec has more than one.
+  const ordered = [];
+  for (let i = 0; ; i++) {
+    let added = false;
+    for (const f of failures) {
+      if (!f.files[i]) continue;
+      const tag = f.files.length > 1 ? ` (page ${i + 1}/${f.files.length})` : '';
+      ordered.push({ title: `${f.title}${tag}`, file: f.files[i] });
+      added = true;
+    }
+    if (!added) break;
+  }
+
+  const shots = ordered.slice(0, MAX);
+  const dropped = ordered.length - shots.length;
+  console.log(
+    `[slack-screenshots] ${failures.length} failing spec(s), ` +
+    `uploading ${shots.length} of ${ordered.length} screenshot(s).`
+  );
 
   const uploaded = [];
   for (const s of shots) {
@@ -123,8 +181,21 @@ async function uploadOne({ title, file }) {
   }
   if (uploaded.length === 0) bail('all uploads failed — nothing to post.');
 
+  // Name each failing test up front so the message identifies the failures even
+  // before the images load (and even if some screenshots get dropped/skipped).
+  const summary = failures
+    .map((f, n) => {
+      const locPart = f.location ? `  _(${f.location})_` : '';
+      const errPart = f.errLine ? `\n   ↳ ${f.errLine.slice(0, 180)}` : '';
+      return `${n + 1}. *${f.title}*${locPart}${errPart}`;
+    })
+    .join('\n');
+
   const comment =
-    CAPTION + (dropped > 0 ? `\n_(showing ${uploaded.length} of ${all.length} — ${dropped} more in the report)_` : '');
+    `${CAPTION}\n\n*Failing tests (${failures.length}):*\n${summary}` +
+    (dropped > 0
+      ? `\n\n_(showing ${uploaded.length} of ${ordered.length} screenshots — ${dropped} more in the report)_`
+      : '');
 
   const done = await slack(
     'files.completeUploadExternal',
