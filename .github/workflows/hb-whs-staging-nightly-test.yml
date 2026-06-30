@@ -1,5 +1,5 @@
 # Workflow display name (shown in the Actions tab).
-name: Nightly Regression Tests
+name: HB-WHS-STAGING Nightly Regression
 
 # Events that start this workflow.
 on:
@@ -267,6 +267,23 @@ jobs:
 
           jq -n --arg t "$TEXT" '{channel:"#automation-alerts", text:$t}' \
           | curl -sS -X POST -H 'Content-type: application/json' -d @- ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # -----------------------------
+      # Upload failure screenshots to Slack (bot token; up to 10, one per
+      # failing spec). Best-effort — the script never fails the job, so a Slack
+      # hiccup can't mask the real test failure. PR runs skipped (covered by
+      # GitHub PR checks, matching the Slack text alerts above).
+      # Needs secrets: SLACK_BOT_TOKEN (xoxb-…, files:write) + SLACK_CHANNEL_ID
+      # (numeric ID), and the bot must be a member of #automation-alerts.
+      # -----------------------------
+      - name: Upload failure screenshots to Slack
+        if: always() && env.FAILED != '0' && github.event_name != 'pull_request'
+        continue-on-error: true
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          SLACK_CAPTION: "🖼️ *Nightly Regression #${{ github.run_number }}* (`${{ github.ref_name }}`) — failure screenshots (${{ env.FAILED }} failed). Report: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/${{ github.run_id }}/"
+        run: node scripts/slack-upload-screenshots.js test-results.json 10
 
       # -----------------------------
       # Bug-report classifier (nightly schedule only — the confirmation

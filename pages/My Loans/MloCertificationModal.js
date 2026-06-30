@@ -57,6 +57,11 @@ class MloCertificationModal {
             // attached to the DOM" whenever the cert modal re-rendered.
             await this.brokerMloNameInput.waitFor({ state: 'visible', timeout: 15000 });
             await this.brokerMloNameInput.fill(name);
+            // Blur so the form's onBlur/onTouched validation fires and SUBMIT can
+            // enable — a bare .fill() leaves focus in the field and the form's
+            // isValid can stay false. Same commit pattern as ConsentsPage and
+            // NewApplicationPage.fillApplicationDetails.
+            await this.brokerMloNameInput.press('Tab');
         });
     }
 

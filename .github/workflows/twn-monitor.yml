@@ -124,6 +124,21 @@ jobs:
           }" \
           ${{ secrets.SLACK_WEBHOOK_URL }}
 
+      # -----------------------------
+      # Upload failure screenshot to Slack (bot token; the failing monitor
+      # spec's screenshot). Best-effort — the script never fails the job.
+      # Needs secrets: SLACK_BOT_TOKEN (xoxb-…, files:write) + SLACK_CHANNEL_ID,
+      # and the bot must be a member of that channel.
+      # -----------------------------
+      - name: Upload failure screenshot to Slack
+        if: failure()
+        continue-on-error: true
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          SLACK_CAPTION: "🖼️ *TWN Integration Check Failed* — screenshot. Report: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/twn-monitor/${{ github.run_id }}/"
+        run: node scripts/slack-upload-screenshots.js test-results.json 10
+
       # -----------------------------------------------------------------------
       # Email alert — production outage only (TWN failure).
       # Fires when the integration check fails; does NOT send on success.

@@ -1,0 +1,311 @@
+# Workflow display name (shown in the Actions tab).
+name: REMN-WHS-STG Nightly Regression
+
+# ---------------------------------------------------------------------------
+# Scoped nightly regression for the REMN WHS *staging* HELOC portal
+# (remn-staging-pos.onrender.com). Runs ONLY the curated spec list below — not
+# the full suite — against REMN staging, using a dedicated set of REMN_STG_*
+# secrets so it never touches the creds used by the other workflows.
+#
+# Both the broker session (chromium) and the LO session (chromium-lo) log in
+# with the SAME staging MLO account: the workflow maps the one credential into
+# both EMAIL/PASSWORD and EMAIL_LO/PASSWORD_LO.
+#
+# NOTE: this target is a Render staging host, which intermittently 502s on cold
+# start. playwright.config.js already mitigates this (retries: 2 + a fail-fast
+# goto guard in fixtures), so transient 502s should self-recover within a run.
+#
+# Required repo secrets (Settings → Secrets and variables → Actions):
+#   REMN_STG_BASE_URL   → https://remn-staging-pos.onrender.com/portal
+#   REMN_STG_EMAIL      → stg_helix_remn_mlo@homebridge.com
+#   REMN_STG_PASSWORD   → (the staging MLO password)
+# Reused (shared with the other workflows):
+#   HB_TOKEN            → PAT with push rights to gh-pages
+#   SLACK_WEBHOOK_URL   → Slack incoming webhook
+# ---------------------------------------------------------------------------
+
+on:
+  # Scheduled run. Cron is in UTC: "minute hour day month weekday".
+  # '0 6 * * *' = 06:00 UTC daily — off-peak, and offset from the staging
+  # nightly (20:00 UTC) and the HB-WHS-PROD nightly (08:00 UTC) so the runs
+  # never contend for runners or report trends.
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:      # manual run from the Actions tab
+
+# Never let two REMN staging runs overlap (a manual dispatch on top of the nightly, etc.)
+concurrency:
+  group: remn-whs-stg-nightly
+  cancel-in-progress: false   # let an in-flight run finish rather than killing it
+
+# GITHUB_TOKEN permissions. "write" is required because the gh-pages deploy
+# steps push the generated reports to the gh-pages branch.
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: REMN-WHS-STG — Scoped Nightly Regression
+    timeout-minutes: 120                  # generous cap — real API calls (credit pull, employment verify) are slow
+    runs-on: ubuntu-latest
+
+    container:
+      # Run inside Playwright's official image (browsers + OS deps preinstalled, version-matched).
+      image: mcr.microsoft.com/playwright:v1.59.1-jammy
+
+    steps:
+      - uses: actions/checkout@v4         # clone the repo
+
+      - uses: actions/setup-node@v4       # install Node + enable npm cache
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci                       # reproducible install from package-lock.json
+
+      # -----------------------------
+      # Validate Secrets
+      # -----------------------------
+      - name: Validate required secrets
+        run: |
+          missing=""
+          [ -z "$REMN_STG_BASE_URL" ] && missing="$missing REMN_STG_BASE_URL"
+          [ -z "$REMN_STG_EMAIL" ] && missing="$missing REMN_STG_EMAIL"
+          [ -z "$REMN_STG_PASSWORD" ] && missing="$missing REMN_STG_PASSWORD"
+
+          if [ -n "$missing" ]; then
+            echo "❌ Missing required secrets:$missing"
+            exit 1
+          fi
+
+          echo "✅ All required secrets are present"
+        env:
+          REMN_STG_BASE_URL: ${{ secrets.REMN_STG_BASE_URL }}
+          REMN_STG_EMAIL: ${{ secrets.REMN_STG_EMAIL }}
+          REMN_STG_PASSWORD: ${{ secrets.REMN_STG_PASSWORD }}
+
+      # -----------------------------
+      # Run the curated REMN staging spec list
+      # -----------------------------
+      # Exact file paths are passed (Playwright matches them as anchored
+      # regexes). This avoids the substring trap — a bare "active" filter would
+      # also match inactive/reactivate-user/deactivate-user, and a bare
+      # "quick-pricer" filter would also match quick-pricer-monitor. Each path is
+      # routed to the correct project by playwright.config.js: Broker-session
+      # specs run under `chromium` (setup → broker login), LO-session specs under
+      # `chromium-lo` (setup-lo → LO login). Both setups log in with the same
+      # staging MLO account because EMAIL_LO/PASSWORD_LO are mapped to it below.
+      - name: Run Playwright tests (REMN staging scope)
+        id: playwright
+        # continue-on-error: a failing suite does NOT stop the job here — the
+        # reporting/Allure/Slack steps below must still run. We fail the job at
+        # the very end (see "Fail workflow if tests failed").
+        continue-on-error: true
+        run: |
+          npx playwright test \
+            "tests/Broker Flow/loandetail.spec.js" \
+            "tests/Broker Flow/shadow-borrower-view.spec.js" \
+            "tests/Broker Flow/twn-monitor.spec.js" \
+            "tests/Broker Flow/credit-and-income.spec.js" \
+            "tests/Broker Flow/pre-qual-manual.spec.js" \
+            "tests/Broker Flow/econsent.spec.js" \
+            "tests/Broker Flow/quick-pricer.spec.js" \
+            "tests/Broker Flow/My Loans/active.spec.js" \
+            "tests/Broker Flow/My Loans/adversed.spec.js" \
+            "tests/Broker Flow/My Loans/inactive.spec.js" \
+            "tests/Borrower Flow/support.spec.js" \
+            "tests/LO Flow/pipeline-management.spec.js" \
+            "tests/LO Flow/deal-optimization.spec.js" \
+            "tests/LO Flow/certifications.spec.js" \
+            "tests/LO Flow/property-applicant-data.spec.js" \
+            "tests/Borrower Flow/invitation.spec.js" \
+            "tests/Borrower Flow/Co-Borrower/coborrower.spec.js" \
+            "tests/Borrower Flow/Co-Borrower/verification-documentation.spec.js" \
+            "tests/Borrower Flow/Co-Borrower/loan-hub.spec.js"
+        env:
+          # Point the whole run at REMN staging.
+          BASE_URL: ${{ secrets.REMN_STG_BASE_URL }}
+          # Broker session (chromium) creds.
+          EMAIL: ${{ secrets.REMN_STG_EMAIL }}
+          PASSWORD: ${{ secrets.REMN_STG_PASSWORD }}
+          # LO session (chromium-lo) creds — reuse the same staging MLO account
+          # so the LO-flow specs authenticate without a second login.
+          EMAIL_LO: ${{ secrets.REMN_STG_EMAIL }}
+          PASSWORD_LO: ${{ secrets.REMN_STG_PASSWORD }}
+
+      # -----------------------------
+      # Install jq
+      # -----------------------------
+      - name: Install jq
+        if: always()
+        run: apt-get update -qq && apt-get install -y -qq jq
+
+      # -----------------------------
+      # Extract Test Statistics
+      # -----------------------------
+      - name: Extract test results
+        if: always()
+        run: |
+          PASSED=$(jq '.stats.expected // 0' test-results.json)
+          FAILED=$(jq '.stats.unexpected // 0' test-results.json)
+          SKIPPED=$(jq '.stats.skipped // 0' test-results.json)
+
+          echo "PASSED=$PASSED" >> $GITHUB_ENV
+          echo "FAILED=$FAILED" >> $GITHUB_ENV
+          echo "SKIPPED=$SKIPPED" >> $GITHUB_ENV
+
+      # -----------------------------
+      # Extract Failed Test Names
+      # -----------------------------
+      - name: Extract failed tests
+        if: always()
+        run: |
+          FAILED_TESTS=$(jq -r '
+            .suites[]?.specs[]? |
+            select(any(.tests[]?.results[]?; .status=="failed")) |
+            .title
+          ' test-results.json)
+
+          {
+            echo "FAILED_TESTS<<EOF"
+            echo "${FAILED_TESTS:-None}"
+            echo "EOF"
+          } >> $GITHUB_ENV
+
+      # -----------------------------
+      # Allure: restore history JSONL across runs (trends / flakiness).
+      # REMN-staging-namespaced cache key keeps these trends separate from the
+      # other workflows' histories.
+      # -----------------------------
+      - name: Restore Allure history
+        uses: actions/cache@v4
+        if: always()
+        with:
+          path: allure-history.jsonl
+          key: allure-history-remnstg-${{ github.run_id }}
+          restore-keys: |
+            allure-history-remnstg-
+
+      # -----------------------------
+      # Allure: strip spurious "skipped" twin results (see scripts/allure-dedupe.js).
+      # -----------------------------
+      - name: Deduplicate Allure results
+        if: always()
+        run: node scripts/allure-dedupe.js allure-results
+
+      # -----------------------------
+      # Allure: generate report (reads + appends allure-history.jsonl).
+      # -----------------------------
+      - name: Generate Allure report
+        if: always()
+        run: |
+          npx allure generate allure-results --name "REMN-WHS-STG Nightly #${{ github.run_number }}"
+
+      # -----------------------------
+      # Upload Playwright Report
+      # -----------------------------
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: remn-whs-stg-playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+      # -----------------------------
+      # Upload Allure Report
+      # -----------------------------
+      - name: Upload Allure Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: remn-whs-stg-allure-report
+          path: allure-report/
+          retention-days: 30
+
+      # -----------------------------
+      # Deploy Reports to GitHub Pages (REMN-staging-namespaced dirs so they
+      # never clobber the other workflows' reports/ and allure/ trees).
+      # -----------------------------
+      - name: Deploy Playwright report to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: always()
+        with:
+          github_token: ${{ secrets.HB_TOKEN }}
+          publish_dir: playwright-report/
+          destination_dir: remn-whs-stg/reports/${{ github.run_id }}
+          keep_files: true
+
+      - name: Deploy Allure report to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: always()
+        with:
+          github_token: ${{ secrets.HB_TOKEN }}
+          publish_dir: allure-report/
+          destination_dir: remn-whs-stg/allure/${{ github.run_id }}
+          keep_files: true
+
+      # -----------------------------
+      # Slack Success Alert — quiet one-line digest.
+      # -----------------------------
+      - name: Slack Alert - Test Success
+        if: always() && env.FAILED == '0'
+        run: |
+          ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/remn-whs-stg/allure/${{ github.run_id }}/"
+          TEXT="✅ *REMN-WHS-STG Nightly Passed* — ${PASSED} passed, ${SKIPPED} skipped on REMN staging. 🟣 <${ALLURE_REPORT}|Allure trends>"
+          jq -n --arg t "$TEXT" '{channel:"#automation-alerts", text:$t}' \
+          | curl -sS -X POST -H 'Content-type: application/json' -d @- ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # -----------------------------
+      # Slack Failure Alert — actionable: includes failed test names + links.
+      # -----------------------------
+      - name: Slack Alert - Test Failed
+        if: always() && env.FAILED != '0'
+        run: |
+          RUN_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/remn-whs-stg/reports/${{ github.run_id }}/"
+          ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/remn-whs-stg/allure/${{ github.run_id }}/"
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          FAILED_LIST=$(printf '%s\n' "$FAILED_TESTS" | sed 's/^/• /')
+
+          TEXT=$(printf '%s\n' \
+            "❌ *REMN-WHS-STG Nightly Failed* <!here>" \
+            "📦 ${{ github.repository }} — REMN WHS staging HELOC portal" \
+            "📈 Passed: ${PASSED} | Failed: ${FAILED} | Skipped: ${SKIPPED}" \
+            "" \
+            "*Failed tests:*" \
+            "${FAILED_LIST}" \
+            "" \
+            "🚨 Playwright report: ${RUN_REPORT}" \
+            "🟣 Allure (trends/flakiness): ${ALLURE_REPORT}" \
+            "🔍 Run logs: ${RUN_URL}")
+
+          jq -n --arg t "$TEXT" '{channel:"#automation-alerts", text:$t}' \
+          | curl -sS -X POST -H 'Content-type: application/json' -d @- ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # -----------------------------
+      # Upload failure screenshots to Slack (bot token; up to 10, one per
+      # failing spec). Best-effort — the script never fails the job, so a Slack
+      # hiccup can't mask the real test failure.
+      # Needs secrets: SLACK_BOT_TOKEN (xoxb-…, files:write) + SLACK_CHANNEL_ID
+      # (numeric ID), and the bot must be a member of #automation-alerts.
+      # -----------------------------
+      - name: Upload failure screenshots to Slack
+        if: always() && env.FAILED != '0'
+        continue-on-error: true
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          SLACK_CAPTION: "🖼️ *REMN-WHS-STG Nightly #${{ github.run_number }}* — failure screenshots (${{ env.FAILED }} failed). Report: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/remn-whs-stg/reports/${{ github.run_id }}/"
+        run: node scripts/slack-upload-screenshots.js test-results.json 10
+
+      # -----------------------------
+      # Mark Workflow Failed — the test step used continue-on-error, so fail
+      # the job explicitly here if any test failed (so the run shows red).
+      # -----------------------------
+      - name: Fail workflow if tests failed
+        if: env.FAILED != '0'
+        run: |
+          echo "One or more tests failed."
+          exit 1
