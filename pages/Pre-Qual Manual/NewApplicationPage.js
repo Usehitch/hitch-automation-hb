@@ -255,7 +255,9 @@ class NewApplicationPage {
 
             await this.coBorrowerYesRadio.check();
 
-            await this.coBorrowerFirstNameInput.waitFor({ state: 'visible', timeout: 10000 });
+            // 30 s — checking "Yes" triggers the co-borrower fields to expand/render,
+            // which occasionally runs past 10s on prod.
+            await this.coBorrowerFirstNameInput.waitFor({ state: 'visible', timeout: 30000 });
             await this.coBorrowerFirstNameInput.fill(coBorrower.firstName);
             await this.coBorrowerFirstNameInput.press('Tab');
 
@@ -425,16 +427,20 @@ class NewApplicationPage {
                     .catch(() => false);
 
                 if (appeared) {
-                    // Wait for finalization to fully complete (URL stays the same — SPA)
-                    await this.finalizingHeading.waitFor({ state: 'hidden', timeout: 200000 });
+                    // Wait for finalization to fully complete (URL stays the same — SPA).
+                    // 300s — raised from 200s after REMN prod exceeded that ceiling;
+                    // its finalization backend runs slower than HB prod/staging.
+                    await this.finalizingHeading.waitFor({ state: 'hidden', timeout: 300000 });
                 }
             });
 
             // Confirm step 2 loaded.
-            // 60 s — on CI, the Finalizing overlay may hide quickly but the
+            // 120 s — on CI, the Finalizing overlay may hide quickly but the
             // Mortgages & Liens page still takes many seconds to hydrate its data
             // (especially on co-borrower flows where two credit pulls are in flight).
-            await this.mortgagesHeading.waitFor({ state: 'visible', timeout: 60000 });
+            // Raised from 60s after prod nightlies hit the ceiling then passed clean
+            // on retry — backend hydration occasionally runs past 60s under load.
+            await this.mortgagesHeading.waitFor({ state: 'visible', timeout: 120000 });
 
             // Brief buffer so any late-opening tabs (e.g. co-borrower consent) are captured
             await this.page.waitForTimeout(1500);

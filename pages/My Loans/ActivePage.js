@@ -264,6 +264,41 @@ class ActivePage {
     }
 
     /**
+     * Searches for a query and retries the search itself (not just waits) until
+     * the View button appears or the budget is exhausted.
+     *
+     * A loan created moments earlier in the same test can lag behind the My
+     * Loans search index/read-replica — the first search can hit a stale
+     * snapshot with zero results. Re-issuing the search re-queries the backend
+     * rather than just waiting for a UI element that will never appear against
+     * stale data.
+     *
+     * @param {string} query
+     * @param {{ attempts?: number, retryDelayMs?: number }} [opts]
+     */
+    async searchAndWaitForResult(query, { attempts = 4, retryDelayMs = 15000 } = {}) {
+        await test.step(`Search for "${query}" and wait for a result (indexing lag retry)`, async () => {
+            for (let attempt = 1; attempt <= attempts; attempt++) {
+                await this.search(query);
+                const found = await this.viewBtn.isVisible({ timeout: 10000 }).catch(() => false);
+                if (found) return;
+                if (attempt < attempts) {
+                    console.warn(
+                        `searchAndWaitForResult: no result for "${query}" on attempt ${attempt}/${attempts} — ` +
+                        `loan may not be indexed yet, retrying in ${retryDelayMs}ms`
+                    );
+                    await this.page.waitForTimeout(retryDelayMs);
+                }
+            }
+            await expect(
+                this.viewBtn,
+                `View button did not appear for "${query}" after ${attempts} search attempts — ` +
+                'the newly created loan may not be indexed in My Loans search yet.'
+            ).toBeVisible({ timeout: 10000 });
+        });
+    }
+
+    /**
      * Clears the search box and waits for results to reset.
      */
     async clearSearch() {

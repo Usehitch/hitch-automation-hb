@@ -38,8 +38,10 @@ test.describe('LO - Credit and Income', () => {
         offerReviewPage,
     }) => {
         // Finalization runs a real soft credit pull against the Method Fi sandbox
-        // SSN, which can take minutes on CI.
-        test.setTimeout(360000);
+        // SSN, which can take minutes on CI. Raised from 360000 to keep headroom
+        // over NewApplicationPage's finalizing (300s) + mortgages heading (120s)
+        // wait ceilings after REMN prod needed a longer finalizing budget.
+        test.setTimeout(480000);
 
         // Fresh email per run — avoids "already associated" collisions with other
         // create-flow specs sharing this worker (and on retries).

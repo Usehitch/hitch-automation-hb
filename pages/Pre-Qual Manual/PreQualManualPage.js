@@ -10,11 +10,13 @@ class PreQualManualPage {
             .or(this.page.getByText(/Sharable App Link/i)).first();
 
         // -- "Start HELOC Loan Application" modal -----------------------------
+        // Domain-agnostic (staging serves onrender.com, prod serves
+        // hbwheloc.homebridge.com) — match any host/path-shaped value instead.
         this.shareableLinkInput = this.page.getByRole('textbox').filter({
-            has: this.page.locator('[value*="onrender.com"]'),
-        }).or(this.page.locator('input[value*="onrender.com"]')).first();
+            has: this.page.locator('[value*="://"], [value$=".com"], [value*=".com/"]'),
+        }).or(this.page.locator('input[value*=".com/"]')).first();
         this.copyLinkBtn = this.page.locator('button[aria-label*="copy" i], button[title*="copy" i]')
-            .or(this.page.locator('input[value*="onrender.com"] ~ button'))
+            .or(this.page.locator('input[value*=".com/"] ~ button'))
             .first();
         this.startPreQualManual_btn = this.page.getByRole("button", { name: "Start Pre-Qual Manually" });
     };
@@ -47,8 +49,10 @@ class PreQualManualPage {
             await this.page.getByRole('heading', { name: 'Start HELOC Loan Application' })
                 .waitFor({ state: 'visible', timeout: 10000 });
 
-            // URL is rendered in a <p> tag (not an input) — read text content
-            const linkText = this.page.locator('p').filter({ hasText: /onrender\.com\// }).first();
+            // URL is rendered in a <p> tag (not an input) — read text content.
+            // Match any host/path shape (domain.tld/path), not a specific domain —
+            // staging serves onrender.com, prod serves hbwheloc.homebridge.com.
+            const linkText = this.page.locator('p').filter({ hasText: /[\w-]+\.[a-z]{2,}\/\S+/i }).first();
             await linkText.waitFor({ state: 'visible', timeout: 10000 });
             const shareableUrl = (await linkText.textContent()).trim();
 

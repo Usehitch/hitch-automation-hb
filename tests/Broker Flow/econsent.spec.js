@@ -85,7 +85,9 @@ test.describe('E-Consent', () => {
             if (extraPage !== page) await extraPage.close().catch(() => {});
         }
         await page.bringToFront();
-        await activePage.search(coBorrowerApplicationData.applicant.email);
+        // Retries the search itself (not just the wait) — a loan created moments
+        // earlier in this same test can lag behind the My Loans search index.
+        await activePage.searchAndWaitForResult(coBorrowerApplicationData.applicant.email);
         await activePage.viewBtn.click();
         await loanDetailPage.verifyPageLoaded();
 

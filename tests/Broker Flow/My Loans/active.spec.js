@@ -60,7 +60,14 @@ test.describe('My Loans - Active', () => {
             await activePage.fileOwnerDropdown
                 .getByRole('button', { name: /open/i })
                 .evaluate(el => el.click());
-            await expect(activePage.page.getByRole('listbox').first()).toBeVisible({ timeout: 10000 });
+
+            // Some tenants (e.g. REMN) have zero File Owners configured — MUI
+            // Autocomplete then renders a "No options" state instead of a
+            // role="listbox" popup, so a hard listbox assertion never resolves.
+            // Accept either as evidence the dropdown opened.
+            const listbox = activePage.page.getByRole('listbox').first();
+            const noOptions = activePage.page.getByText(/No options/i).first();
+            await expect(listbox.or(noOptions)).toBeVisible({ timeout: 10000 });
             await activePage.page.keyboard.press('Escape');
         });
 

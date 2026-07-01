@@ -88,6 +88,13 @@ test.describe('My Loans - Adversed', () => {
         activePage,
         mloCertificationModal,
     }) => {
+        // Adversed certification triggers extra underwriting checks on top of the
+        // modal/submit waits inside MloCertificationModal (up to ~115s worst case)
+        // — on some tenants (e.g. REMN) that pushes past the 180s default config
+        // timeout. Widen so a genuinely slow backend fails as a clean assertion
+        // instead of a hard test-timeout.
+        test.setTimeout(300000);
+
         const hasPending = await activePage.certifyBtn
             .isVisible({ timeout: 15000 })
             .catch(() => false);

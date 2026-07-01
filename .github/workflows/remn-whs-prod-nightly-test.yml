@@ -99,24 +99,25 @@ jobs:
         continue-on-error: true
         run: |
           npx playwright test \
-            "tests/Broker Flow/loandetail.spec.js" \
             "tests/Broker Flow/shadow-borrower-view.spec.js" \
             "tests/Broker Flow/twn-monitor.spec.js" \
             "tests/Broker Flow/credit-and-income.spec.js" \
             "tests/Broker Flow/pre-qual-manual.spec.js" \
             "tests/Broker Flow/econsent.spec.js" \
-            "tests/Broker Flow/My Loans/active.spec.js" \
             "tests/Broker Flow/My Loans/adversed.spec.js" \
             "tests/Broker Flow/My Loans/inactive.spec.js" \
             "tests/Borrower Flow/support.spec.js" \
             "tests/LO Flow/pipeline-management.spec.js" \
             "tests/LO Flow/deal-optimization.spec.js" \
-            "tests/LO Flow/certifications.spec.js" \
             "tests/LO Flow/property-applicant-data.spec.js" \
             "tests/Borrower Flow/invitation.spec.js" \
             "tests/Borrower Flow/Co-Borrower/coborrower.spec.js" \
             "tests/Borrower Flow/Co-Borrower/verification-documentation.spec.js" \
             "tests/Borrower Flow/Co-Borrower/loan-hub.spec.js"
+          # Excluded from prod scope: loandetail.spec.js, My Loans/active.spec.js,
+          # LO Flow/certifications.spec.js — all search for a hardcoded fixture
+          # loan (SHARED name/address, "4556 Eliot St") seeded on staging only.
+          # They still run in the REMN staging nightly where that data exists.
         env:
           # Point the whole run at REMN production.
           BASE_URL: ${{ secrets.REMN_PROD_BASE_URL }}

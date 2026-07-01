@@ -1356,9 +1356,11 @@ class CoBorrowerFlowPage {
      */
     async fillFundingAccount() {
         await test.step('Fill Funding Account page (Plaid)', async () => {
+            // 60 s — on prod, the locator can resolve to a hidden element for tens of
+            // seconds while the page transitions in before becoming visible.
             await this.page.getByText(/Funding Account/i)
                 .first()
-                .waitFor({ state: 'visible', timeout: 30000 });
+                .waitFor({ state: 'visible', timeout: 60000 });
 
             // TODO: Implement full Plaid sandbox flow for Funding Account
             // (phone → OTP → Tartan Bank → Confirm).  For now, click

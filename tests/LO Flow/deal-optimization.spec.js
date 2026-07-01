@@ -37,8 +37,10 @@ test.describe('LO - Deal Optimization', () => {
         offerReviewPage,
     }) => {
         // Finalization runs a real soft credit pull against the sandbox SSN, which
-        // can take minutes on CI.
-        test.setTimeout(360000);
+        // can take minutes on CI. Raised from 360000 to keep headroom over
+        // NewApplicationPage's finalizing (300s) + mortgages heading (120s) wait
+        // ceilings after REMN prod needed a longer finalizing budget.
+        test.setTimeout(480000);
 
         await test.step('Start manual pre-qual and reach Offer Review', async () => {
             await preQualManualPage.clickStartApp();

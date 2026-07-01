@@ -1,37 +1,43 @@
 # Workflow display name (shown in the Actions tab).
-name: HB-WHS-PROD Nightly Regression
+name: CMG-WHS-PROD Nightly Regression
 
 # ---------------------------------------------------------------------------
-# Scoped nightly regression for the Homebridge WHS *production* HELOC portal
-# (hbwheloc.homebridge.com). Runs ONLY the curated spec list below — not the
-# full suite — against prod, using a dedicated set of HBW_PROD_* secrets so it
-# never touches the staging creds used by nightly-test.yml.
+# Scoped nightly regression for the CMG WHS *production* HELOC portal
+# (cmg-prod-pos.onrender.com). Runs ONLY the curated spec list below — not the
+# full suite — against CMG prod, using a dedicated set of CMG_PROD_* secrets so
+# it never touches the creds used by the other workflows.
 #
 # Both the broker session (chromium) and the LO session (chromium-lo) log in
-# with the SAME prod MLO account: the workflow maps the one prod credential
-# into both EMAIL/PASSWORD and EMAIL_LO/PASSWORD_LO.
+# with the SAME prod MLO account: the workflow maps the one credential into
+# both EMAIL/PASSWORD and EMAIL_LO/PASSWORD_LO.
+#
+# NOTE: this target is a Render host, which intermittently 502s on cold start.
+# playwright.config.js already mitigates this (retries: 2 + a fail-fast goto
+# guard in fixtures), so transient 502s should self-recover within a run.
 #
 # Required repo secrets (Settings → Secrets and variables → Actions):
-#   HBW_PROD_BASE_URL   → https://hbwheloc.homebridge.com/portal
-#   HBW_PROD_EMAIL      → prod_helix_hbw_mlo@homebridge.com
-#   HBW_PROD_PASSWORD   → (the prod MLO password)
+#   CMG_PROD_BASE_URL   → https://cmg-prod-pos.onrender.com/portal/login
+#   CMG_PROD_EMAIL      → prod_helix_cmg_mlo@homebridge.com
+#   CMG_PROD_PASSWORD   → (the prod MLO password)
 # Reused (shared with the other workflows):
 #   HB_TOKEN            → PAT with push rights to gh-pages
-#   SLACK_WEBHOOK_URL   → Slack incoming webhook
+#   SLACK_WEBHOOK_URL   → Slack incoming webhook (text alerts)
+#   SLACK_BOT_TOKEN     → xoxb-… bot token (screenshot upload; files:write)
+#   SLACK_CHANNEL_ID    → numeric channel ID the bot is a member of
 # ---------------------------------------------------------------------------
 
 on:
   # Scheduled run. Cron is in UTC: "minute hour day month weekday".
-  # '0 8 * * *' = 08:00 UTC daily (~1 AM PST / midnight PDT) — off-peak, and
-  # deliberately offset from the staging nightly (20:00 UTC) so the two prod
-  # vs staging runs never contend for runners or report trends.
+  # '0 12 * * *' = 12:00 UTC daily — off-peak, and offset from the other
+  # nightlies (REMN-STG 06:00, HB-PROD 08:00, REMN-PROD 10:00, HB-STG 20:00)
+  # so the runs never contend for runners or report trends.
   schedule:
-    - cron: '0 8 * * *'
+    - cron: '0 12 * * *'
   workflow_dispatch:      # manual run from the Actions tab
 
-# Never let two prod runs overlap (a manual dispatch on top of the nightly, etc.)
+# Never let two CMG prod runs overlap (a manual dispatch on top of the nightly, etc.)
 concurrency:
-  group: hb-whs-prod-nightly
+  group: cmg-whs-prod-nightly
   cancel-in-progress: false   # let an in-flight prod run finish rather than killing it
 
 # GITHUB_TOKEN permissions. "write" is required because the gh-pages deploy
@@ -41,7 +47,7 @@ permissions:
 
 jobs:
   test:
-    name: HB-WHS-PROD — Scoped Nightly Regression
+    name: CMG-WHS-PROD — Scoped Nightly Regression
     timeout-minutes: 120                  # generous cap — real API calls (credit pull, employment verify) are slow
     runs-on: ubuntu-latest
 
@@ -66,9 +72,9 @@ jobs:
       - name: Validate required secrets
         run: |
           missing=""
-          [ -z "$HBW_PROD_BASE_URL" ] && missing="$missing HBW_PROD_BASE_URL"
-          [ -z "$HBW_PROD_EMAIL" ] && missing="$missing HBW_PROD_EMAIL"
-          [ -z "$HBW_PROD_PASSWORD" ] && missing="$missing HBW_PROD_PASSWORD"
+          [ -z "$CMG_PROD_BASE_URL" ] && missing="$missing CMG_PROD_BASE_URL"
+          [ -z "$CMG_PROD_EMAIL" ] && missing="$missing CMG_PROD_EMAIL"
+          [ -z "$CMG_PROD_PASSWORD" ] && missing="$missing CMG_PROD_PASSWORD"
 
           if [ -n "$missing" ]; then
             echo "❌ Missing required secrets:$missing"
@@ -77,12 +83,12 @@ jobs:
 
           echo "✅ All required secrets are present"
         env:
-          HBW_PROD_BASE_URL: ${{ secrets.HBW_PROD_BASE_URL }}
-          HBW_PROD_EMAIL: ${{ secrets.HBW_PROD_EMAIL }}
-          HBW_PROD_PASSWORD: ${{ secrets.HBW_PROD_PASSWORD }}
+          CMG_PROD_BASE_URL: ${{ secrets.CMG_PROD_BASE_URL }}
+          CMG_PROD_EMAIL: ${{ secrets.CMG_PROD_EMAIL }}
+          CMG_PROD_PASSWORD: ${{ secrets.CMG_PROD_PASSWORD }}
 
       # -----------------------------
-      # Run the curated prod spec list
+      # Run the curated CMG prod spec list
       # -----------------------------
       # Exact file paths are passed (Playwright matches them as anchored
       # regexes). This avoids the substring trap — a bare "active" filter would
@@ -91,13 +97,17 @@ jobs:
       # under `chromium` (setup → broker login), LO-session specs under
       # `chromium-lo` (setup-lo → LO login). Both setups log in with the same
       # prod MLO account because EMAIL_LO/PASSWORD_LO are mapped to it below.
-      - name: Run Playwright tests (prod scope)
+      - name: Run Playwright tests (CMG prod scope)
         id: playwright
         # continue-on-error: a failing suite does NOT stop the job here — the
         # reporting/Allure/Slack steps below must still run. We fail the job at
         # the very end (see "Fail workflow if tests failed").
         continue-on-error: true
         run: |
+          # NOTE: loandetail.spec.js and My Loans/active.spec.js are intentionally
+          # EXCLUDED (matching hb-whs-prod / remn-whs-prod). They search for a
+          # fixture loan seeded only on staging, so they fail on prod. Re-add
+          # them here if CMG prod has that fixture data.
           npx playwright test \
             "tests/Broker Flow/shadow-borrower-view.spec.js" \
             "tests/Broker Flow/twn-monitor.spec.js" \
@@ -109,25 +119,22 @@ jobs:
             "tests/Borrower Flow/support.spec.js" \
             "tests/LO Flow/pipeline-management.spec.js" \
             "tests/LO Flow/deal-optimization.spec.js" \
+            "tests/LO Flow/certifications.spec.js" \
             "tests/LO Flow/property-applicant-data.spec.js" \
             "tests/Borrower Flow/invitation.spec.js" \
             "tests/Borrower Flow/Co-Borrower/coborrower.spec.js" \
             "tests/Borrower Flow/Co-Borrower/verification-documentation.spec.js" \
             "tests/Borrower Flow/Co-Borrower/loan-hub.spec.js"
-          # Excluded from prod scope: loandetail.spec.js, My Loans/active.spec.js,
-          # LO Flow/certifications.spec.js — all search for a hardcoded fixture
-          # loan (SHARED name/address, "4556 Eliot St") seeded on staging only.
-          # They still run in the staging nightly where that data exists.
         env:
-          # Point the whole run at production.
-          BASE_URL: ${{ secrets.HBW_PROD_BASE_URL }}
+          # Point the whole run at CMG production.
+          BASE_URL: ${{ secrets.CMG_PROD_BASE_URL }}
           # Broker session (chromium) creds.
-          EMAIL: ${{ secrets.HBW_PROD_EMAIL }}
-          PASSWORD: ${{ secrets.HBW_PROD_PASSWORD }}
+          EMAIL: ${{ secrets.CMG_PROD_EMAIL }}
+          PASSWORD: ${{ secrets.CMG_PROD_PASSWORD }}
           # LO session (chromium-lo) creds — reuse the same prod MLO account so
           # the LO-flow specs authenticate without a second login.
-          EMAIL_LO: ${{ secrets.HBW_PROD_EMAIL }}
-          PASSWORD_LO: ${{ secrets.HBW_PROD_PASSWORD }}
+          EMAIL_LO: ${{ secrets.CMG_PROD_EMAIL }}
+          PASSWORD_LO: ${{ secrets.CMG_PROD_PASSWORD }}
 
       # -----------------------------
       # Install jq
@@ -170,17 +177,17 @@ jobs:
 
       # -----------------------------
       # Allure: restore history JSONL across runs (trends / flakiness).
-      # Prod-namespaced cache key keeps these trends separate from the staging
-      # nightly's history.
+      # CMG-prod-namespaced cache key keeps these trends separate from the
+      # other workflows' histories.
       # -----------------------------
       - name: Restore Allure history
         uses: actions/cache@v4
         if: always()
         with:
           path: allure-history.jsonl
-          key: allure-history-hbwprod-${{ github.run_id }}
+          key: allure-history-cmgprod-${{ github.run_id }}
           restore-keys: |
-            allure-history-hbwprod-
+            allure-history-cmgprod-
 
       # -----------------------------
       # Allure: strip spurious "skipped" twin results (see scripts/allure-dedupe.js).
@@ -195,7 +202,7 @@ jobs:
       - name: Generate Allure report
         if: always()
         run: |
-          npx allure generate allure-results --name "HB-WHS-PROD Nightly #${{ github.run_number }}"
+          npx allure generate allure-results --name "CMG-WHS-PROD Nightly #${{ github.run_number }}"
 
       # -----------------------------
       # Upload Playwright Report
@@ -204,7 +211,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: hb-whs-prod-playwright-report
+          name: cmg-whs-prod-playwright-report
           path: playwright-report/
           retention-days: 30
 
@@ -215,13 +222,13 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: hb-whs-prod-allure-report
+          name: cmg-whs-prod-allure-report
           path: allure-report/
           retention-days: 30
 
       # -----------------------------
-      # Deploy Reports to GitHub Pages (prod-namespaced dirs so they never
-      # clobber the staging nightly's reports/ and allure/ trees).
+      # Deploy Reports to GitHub Pages (CMG-prod-namespaced dirs so they never
+      # clobber the other workflows' reports/ and allure/ trees).
       # -----------------------------
       - name: Deploy Playwright report to gh-pages
         uses: peaceiris/actions-gh-pages@v4
@@ -229,7 +236,7 @@ jobs:
         with:
           github_token: ${{ secrets.HB_TOKEN }}
           publish_dir: playwright-report/
-          destination_dir: hb-whs-prod/reports/${{ github.run_id }}
+          destination_dir: cmg-whs-prod/reports/${{ github.run_id }}
           keep_files: true
 
       - name: Deploy Allure report to gh-pages
@@ -238,7 +245,7 @@ jobs:
         with:
           github_token: ${{ secrets.HB_TOKEN }}
           publish_dir: allure-report/
-          destination_dir: hb-whs-prod/allure/${{ github.run_id }}
+          destination_dir: cmg-whs-prod/allure/${{ github.run_id }}
           keep_files: true
 
       # -----------------------------
@@ -247,8 +254,8 @@ jobs:
       - name: Slack Alert - Test Success
         if: always() && env.FAILED == '0'
         run: |
-          ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/hb-whs-prod/allure/${{ github.run_id }}/"
-          TEXT="✅ *HB-WHS-PROD Nightly Passed* — ${PASSED} passed, ${SKIPPED} skipped on prod. 🟣 <${ALLURE_REPORT}|Allure trends>"
+          ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/cmg-whs-prod/allure/${{ github.run_id }}/"
+          TEXT="✅ *CMG-WHS-PROD Nightly Passed* — ${PASSED} passed, ${SKIPPED} skipped on CMG prod. 🟣 <${ALLURE_REPORT}|Allure trends>"
           jq -n --arg t "$TEXT" '{channel:"#automation-alerts", text:$t}' \
           | curl -sS -X POST -H 'Content-type: application/json' -d @- ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -258,15 +265,15 @@ jobs:
       - name: Slack Alert - Test Failed
         if: always() && env.FAILED != '0'
         run: |
-          RUN_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/hb-whs-prod/reports/${{ github.run_id }}/"
-          ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/hb-whs-prod/allure/${{ github.run_id }}/"
+          RUN_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/cmg-whs-prod/reports/${{ github.run_id }}/"
+          ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/cmg-whs-prod/allure/${{ github.run_id }}/"
           RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
           FAILED_LIST=$(printf '%s\n' "$FAILED_TESTS" | sed 's/^/• /')
 
           TEXT=$(printf '%s\n' \
-            "❌ *HB-WHS-PROD Nightly Failed* <!here>" \
-            "📦 ${{ github.repository }} — production HELOC portal" \
+            "❌ *CMG-WHS-PROD Nightly Failed* <!here>" \
+            "📦 ${{ github.repository }} — CMG WHS production HELOC portal" \
             "📈 Passed: ${PASSED} | Failed: ${FAILED} | Skipped: ${SKIPPED}" \
             "" \
             "*Failed tests:*" \
@@ -280,11 +287,12 @@ jobs:
           | curl -sS -X POST -H 'Content-type: application/json' -d @- ${{ secrets.SLACK_WEBHOOK_URL }}
 
       # -----------------------------
-      # Upload failure screenshots to Slack (bot token; up to 10, one per
-      # failing spec). Best-effort — the script never fails the job, so a Slack
-      # hiccup can't mask the real test failure.
+      # Upload failure screenshots to Slack (bot token; up to 12, all pages of
+      # each failing spec, round-robined so every spec's failing page shows
+      # first). Best-effort — the script never fails the job, so a Slack hiccup
+      # can't mask the real test failure.
       # Needs secrets: SLACK_BOT_TOKEN (xoxb-…, files:write) + SLACK_CHANNEL_ID
-      # (numeric ID), and the bot must be a member of #automation-alerts.
+      # (numeric ID), and the bot must be a member of that channel.
       # -----------------------------
       - name: Upload failure screenshots to Slack
         if: always() && env.FAILED != '0'
@@ -292,8 +300,8 @@ jobs:
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
-          SLACK_CAPTION: "🖼️ *HB-WHS-PROD Nightly #${{ github.run_number }}* — failure screenshots (${{ env.FAILED }} failed). Report: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/hb-whs-prod/reports/${{ github.run_id }}/"
-        run: node scripts/slack-upload-screenshots.js test-results.json 10
+          SLACK_CAPTION: "🖼️ *CMG-WHS-PROD Nightly #${{ github.run_number }}* — failure screenshots (${{ env.FAILED }} failed). Report: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/cmg-whs-prod/reports/${{ github.run_id }}/"
+        run: node scripts/slack-upload-screenshots.js test-results.json 12
 
       # -----------------------------
       # Mark Workflow Failed — the test step used continue-on-error, so fail
