@@ -1,0 +1,559 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: Borrower Flow/Co-Borrower/verification-documentation.spec.js >> Borrower Flow — Verification and Documentation >> Borrower verifies income by linking a bank account via Plaid
+- Location: tests/Borrower Flow/Co-Borrower/verification-documentation.spec.js:132:9
+
+# Error details
+
+```
+TimeoutError: locator.waitFor: Timeout 10000ms exceeded.
+Call log:
+  - waiting for locator('p').filter({ hasText: /onrender\.com\// }).first() to be visible
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e8]:
+      - list [ref=e10]:
+        - listitem [ref=e11]:
+          - button:
+            - generic:
+              - generic:
+                - img
+          - button [ref=e12] [cursor=pointer]:
+            - img
+            - generic [ref=e13]: Toggle Sidebar
+        - listitem [ref=e14]:
+          - generic [ref=e15]: Homebridge Financial Services, Inc.
+      - list [ref=e19]:
+        - listitem [ref=e20]:
+          - button [ref=e22] [cursor=pointer]:
+            - img [ref=e23]
+            - text: My Loans
+            - img [ref=e26]
+            - generic [ref=e28]: Chevron down
+        - listitem [ref=e29]:
+          - button [ref=e31] [cursor=pointer]:
+            - img [ref=e32]
+            - text: Release Notes
+      - list [ref=e38]:
+        - listitem [ref=e39]:
+          - button [ref=e40] [cursor=pointer]:
+            - generic [ref=e42]: HH
+            - generic [ref=e43]:
+              - paragraph [ref=e44]: Helix Hbw Testmlo
+              - paragraph [ref=e45]: prod_helix_hbw_mlo@homebridge.com
+            - img [ref=e46]
+    - main [ref=e50]:
+      - generic [ref=e51]:
+        - generic [ref=e52]:
+          - heading [level=1] [ref=e53]: My Loans
+          - generic [ref=e54]:
+            - button [ref=e55] [cursor=pointer]:
+              - img
+              - text: Sharable App Link
+            - button [ref=e56] [cursor=pointer]:
+              - img
+              - text: Start App
+        - generic [ref=e57]:
+          - heading [level=2] [ref=e59]: Overview
+          - generic [ref=e60]:
+            - generic [ref=e62]:
+              - generic [ref=e64]: My Loans
+              - generic [ref=e65]:
+                - generic [ref=e66]: "54"
+                - generic [ref=e67]: / $5,251,000
+            - generic [ref=e69]:
+              - generic [ref=e70]:
+                - img [ref=e72]
+                - generic [ref=e77]: Pre-Qual
+              - generic [ref=e78]:
+                - generic [ref=e79]: "38"
+                - generic [ref=e80]: / $2,457,000
+            - generic [ref=e82]:
+              - generic [ref=e83]:
+                - img [ref=e85]
+                - generic [ref=e87]: In Process
+              - generic [ref=e88]:
+                - generic [ref=e89]: "15"
+                - generic [ref=e90]: / $2,594,000
+            - generic [ref=e92]:
+              - generic [ref=e93]:
+                - img [ref=e95]
+                - generic [ref=e97]: Closing
+              - generic [ref=e98]:
+                - generic [ref=e99]: "1"
+                - generic [ref=e100]: / $200,000
+            - generic [ref=e102]:
+              - generic [ref=e103]:
+                - img [ref=e105]
+                - generic [ref=e107]: Funded
+              - generic [ref=e108]:
+                - generic [ref=e109]: "0"
+                - generic [ref=e110]: / $0
+        - generic [ref=e111]:
+          - generic [ref=e112]:
+            - generic [ref=e113]:
+              - generic [ref=e114]:
+                - img [ref=e115]
+                - textbox [ref=e118]:
+                  - /placeholder: Search by email, name, full address or loan number
+              - button [ref=e120] [cursor=pointer]:
+                - img
+                - text: Filter
+            - tablist [ref=e121]:
+              - tab [selected] [ref=e122] [cursor=pointer]:
+                - img [ref=e124]
+                - text: List
+          - generic [ref=e125]:
+            - generic [ref=e126]:
+              - button [ref=e127] [cursor=pointer]:
+                - generic [ref=e128]:
+                  - generic [ref=e129]: "0"
+                  - heading [level=3] [ref=e130]: Pending MLO Certification
+                  - generic [ref=e131]: 36 applications / $1,925,000
+                - img [ref=e132]
+              - generic [ref=e135]:
+                - table [ref=e137]:
+                  - rowgroup [ref=e138]:
+                    - row [ref=e139]:
+                      - columnheader [ref=e140]:
+                        - generic [ref=e141]: Applicant
+                      - columnheader [ref=e142]:
+                        - generic [ref=e143]: Property Address
+                      - columnheader [ref=e144]:
+                        - generic [ref=e145]: Loan Amount
+                      - columnheader [ref=e146]:
+                        - generic [ref=e147]: Status
+                      - columnheader [ref=e148]:
+                        - generic [ref=e149]: LO Assistant
+                      - columnheader [ref=e150]:
+                        - generic [ref=e151]: Time in Stage
+                      - columnheader [ref=e152]
+                  - rowgroup [ref=e153]:
+                    - row [ref=e154]:
+                      - cell [ref=e155]:
+                        - generic [ref=e156]:
+                          - link [ref=e157] [cursor=pointer]:
+                            - /url: /portal/loan/6a44dc5adad755bba57376d5/summary/overview
+                            - text: Andy America
+                          - generic [ref=e158]: 512-123-1113
+                      - cell [ref=e159]: 4556 Eliot St, Denver, CO 80211
+                      - cell [ref=e160]: $0
+                      - cell [ref=e161]:
+                        - generic [ref=e162]: Pending MLO Certification
+                      - cell [ref=e163]: —
+                      - cell [ref=e164]:
+                        - generic [ref=e165]:
+                          - text: 0d 0h
+                          - img [ref=e166]
+                      - cell [ref=e168]:
+                        - generic [ref=e169]:
+                          - button [ref=e170] [cursor=pointer]: Certify
+                          - button [ref=e171] [cursor=pointer]: View
+                    - row [ref=e172]:
+                      - cell [ref=e173]:
+                        - generic [ref=e174]:
+                          - link [ref=e175] [cursor=pointer]:
+                            - /url: /portal/loan/6a44db86dad755bba57376cb/summary/overview
+                            - text: Andy America
+                          - generic [ref=e176]: 512-123-1113
+                      - cell [ref=e177]: 4556 Eliot St, Denver, CO 80211
+                      - cell [ref=e178]: $0
+                      - cell [ref=e179]:
+                        - generic [ref=e180]: Pending MLO Certification
+                      - cell [ref=e181]: —
+                      - cell [ref=e182]:
+                        - generic [ref=e183]:
+                          - text: 0d 0h
+                          - img [ref=e184]
+                      - cell [ref=e186]:
+                        - generic [ref=e187]:
+                          - button [ref=e188] [cursor=pointer]: Certify
+                          - button [ref=e189] [cursor=pointer]: View
+                    - row [ref=e190]:
+                      - cell [ref=e191]:
+                        - generic [ref=e192]:
+                          - link [ref=e193] [cursor=pointer]:
+                            - /url: /portal/loan/6a44638a856286f4815540f1/summary/overview
+                            - text: Andy A
+                          - generic [ref=e194]: 302-561-4161
+                      - cell [ref=e195]: 4556 Eliot St, Denver, CO 80211
+                      - cell [ref=e196]: $0
+                      - cell [ref=e197]:
+                        - generic [ref=e198]: Pending MLO Certification
+                      - cell [ref=e199]: —
+                      - cell [ref=e200]:
+                        - generic [ref=e201]:
+                          - text: 0d 8h
+                          - img [ref=e202]
+                      - cell [ref=e204]:
+                        - generic [ref=e205]:
+                          - button [ref=e206] [cursor=pointer]: Certify
+                          - button [ref=e207] [cursor=pointer]: View
+                    - row [ref=e208]:
+                      - cell [ref=e209]:
+                        - generic [ref=e210]:
+                          - link [ref=e211] [cursor=pointer]:
+                            - /url: /portal/loan/6a4451dc856286f481554011/summary/overview
+                            - text: Andy America
+                          - generic [ref=e212]: 302-561-4161
+                      - cell [ref=e213]: 4556 Eliot St, Denver, CO 80211
+                      - cell [ref=e214]: $0
+                      - cell [ref=e215]:
+                        - generic [ref=e216]: Pending MLO Certification
+                      - cell [ref=e217]: —
+                      - cell [ref=e218]:
+                        - generic [ref=e219]:
+                          - text: 0d 10h
+                          - img [ref=e220]
+                      - cell [ref=e222]:
+                        - generic [ref=e223]:
+                          - button [ref=e224] [cursor=pointer]: Certify
+                          - button [ref=e225] [cursor=pointer]: View
+                    - row [ref=e226]:
+                      - cell [ref=e227]:
+                        - generic [ref=e228]:
+                          - link [ref=e229] [cursor=pointer]:
+                            - /url: /portal/loan/6a444d2f856286f481553ff2/summary/overview
+                            - text: Andy America
+                          - generic [ref=e230]: 302-561-4161
+                      - cell [ref=e231]: 4556 Eliot St, Denver, CO 80211
+                      - cell [ref=e232]: $300,000
+                      - cell [ref=e233]:
+                        - generic [ref=e234]: Pending MLO Certification
+                      - cell [ref=e235]: —
+                      - cell [ref=e236]:
+                        - generic [ref=e237]:
+                          - text: 0d 10h
+                          - img [ref=e238]
+                      - cell [ref=e240]:
+                        - generic [ref=e241]:
+                          - button [ref=e242] [cursor=pointer]: Certify
+                          - button [ref=e243] [cursor=pointer]: View
+                    - row [ref=e244]:
+                      - cell [ref=e245]:
+                        - generic [ref=e246]:
+                          - link [ref=e247] [cursor=pointer]:
+                            - /url: /portal/loan/6a43c3d8975e9fb7fb787f68/summary/overview
+                            - text: Andy America
+                          - generic [ref=e248]: 987-654-5678
+                      - cell [ref=e249]: 8978 Harrover Pl, Lorton, VA 22079
+                      - cell [ref=e250]: $325,000
+                      - cell [ref=e251]:
+                        - generic [ref=e252]: Pending MLO Certification
+                      - cell [ref=e253]: —
+                      - cell [ref=e254]:
+                        - generic [ref=e255]:
+                          - text: 0d 20h
+                          - img [ref=e256]
+                      - cell [ref=e258]:
+                        - generic [ref=e259]:
+                          - button [ref=e260] [cursor=pointer]: Certify
+                          - button [ref=e261] [cursor=pointer]: View
+                - generic [ref=e262]:
+                  - button [disabled]:
+                    - img
+                    - text: Previous
+                  - button [ref=e263] [cursor=pointer]: "1"
+                  - button [ref=e264] [cursor=pointer]: "2"
+                  - button [ref=e265] [cursor=pointer]: "3"
+                  - button [ref=e266] [cursor=pointer]: "4"
+                  - button [ref=e267] [cursor=pointer]: "5"
+                  - button [ref=e268] [cursor=pointer]: "6"
+                  - button [ref=e269] [cursor=pointer]:
+                    - text: Next
+                    - img
+            - generic [ref=e270]:
+              - button [ref=e271] [cursor=pointer]:
+                - generic [ref=e272]:
+                  - generic [ref=e273]: "1"
+                  - heading [level=3] [ref=e274]: Pre-Qual
+                  - generic [ref=e275]: 38 applications / $2,457,000
+                - img [ref=e276]
+              - generic [ref=e279]:
+                - table [ref=e281]:
+                  - rowgroup [ref=e282]:
+                    - row [ref=e283]:
+                      - columnheader [ref=e284]:
+                        - generic [ref=e285]: Applicant
+                      - columnheader [ref=e286]:
+                        - generic [ref=e287]: Property Address
+                      - columnheader [ref=e288]:
+                        - generic [ref=e289]: Loan Amount
+                      - columnheader [ref=e290]:
+                        - generic [ref=e291]: Processor / LOA
+                      - columnheader [ref=e292]:
+                        - generic [ref=e293]: Time in Stage
+                      - columnheader [ref=e294]
+                  - rowgroup [ref=e295]:
+                    - row [ref=e296]:
+                      - cell [ref=e297]:
+                        - generic [ref=e298]:
+                          - link [ref=e299] [cursor=pointer]:
+                            - /url: /portal/loan/6a44dd32dad755bba57376df/summary/overview
+                            - text: Andy America
+                          - generic [ref=e300]: test.w84wk.1782897964734@mailinator.com
+                          - generic [ref=e301]: "Loan: #300000000000508"
+                      - cell [ref=e302]:
+                        - generic [ref=e303]:
+                          - generic [ref=e304]: 4556 Eliot St
+                          - generic [ref=e305]: Denver, CO 80211
+                      - cell [ref=e306]: $100,000
+                      - cell [ref=e307]: Helix Hbw Testmlo
+                      - cell [ref=e308]:
+                        - generic [ref=e309]:
+                          - generic [ref=e310]: 0 d 0 h
+                          - img [ref=e311]
+                      - cell [ref=e313]:
+                        - button [ref=e314] [cursor=pointer]: View
+                    - row [ref=e315]:
+                      - cell [ref=e316]:
+                        - generic [ref=e317]:
+                          - link [ref=e318] [cursor=pointer]:
+                            - /url: /portal/loan/6a44dc5adad755bba57376d5/summary/overview
+                            - text: Andy America
+                          - generic [ref=e319]: test.l3c3p.1782897745023@mailinator.com
+                          - generic [ref=e320]: "Loan: #300000000000507"
+                      - cell [ref=e321]:
+                        - generic [ref=e322]:
+                          - generic [ref=e323]: 4556 Eliot St
+                          - generic [ref=e324]: Denver, CO 80211
+                      - cell [ref=e325]: $0
+                      - cell [ref=e326]: Helix Hbw Testmlo
+                      - cell [ref=e327]:
+                        - generic [ref=e328]:
+                          - generic [ref=e329]: 0 d 0 h
+                          - img [ref=e330]
+                      - cell [ref=e332]:
+                        - button [ref=e333] [cursor=pointer]: View
+                    - row [ref=e334]:
+                      - cell [ref=e335]:
+                        - generic [ref=e336]:
+                          - link [ref=e337] [cursor=pointer]:
+                            - /url: /portal/loan/6a44db86dad755bba57376cb/summary/overview
+                            - text: Andy America
+                          - generic [ref=e338]: test.cp270.1782897536154@mailinator.com
+                          - generic [ref=e339]: "Loan: #300000000000506"
+                      - cell [ref=e340]:
+                        - generic [ref=e341]:
+                          - generic [ref=e342]: 4556 Eliot St
+                          - generic [ref=e343]: Denver, CO 80211
+                      - cell [ref=e344]: $0
+                      - cell [ref=e345]: Helix Hbw Testmlo
+                      - cell [ref=e346]:
+                        - generic [ref=e347]:
+                          - generic [ref=e348]: 0 d 0 h
+                          - img [ref=e349]
+                      - cell [ref=e351]:
+                        - button [ref=e352] [cursor=pointer]: View
+                    - row [ref=e353]:
+                      - cell [ref=e354]:
+                        - generic [ref=e355]:
+                          - link [ref=e356] [cursor=pointer]:
+                            - /url: /portal/loan/6a44d9dbdad755bba5737680/summary/overview
+                            - text: Andy America
+                          - generic [ref=e357]: test.hq41a.1782897109125@mailinator.com
+                          - generic [ref=e358]: "Loan: #300000000000505"
+                      - cell [ref=e359]:
+                        - generic [ref=e360]:
+                          - generic [ref=e361]: 4556 Eliot St
+                          - generic [ref=e362]: Denver, CO 80211
+                      - cell [ref=e363]: $100,000
+                      - cell [ref=e364]: Helix Hbw Testmlo
+                      - cell [ref=e365]:
+                        - generic [ref=e366]:
+                          - generic [ref=e367]: 0 d 0 h
+                          - img [ref=e368]
+                      - cell [ref=e370]:
+                        - button [ref=e371] [cursor=pointer]: View
+                    - row [ref=e372]:
+                      - cell [ref=e373]:
+                        - generic [ref=e374]:
+                          - link [ref=e375] [cursor=pointer]:
+                            - /url: /portal/loan/6a44638a856286f4815540f1/summary/overview
+                            - text: Andy A
+                          - generic [ref=e376]: testertestingapplication+12@gmail.com
+                          - generic [ref=e377]: "Loan: #300000000000497"
+                      - cell [ref=e378]:
+                        - generic [ref=e379]:
+                          - generic [ref=e380]: 4556 Eliot St
+                          - generic [ref=e381]: Denver, CO 80211
+                      - cell [ref=e382]: $0
+                      - cell [ref=e383]: Helix Hbw Testmlo
+                      - cell [ref=e384]:
+                        - generic [ref=e385]:
+                          - generic [ref=e386]: 0 d 8 h
+                          - img [ref=e387]
+                      - cell [ref=e389]:
+                        - button [ref=e390] [cursor=pointer]: View
+                    - row [ref=e391]:
+                      - cell [ref=e392]:
+                        - generic [ref=e393]:
+                          - link [ref=e394] [cursor=pointer]:
+                            - /url: /portal/loan/6a4451dc856286f481554011/summary/overview
+                            - text: Andy America
+                          - generic [ref=e395]: testertestingapplication+11@gmail.com
+                          - generic [ref=e396]: "Loan: #300000000000494"
+                      - cell [ref=e397]:
+                        - generic [ref=e398]:
+                          - generic [ref=e399]: 4556 Eliot St
+                          - generic [ref=e400]: Denver, CO 80211
+                      - cell [ref=e401]: $0
+                      - cell [ref=e402]: Helix Hbw Testmlo
+                      - cell [ref=e403]:
+                        - generic [ref=e404]:
+                          - generic [ref=e405]: 0 d 10 h
+                          - img [ref=e406]
+                      - cell [ref=e408]:
+                        - button [ref=e409] [cursor=pointer]: View
+                - generic [ref=e410]:
+                  - button [disabled]:
+                    - img
+                    - text: Previous
+                  - button [ref=e411] [cursor=pointer]: "1"
+                  - button [ref=e412] [cursor=pointer]: "2"
+                  - button [ref=e413] [cursor=pointer]: "3"
+                  - button [ref=e414] [cursor=pointer]: "4"
+                  - button [ref=e415] [cursor=pointer]: "5"
+                  - button [ref=e416] [cursor=pointer]: "6"
+                  - button [ref=e417] [cursor=pointer]: "7"
+                  - button [ref=e418] [cursor=pointer]:
+                    - text: Next
+                    - img
+            - button [ref=e420] [cursor=pointer]:
+              - generic [ref=e421]:
+                - generic [ref=e422]: "2"
+                - heading [level=3] [ref=e423]: In Process
+                - generic [ref=e424]: 15 applications / $2,594,000
+              - img [ref=e425]
+            - button [ref=e428] [cursor=pointer]:
+              - generic [ref=e429]:
+                - generic [ref=e430]: "3"
+                - heading [level=3] [ref=e431]: Closing
+                - generic [ref=e432]: 1 applications / $200,000
+              - img [ref=e433]
+            - button [ref=e436] [cursor=pointer]:
+              - generic [ref=e437]:
+                - generic [ref=e438]: "4"
+                - heading [level=3] [ref=e439]: Funded
+                - generic [ref=e440]: 0 applications / $0
+              - img [ref=e441]
+  - alert [ref=e443]
+  - generic [ref=e445]:
+    - iframe [ref=e446]:
+      - button "Close message from company" [ref=f10e4] [cursor=pointer]:
+        - img [ref=f10e5]
+    - iframe [ref=e447]:
+      - button "Hi. Need any help?" [ref=f11e5] [cursor=pointer]
+  - iframe [ref=e448]:
+    - button "Open messaging window" [ref=f12e5] [cursor=pointer]:
+      - img [ref=f12e7]
+      - img [ref=f12e10]
+  - dialog "Start HELOC Loan Application" [ref=e451]:
+    - heading "Start HELOC Loan Application" [level=2] [ref=e452]
+    - button "close" [ref=e453] [cursor=pointer]:
+      - img [ref=e454]
+    - generic [ref=e458]:
+      - generic [ref=e459]:
+        - paragraph [ref=e460]: Copy Shareable Link
+        - paragraph [ref=e461]: Your exclusive, permanent branded link is ready to be shared with borrowers and can be shared with borrowers and can be used to amplify your marketing campaigns -- share it with confidence and watch your brand shine.
+        - generic [ref=e462]:
+          - paragraph [ref=e463]: hbwheloc.homebridge.com/helix-hbw-prod
+          - button [ref=e464] [cursor=pointer]:
+            - img [ref=e465]
+      - generic [ref=e467]:
+        - separator [ref=e468]
+        - paragraph [ref=e469]: OR
+      - generic [ref=e470]:
+        - paragraph [ref=e471]: Start Pre-Qual Manually
+        - paragraph [ref=e472]: Complete the pre-qual on behalf of your borrower by manually entering their information
+        - button "Start Pre-Qual Manually" [ref=e474] [cursor=pointer]:
+          - img [ref=e476]
+          - text: Start Pre-Qual Manually
+```
+
+# Test source
+
+```ts
+  1  | import { expect, test } from "@playwright/test";
+  2  | 
+  3  | class PreQualManualPage {
+  4  |     constructor(page) {
+  5  |         this.page = page;
+  6  | 
+  7  |         // -- Portal header actions --------------------------------------------
+  8  |         this.startApp_btn = this.page.getByRole("button", { name: "Start App" });
+  9  |         this.sharableAppLinkBtn = this.page.getByRole("button", { name: /Sharable App Link/i })
+  10 |             .or(this.page.getByText(/Sharable App Link/i)).first();
+  11 | 
+  12 |         // -- "Start HELOC Loan Application" modal -----------------------------
+  13 |         this.shareableLinkInput = this.page.getByRole('textbox').filter({
+  14 |             has: this.page.locator('[value*="onrender.com"]'),
+  15 |         }).or(this.page.locator('input[value*="onrender.com"]')).first();
+  16 |         this.copyLinkBtn = this.page.locator('button[aria-label*="copy" i], button[title*="copy" i]')
+  17 |             .or(this.page.locator('input[value*="onrender.com"] ~ button'))
+  18 |             .first();
+  19 |         this.startPreQualManual_btn = this.page.getByRole("button", { name: "Start Pre-Qual Manually" });
+  20 |     };
+  21 |     async clickStartPreQualManually() {
+  22 |         await test.step('Click the start pre-qual manually button', async () => {
+  23 |             await this.startPreQualManual_btn.click();
+  24 |             await this.page.waitForLoadState('load');
+  25 |             await expect(this.page).toHaveURL('/portal/new-application');
+  26 |         });
+  27 |     };
+  28 |     async clickStartApp() {
+  29 |         await test.step('Click the start app button', async () => {
+  30 |             await this.startApp_btn.click();
+  31 |             await expect(this.page.getByRole('heading', { name: 'Start HELOC Loan Application' })).toBeVisible();
+  32 |         });
+  33 |     };
+  34 | 
+  35 |     /**
+  36 |      * Clicks "Sharable App Link", reads the broker-branded URL from the modal
+  37 |      * input, then opens it in a new tab and returns that tab's Page object.
+  38 |      */
+  39 |     async openShareableLinkInNewTab() {
+  40 |         return await test.step('Open shareable app link in new tab', async () => {
+  41 |             // Wait for the portal dashboard to render the button before clicking.
+  42 |             // click({ force: true }) bypasses actionability but still needs the element
+  43 |             // in the DOM — without this guard, CI load can cause a silent 180 s wait.
+  44 |             await this.sharableAppLinkBtn.waitFor({ state: 'visible', timeout: 30000 });
+  45 |             // Open the modal
+  46 |             await this.sharableAppLinkBtn.click({ force: true });
+  47 |             await this.page.getByRole('heading', { name: 'Start HELOC Loan Application' })
+  48 |                 .waitFor({ state: 'visible', timeout: 10000 });
+  49 | 
+  50 |             // URL is rendered in a <p> tag (not an input) — read text content
+  51 |             const linkText = this.page.locator('p').filter({ hasText: /onrender\.com\// }).first();
+> 52 |             await linkText.waitFor({ state: 'visible', timeout: 10000 });
+     |                            ^ TimeoutError: locator.waitFor: Timeout 10000ms exceeded.
+  53 |             const shareableUrl = (await linkText.textContent()).trim();
+  54 | 
+  55 |             // Open in a new tab
+  56 |             const newTab = await this.page.context().newPage();
+  57 |             await newTab.goto(`https://${shareableUrl.replace(/^https?:\/\//, '')}`);
+  58 |             await newTab.waitForLoadState('domcontentloaded');
+  59 | 
+  60 |             // Dismiss the modal on the LO tab so the next test starts clean.
+  61 |             await this.page.getByRole('button', { name: 'close' })
+  62 |                 .click({ force: true }).catch(() => { });
+  63 | 
+  64 |             return newTab;
+  65 |         });
+  66 |     };
+  67 | };
+  68 | 
+  69 | export default PreQualManualPage;
+```

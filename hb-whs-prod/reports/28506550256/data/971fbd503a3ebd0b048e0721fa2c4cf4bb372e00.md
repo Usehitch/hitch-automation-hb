@@ -1,0 +1,437 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: Broker Flow/loandetail.spec.js >> Loan Detail — Tracker tab >> Valuation and Initial Offer step rows are present on the Tracker
+- Location: tests/Broker Flow/loandetail.spec.js:172:9
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: getByText('Initial Offer').first()
+Expected: visible
+Timeout: 5000ms
+Error: element(s) not found
+
+Call log:
+  - Expect "toBeVisible" with timeout 5000ms
+  - waiting for getByText('Initial Offer').first()
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e8]:
+      - list [ref=e10]:
+        - listitem [ref=e11]:
+          - button "logo":
+            - generic:
+              - generic:
+                - img "logo"
+      - list [ref=e15]:
+        - listitem [ref=e16]:
+          - button "My Loans Chevron down" [ref=e18] [cursor=pointer]:
+            - img [ref=e19]
+            - text: My Loans
+            - img [ref=e22]
+            - generic [ref=e24]: Chevron down
+        - listitem [ref=e25]:
+          - button "Release Notes" [ref=e27] [cursor=pointer]:
+            - img [ref=e28]
+            - text: Release Notes
+      - list [ref=e34]:
+        - listitem [ref=e35]:
+          - button "HH Helix Hbw Testmlo prod_helix_hbw_mlo@homebridge.com" [ref=e36] [cursor=pointer]:
+            - generic [ref=e38]: HH
+            - generic [ref=e39]:
+              - paragraph [ref=e40]: Helix Hbw Testmlo
+              - paragraph [ref=e41]: prod_helix_hbw_mlo@homebridge.com
+            - img [ref=e42]
+    - main [ref=e46]:
+      - generic [ref=e47]:
+        - button [ref=e49] [cursor=pointer]:
+          - img
+        - generic [ref=e50]:
+          - paragraph [ref=e52]:
+            - text: Andy America
+            - generic [ref=e53]: (B1)
+          - generic [ref=e54]:
+            - paragraph [ref=e55]: 4556 Eliot St, Denver, CO 80211
+            - generic [ref=e57]:
+              - generic [ref=e58]: "Loan ID:"
+              - generic [ref=e59]: "300000000000507"
+              - button [ref=e60] [cursor=pointer]:
+                - img
+        - generic [ref=e61]:
+          - button "Share Links" [ref=e62] [cursor=pointer]:
+            - img
+            - text: Share Links
+          - button "View Application" [ref=e63] [cursor=pointer]:
+            - img
+            - text: View Application
+          - button "Shadow Borrower View" [ref=e64] [cursor=pointer]:
+            - img
+            - text: Shadow Borrower View
+          - button "More Actions" [ref=e65] [cursor=pointer]:
+            - img
+      - generic [ref=e66]:
+        - list [ref=e68]:
+          - listitem [ref=e69]:
+            - generic [ref=e70]:
+              - generic "Tracker Indicator active" [ref=e71]
+              - paragraph [ref=e73]: Pre-Qual
+          - listitem [ref=e74]:
+            - generic [ref=e75]:
+              - generic "Tracker Indicator notCompleted" [ref=e76]:
+                - img [ref=e77]
+              - paragraph [ref=e86]: In Process
+          - listitem [ref=e87]:
+            - generic [ref=e88]:
+              - generic "Tracker Indicator notCompleted" [ref=e89]:
+                - img [ref=e90]
+              - paragraph [ref=e99]: Closing
+          - listitem [ref=e100]:
+            - generic [ref=e101]:
+              - generic "Tracker Indicator notCompleted" [ref=e102]:
+                - img [ref=e103]
+              - paragraph [ref=e112]: Funded
+        - tablist [ref=e114]:
+          - tab "Application Summary" [ref=e115] [cursor=pointer]:
+            - img [ref=e116]
+            - text: Application Summary
+          - tab "Tracker" [active] [selected] [ref=e119] [cursor=pointer]:
+            - img [ref=e120]
+            - text: Tracker
+          - tab "Conditions" [ref=e122] [cursor=pointer]:
+            - img [ref=e123]
+            - text: Conditions
+          - tab "Documents" [ref=e124] [cursor=pointer]:
+            - img [ref=e125]
+            - text: Documents
+        - generic [ref=e129]:
+          - list [ref=e130]:
+            - listitem [ref=e131]:
+              - button "Tracker Indicator notCompleted Pre-Qual" [ref=e132] [cursor=pointer]:
+                - generic [ref=e133]:
+                  - generic "Tracker Indicator notCompleted" [ref=e134]:
+                    - img [ref=e135]
+                  - paragraph [ref=e145]: Pre-Qual
+            - listitem [ref=e146]
+            - listitem [ref=e147]:
+              - button "Tracker Indicator active In Process" [ref=e148] [cursor=pointer]:
+                - generic [ref=e149]:
+                  - generic "Tracker Indicator active" [ref=e150]
+                  - paragraph [ref=e153]: In Process
+            - listitem [ref=e154]
+            - listitem [ref=e155]:
+              - button "Tracker Indicator notCompleted Closing" [ref=e156] [cursor=pointer]:
+                - generic [ref=e157]:
+                  - generic "Tracker Indicator notCompleted" [ref=e158]:
+                    - img [ref=e159]
+                  - paragraph [ref=e169]: Closing
+            - listitem [ref=e170]
+            - listitem [ref=e171]:
+              - button "Tracker Indicator notCompleted Funded" [ref=e172] [cursor=pointer]:
+                - generic [ref=e173]:
+                  - generic "Tracker Indicator notCompleted" [ref=e174]:
+                    - img [ref=e175]
+                  - paragraph [ref=e185]: Funded
+          - generic [ref=e186]:
+            - generic [ref=e187]:
+              - paragraph [ref=e188]: "Stage 2: In Process"
+              - generic [ref=e189]: Current
+            - paragraph [ref=e190]: 0/11 steps completed
+          - region "Accordion" [ref=e191]:
+            - generic [ref=e192]:
+              - button "ID Verification Pending Andy America (B1)" [ref=e195] [cursor=pointer]:
+                - img [ref=e197]
+                - generic [ref=e206]:
+                  - generic [ref=e207]: ID Verification
+                  - generic [ref=e209]:
+                    - generic [ref=e210]: Pending
+                    - generic [ref=e212]:
+                      - img [ref=e213]
+                      - generic [ref=e215]: Andy America (B1)
+                - img [ref=e216]
+              - button "Credit Pending" [ref=e220] [cursor=pointer]:
+                - img [ref=e222]
+                - generic [ref=e231]:
+                  - generic [ref=e232]: Credit
+                  - generic [ref=e233]: Pending
+                - img [ref=e234]
+              - button "Property Validation Pending" [ref=e238] [cursor=pointer]:
+                - img [ref=e240]
+                - generic [ref=e249]:
+                  - generic [ref=e250]: Property Validation
+                  - generic [ref=e251]: Pending
+              - button "Valuation Pending" [ref=e254] [cursor=pointer]:
+                - img [ref=e256]
+                - generic [ref=e265]:
+                  - generic [ref=e266]: Valuation
+                  - generic [ref=e267]: Pending
+              - button "Loan Officer Certifications Pending" [ref=e270] [cursor=pointer]:
+                - img [ref=e272]
+                - generic [ref=e281]:
+                  - generic [ref=e282]: Loan Officer Certifications
+                  - generic [ref=e283]: Pending
+              - button "Broker Disclosures Pending" [ref=e286] [cursor=pointer]:
+                - img [ref=e288]
+                - generic [ref=e297]:
+                  - generic [ref=e298]: Broker Disclosures
+                  - generic [ref=e299]: Pending
+              - button "Lender Disclosures 0/3 sub-steps completed" [ref=e302] [cursor=pointer]:
+                - img [ref=e304]
+                - generic [ref=e306]:
+                  - generic [ref=e307]: Lender Disclosures
+                  - generic [ref=e308]: 0/3 sub-steps completed
+                - img [ref=e309]
+              - button "HOI Pending" [ref=e313] [cursor=pointer]:
+                - img [ref=e315]
+                - generic [ref=e324]:
+                  - generic [ref=e325]: HOI
+                  - generic [ref=e326]: Pending
+              - button "Income Verification & DTI Pending" [ref=e329] [cursor=pointer]:
+                - img [ref=e331]
+                - generic [ref=e340]:
+                  - generic [ref=e341]: Income Verification & DTI
+                  - generic [ref=e342]: Pending
+              - button "Title Pending" [ref=e345] [cursor=pointer]:
+                - img [ref=e347]
+                - generic [ref=e356]:
+                  - generic [ref=e357]: Title
+                  - generic [ref=e358]: Pending
+              - button "Final Offer Accepted Pending" [ref=e361] [cursor=pointer]:
+                - img [ref=e363]
+                - generic [ref=e372]:
+                  - generic [ref=e373]: Final Offer Accepted
+                  - generic [ref=e374]: Pending
+  - alert [ref=e375]: Applications Portal - Loan Card
+  - generic:
+    - generic:
+      - generic [ref=e377]:
+        - iframe [ref=e378]:
+          - button "Close message from company" [ref=f11e4] [cursor=pointer]:
+            - img [ref=f11e5]
+        - iframe [ref=e379]:
+          - button "Hi. Need any help?" [ref=f12e5] [cursor=pointer]
+      - iframe [ref=e380]:
+        - button "Open messaging window" [ref=f13e5] [cursor=pointer]:
+          - img [ref=f13e7]
+          - img [ref=f13e10]
+```
+
+# Test source
+
+```ts
+  530 |             // Top stepper — always present
+  531 |             await expect(this.trackerPreQual).toBeVisible({ timeout: 10000 });
+  532 |             await expect(this.trackerInProcess).toBeVisible();
+  533 |             await expect(this.trackerClosing).toBeVisible();
+  534 |             await expect(this.trackerFunded).toBeVisible();
+  535 | 
+  536 |             // Current stage detail panel
+  537 |             await expect(this.trackerCurrentStageLabel).toBeVisible();
+  538 | 
+  539 |             // "Current" badge — soft-assert because the badge text varies by
+  540 |             // loan state/UI version.  Some loans show the badge as "Active" or
+  541 |             // omit it entirely.  Log a warning rather than failing the whole test.
+  542 |             const hasCurrentBadge = await this.trackerCurrentBadge
+  543 |                 .isVisible({ timeout: 5000 }).catch(() => false);
+  544 |             if (!hasCurrentBadge) {
+  545 |                 console.warn('trackerCurrentBadge: "Current" text not visible — badge may use different text for this loan stage');
+  546 |             }
+  547 | 
+  548 |             await expect(this.trackerStepsCompleted).toBeVisible();
+  549 | 
+  550 |             // Step rows — conditional: presence depends on loan stage and type
+  551 |             const hasIdentityVer = await this.trackerIdentityVerStep
+  552 |                 .isVisible().catch(() => false);
+  553 |             if (hasIdentityVer) await expect(this.trackerIdentityVerStep).toBeVisible();
+  554 | 
+  555 |             const hasCreditCheck = await this.trackerCreditCheckStep
+  556 |                 .isVisible().catch(() => false);
+  557 |             if (hasCreditCheck) await expect(this.trackerCreditCheckStep).toBeVisible();
+  558 | 
+  559 |             const hasValuation = await this.trackerValuationStep
+  560 |                 .isVisible().catch(() => false);
+  561 |             if (hasValuation) await expect(this.trackerValuationStep).toBeVisible();
+  562 | 
+  563 |             const hasInitialOffer = await this.trackerInitialOfferStep
+  564 |                 .isVisible().catch(() => false);
+  565 |             if (hasInitialOffer) await expect(this.trackerInitialOfferStep).toBeVisible();
+  566 |         });
+  567 |     }
+  568 | 
+  569 |     /**
+  570 |      * Clicks the Identity Verification row to expand it, then verifies the
+  571 |      * borrower detail card (Borrower 1 label, name, Started Application badge).
+  572 |      * Pass { firstName, lastName } from shared test data.
+  573 |      */
+  574 |     async verifyIdentityVerificationExpanded({ firstName, lastName }) {
+  575 |         await test.step('Verify Identity Verification expanded detail', async () => {
+  576 |             // Click the row header to expand if not already open
+  577 |             const alreadyOpen = await this.trackerBorrower1Label.isVisible().catch(() => false);
+  578 |             if (!alreadyOpen) await this.trackerIdentityVerStep.click();
+  579 | 
+  580 |             await expect(this.trackerBorrower1Label).toBeVisible({ timeout: 10000 });
+  581 | 
+  582 |             // Name may be split across child elements or belong to a different loan —
+  583 |             // check first and last name independently with if/else guards
+  584 |             const firstNameLocator = this.page.getByText(firstName, { exact: false }).first();
+  585 |             const lastNameLocator  = this.page.getByText(lastName,  { exact: false }).first();
+  586 | 
+  587 |             const firstFound = await firstNameLocator.isVisible().catch(() => false);
+  588 |             const lastFound  = await lastNameLocator.isVisible().catch(() => false);
+  589 | 
+  590 |             if (firstFound) await expect(firstNameLocator).toBeVisible();
+  591 |             if (lastFound)  await expect(lastNameLocator).toBeVisible();
+  592 | 
+  593 |             // "Started Application" badge — only shown when the borrower has begun
+  594 |             const hasStarted = await this.trackerStartedApplicationBadge
+  595 |                 .isVisible().catch(() => false);
+  596 |             if (hasStarted) await expect(this.trackerStartedApplicationBadge).toBeVisible();
+  597 |         });
+  598 |     }
+  599 | 
+  600 |     /**
+  601 |      * Clicks the Credit Check row to expand it, then verifies all six detail
+  602 |      * label fields are rendered (values may be "—" when pull hasn't run yet).
+  603 |      */
+  604 |     async verifyCreditCheckExpanded() {
+  605 |         await test.step('Verify Credit Check expanded detail', async () => {
+  606 |             // Click the row header to expand if not already open
+  607 |             const alreadyOpen = await this.trackerSoftPullScoreLabel.isVisible().catch(() => false);
+  608 |             if (!alreadyOpen) await this.trackerCreditCheckStep.click();
+  609 | 
+  610 |             await expect(this.trackerSoftPullScoreLabel).toBeVisible({ timeout: 10000 });
+  611 |             await expect(this.trackerSoftPullDateLabel).toBeVisible();
+  612 |             await expect(this.trackerHardPullScoreLabel).toBeVisible();
+  613 |             await expect(this.trackerHardPullDateLabel).toBeVisible();
+  614 |             await expect(this.trackerLoanBalanceLabel).toBeVisible();
+  615 |             await expect(this.trackerMonthlyDebtLabel).toBeVisible();
+  616 |         });
+  617 |     }
+  618 | 
+  619 |     /**
+  620 |      * Verifies the Valuation and Initial Offer step rows are present on the Tracker.
+  621 |      * Both steps are always rendered, but their status text is loan-dependent:
+  622 |      *   • "Pending"  — step has not started yet
+  623 |      *   • completion text (e.g. "Valuation accepted") — step is done
+  624 |      * We assert the step headers unconditionally and the "Pending" badge only
+  625 |      * when at least one incomplete step is visible on this particular loan.
+  626 |      */
+  627 |     async verifyPendingSteps() {
+  628 |         await test.step('Verify Valuation and Initial Offer steps are present', async () => {
+  629 |             await expect(this.trackerValuationStep).toBeVisible({ timeout: 10000 });
+> 630 |             await expect(this.trackerInitialOfferStep).toBeVisible();
+      |                                                        ^ Error: expect(locator).toBeVisible() failed
+  631 | 
+  632 |             // "Pending" appears only when the step has not been started — guard so
+  633 |             // a fully-progressed loan does not cause a false failure
+  634 |             const hasPending = await this.trackerPendingStatus
+  635 |                 .isVisible({ timeout: 3000 })
+  636 |                 .catch(() => false);
+  637 |             if (hasPending) {
+  638 |                 await expect(this.trackerPendingStatus).toBeVisible();
+  639 |             }
+  640 |         });
+  641 |     }
+  642 | 
+  643 |     // -- Conditions tab -------------------------------------------------------
+  644 | 
+  645 |     async clickConditionsTab() {
+  646 |         await test.step('Click Conditions tab', async () => {
+  647 |             await this.conditionsTab.click();
+  648 |             // waitForLoadState('domcontentloaded') is a no-op for SPA tab clicks.
+  649 |             // Wait for the Borrower Tasks sub-tab to appear instead.
+  650 |             await this.conditionsBorrowerTasksTab
+  651 |                 .waitFor({ state: 'visible', timeout: 10000 });
+  652 |         });
+  653 |     }
+  654 | 
+  655 |     /**
+  656 |      * Verifies the Conditions tab chrome: both sub-tab buttons, the Progress
+  657 |      * label, and the progress counter are visible regardless of task count.
+  658 |      * The task area content (empty state vs populated list) is checked
+  659 |      * separately so failures are precise.
+  660 |      */
+  661 |     async verifyConditionsChrome() {
+  662 |         await test.step('Verify Conditions tab chrome', async () => {
+  663 |             await expect(this.conditionsBorrowerTasksTab).toBeVisible({ timeout: 10000 });
+  664 |             await expect(this.conditionsLenderTasksTab).toBeVisible();
+  665 |             await expect(this.conditionsProgressLabel).toBeVisible();
+  666 |             await expect(this.conditionsProgressCounter).toBeVisible();
+  667 |         });
+  668 |     }
+  669 | 
+  670 |     /**
+  671 |      * Verifies the task area content after a sub-tab is selected.
+  672 |      *   • Empty state  — "No tasks assigned yet" is shown
+  673 |      *   • Populated    — at least one task row/item is visible
+  674 |      *   • Fallback     — if neither is found the sub-tab heading itself is
+  675 |      *                    re-asserted, confirming the tab rendered without error
+  676 |      */
+  677 |     async verifyConditionsTaskArea() {
+  678 |         await test.step('Verify Conditions task area (empty or populated)', async () => {
+  679 |             const isEmpty = await this.conditionsEmptyState
+  680 |                 .isVisible({ timeout: 5000 }).catch(() => false);
+  681 | 
+  682 |             if (isEmpty) {
+  683 |                 await expect(this.conditionsEmptyState).toBeVisible();
+  684 |                 return;
+  685 |             }
+  686 | 
+  687 |             // Populated: look for any task row — MUI renders these as <li> or <tr>
+  688 |             const taskRow = this.page
+  689 |                 .locator('li, tr')
+  690 |                 .filter({ hasText: /\S+/ })
+  691 |                 .first();
+  692 |             const hasRows = await taskRow.isVisible({ timeout: 5000 }).catch(() => false);
+  693 | 
+  694 |             if (hasRows) {
+  695 |                 await expect(taskRow).toBeVisible();
+  696 |             } else {
+  697 |                 // Fallback: sub-tab label visible confirms the panel loaded correctly
+  698 |                 await expect(this.conditionsBorrowerTasksTab).toBeVisible({ timeout: 5000 });
+  699 |             }
+  700 |         });
+  701 |     }
+  702 | 
+  703 |     /**
+  704 |      * Clicks the Lender Tasks sub-tab and waits for the view to update.
+  705 |      */
+  706 |     async clickLenderTasksTab() {
+  707 |         await test.step('Click Lender Tasks sub-tab', async () => {
+  708 |             await this.conditionsLenderTasksTab.click();
+  709 |             // waitForLoadState('domcontentloaded') is a no-op for SPA accordion/tab
+  710 |             // state changes — wait for the Progress label to confirm the panel rendered.
+  711 |             await this.conditionsProgressLabel
+  712 |                 .waitFor({ state: 'visible', timeout: 10000 });
+  713 |         });
+  714 |     }
+  715 | 
+  716 |     /**
+  717 |      * Clicks the Borrower Tasks sub-tab and waits for the view to update.
+  718 |      */
+  719 |     async clickBorrowerTasksTab() {
+  720 |         await test.step('Click Borrower Tasks sub-tab', async () => {
+  721 |             await this.conditionsBorrowerTasksTab.click();
+  722 |             // Same SPA guard as clickLenderTasksTab.
+  723 |             await this.conditionsProgressLabel
+  724 |                 .waitFor({ state: 'visible', timeout: 10000 });
+  725 |         });
+  726 |     }
+  727 | 
+  728 |     // -- Documents tab --------------------------------------------------------
+  729 | 
+  730 |     async clickDocumentsTab() {
+```
