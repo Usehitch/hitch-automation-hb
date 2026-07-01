@@ -1,0 +1,6 @@
+clickManageDebtPayoffs: no dialog appeared after clicking MANAGE — modal may not be applicable for this loan state
+verifyDebtPayoffModal: skipping — debt payoff modal was not opened
+saveDebtPayoffPlan: skipping — debt payoff modal was not opened
+searchAndWaitForResult: no result for "test.oi84a.1782929659579@mailinator.com" on attempt 1/4 — loan may not be indexed yet, retrying in 15000ms
+searchAndWaitForResult: no result for "test.oi84a.1782929659579@mailinator.com" on attempt 2/4 — loan may not be indexed yet, retrying in 15000ms
+searchAndWaitForResult: no result for "test.oi84a.1782929659579@mailinator.com" on attempt 3/4 — loan may not be indexed yet, retrying in 15000ms
