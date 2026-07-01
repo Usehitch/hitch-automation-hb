@@ -1,0 +1,1 @@
+selectFilterOption: option "ABC Broker" not found in listbox — pressing Escape
