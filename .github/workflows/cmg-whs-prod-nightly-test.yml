@@ -104,10 +104,11 @@ jobs:
         # the very end (see "Fail workflow if tests failed").
         continue-on-error: true
         run: |
-          # NOTE: loandetail.spec.js and My Loans/active.spec.js are intentionally
-          # EXCLUDED (matching hb-whs-prod / remn-whs-prod). They search for a
-          # fixture loan seeded only on staging, so they fail on prod. Re-add
-          # them here if CMG prod has that fixture data.
+          # NOTE: loandetail.spec.js, My Loans/active.spec.js, and
+          # LO Flow/certifications.spec.js are intentionally EXCLUDED (matching
+          # hb-whs-prod / remn-whs-prod). All three search for a fixture loan
+          # seeded only on staging, so they fail on prod. Re-add them here if
+          # CMG prod has that fixture data.
           npx playwright test \
             "tests/Broker Flow/shadow-borrower-view.spec.js" \
             "tests/Broker Flow/twn-monitor.spec.js" \
@@ -119,7 +120,6 @@ jobs:
             "tests/Borrower Flow/support.spec.js" \
             "tests/LO Flow/pipeline-management.spec.js" \
             "tests/LO Flow/deal-optimization.spec.js" \
-            "tests/LO Flow/certifications.spec.js" \
             "tests/LO Flow/property-applicant-data.spec.js" \
             "tests/Borrower Flow/invitation.spec.js" \
             "tests/Borrower Flow/Co-Borrower/coborrower.spec.js" \
