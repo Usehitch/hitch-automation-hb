@@ -1,8 +1,0 @@
-Shadow Borrower View: checkbox at index 0 is not disabled — the app may enforce read-only via CSS pointer-events instead
-Shadow Borrower View: checkbox at index 1 is not disabled — the app may enforce read-only via CSS pointer-events instead
-Shadow Borrower View: checkbox at index 2 is not disabled — the app may enforce read-only via CSS pointer-events instead
-Shadow Borrower View: checkbox at index 3 is not disabled — the app may enforce read-only via CSS pointer-events instead
-Shadow Borrower View: checkbox at index 4 is not disabled — the app may enforce read-only via CSS pointer-events instead
-Shadow Borrower View: checkbox at index 5 is not disabled — the app may enforce read-only via CSS pointer-events instead
-Shadow Borrower View: checkbox at index 6 is not disabled — the app may enforce read-only via CSS pointer-events instead
-Shadow Borrower View: checkbox at index 7 is not disabled — the app may enforce read-only via CSS pointer-events instead
