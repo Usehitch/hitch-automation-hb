@@ -189,6 +189,16 @@ jobs:
           retention-days: 30
 
       # -----------------------------
+      # Strip traces/videos from the copies published to gh-pages. Pages
+      # deploys the whole branch as ONE artifact hard-capped at 1 GB, and
+      # trace zips/videos are ~90% of a run's size. The full reports (with
+      # traces) live in the Actions artifacts uploaded above.
+      # -----------------------------
+      - name: Strip traces/videos from published reports
+        if: always()
+        run: find playwright-report allure-report -type f \( -name '*.zip' -o -name '*.webm' \) -delete || true
+
+      # -----------------------------
       # Deploy Report to GitHub Pages
       # -----------------------------
       - name: Deploy report to gh-pages

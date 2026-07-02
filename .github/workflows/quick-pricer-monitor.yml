@@ -97,6 +97,15 @@ jobs:
           retention-days: 7
 
       # -----------------------------
+      # Strip traces/videos from the copy published to gh-pages. Pages
+      # deploys the whole branch as ONE artifact hard-capped at 1 GB; the
+      # full report (with traces) lives in the Actions artifact above.
+      # -----------------------------
+      - name: Strip traces/videos from published report
+        if: ${{ !cancelled() }}
+        run: find playwright-report -type f \( -name '*.zip' -o -name '*.webm' \) -delete || true
+
+      # -----------------------------
       # Deploy Report to GitHub Pages
       # -----------------------------
       - name: Deploy report to gh-pages

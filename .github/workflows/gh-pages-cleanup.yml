@@ -1,0 +1,110 @@
+name: gh-pages Report Cleanup
+
+# ---------------------------------------------------------------------------
+# Daily janitor for the gh-pages branch. GitHub Pages packages the ENTIRE
+# branch into a single deployment artifact hard-capped at 1 GB — when the
+# accumulated reports crossed that cap (2026-07-03: 7 GB), every Pages
+# deploy was cancelled and no new report links worked.
+#
+# Three defenses, in order:
+#   1. The publishing workflows strip trace zips/videos before deploying
+#      (the full reports live in each run's Actions artifacts).
+#   2. This workflow deletes report dirs for runs older than RETENTION_DAYS.
+#   3. Budget backstop: if the tree still exceeds MAX_TREE_MB, the oldest
+#      run dirs are deleted until it fits.
+#
+# Run-dir age is derived from the run ID in the dir name: GitHub run IDs are
+# globally monotonic, so "newest run created before the cutoff date" gives a
+# threshold ID; every dir numbered at or below it is older than the window.
+# ---------------------------------------------------------------------------
+
+on:
+  schedule:
+    # Daily 15:00 UTC — after the 08:00 UTC prod nightlies have published,
+    # before the 20:00 UTC staging nightly starts.
+    - cron: '0 15 * * *'
+  workflow_dispatch:
+
+# Never let two cleanups overlap. Concurrent report-publishing pushes from
+# other workflows are handled by the rebase-and-retry in the push step.
+concurrency:
+  group: gh-pages-cleanup
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # push the pruned gh-pages branch
+  actions: read     # list workflow runs to date the run-id cutoff
+
+env:
+  RETENTION_DAYS: 14
+  MAX_TREE_MB: 900
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 1
+          # PAT (not GITHUB_TOKEN) so the push triggers the Pages rebuild,
+          # same as the peaceiris deploy steps in the report workflows.
+          token: ${{ secrets.HB_TOKEN }}
+
+      - name: Prune old run dirs and enforce size budget
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          CUTOFF=$(date -u -d "${RETENTION_DAYS} days ago" +%Y-%m-%d)
+          THRESHOLD=$(gh api -X GET "repos/${{ github.repository }}/actions/runs" \
+            -f "created=<${CUTOFF}" -f per_page=1 \
+            --jq '.workflow_runs[0].id // 0')
+          echo "Retention cutoff ${CUTOFF} → run-id threshold ${THRESHOLD}"
+
+          # Report dirs are <section>/<run_id>/ or <section>/(reports|allure)/<run_id>/.
+          run_dirs() {
+            find . -mindepth 1 -maxdepth 3 -type d -regextype posix-extended -regex '.*/[0-9]{8,}'
+          }
+
+          # 1) Delete run dirs older than the retention window.
+          while IFS= read -r dir; do
+            [ -d "$dir" ] || continue
+            if [ "$(basename "$dir")" -le "$THRESHOLD" ]; then
+              echo "delete (>${RETENTION_DAYS}d): $dir"
+              rm -rf "$dir"
+            fi
+          done < <(run_dirs)
+
+          # 2) Strip any trace zips / videos that slipped through to gh-pages.
+          find . -type f \( -name '*.zip' -o -name '*.webm' \) -not -path './.git/*' -print -delete
+
+          # 3) Budget backstop: drop the oldest run dirs until under MAX_TREE_MB.
+          tree_mb() { du -sm --exclude=.git . | cut -f1; }
+          while [ "$(tree_mb)" -gt "${MAX_TREE_MB}" ]; do
+            oldest=$(run_dirs | awk -F/ '{print $NF "\t" $0}' | sort -n | head -1 | cut -f2)
+            [ -n "$oldest" ] || break
+            echo "delete (over ${MAX_TREE_MB} MB budget): $oldest"
+            rm -rf "$oldest"
+          done
+          echo "Final tree size: $(tree_mb) MB"
+
+      - name: Commit and push
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898994+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nothing to prune."
+            exit 0
+          fi
+          git commit -m "chore: prune gh-pages reports (retention ${RETENTION_DAYS}d, budget ${MAX_TREE_MB} MB)"
+          # A monitor workflow may publish a new report dir mid-cleanup;
+          # rebase our deletion commit onto it and retry.
+          for i in 1 2 3; do
+            git push origin gh-pages && exit 0
+            git pull --rebase origin gh-pages
+          done
+          git push origin gh-pages
