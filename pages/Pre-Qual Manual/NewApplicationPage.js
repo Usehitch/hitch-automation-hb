@@ -75,6 +75,28 @@ class NewApplicationPage {
         this.startDateInput = this.page.getByLabel(/Start Date/);
         this.doneEditingBtn = this.page.getByRole('button', { name: 'Done Editing' });
 
+        // -- Add Business (expands when Self Employed is checked) ---------------
+        // The editor is a single required field ("Total Annual Compensation") under
+        // an "Add Business" heading — no company-name/start-date like the job form.
+        // Scope to the innermost div holding both the heading and the input so the
+        // identically-labelled Salary job field can never collide in mixed-income
+        // flows. .last() = the currently open editor when several businesses exist.
+        this.addBusinessSection = this.page.locator('div')
+            .filter({ has: this.page.getByText('Add Business', { exact: true }) })
+            .filter({ has: this.page.getByLabel(/Total Annual Compensation/) })
+            .last();
+        this.businessCompensationInput = this.addBusinessSection
+            .getByLabel(/Total Annual Compensation/)
+            .last();
+        this.businessDoneEditingBtn = this.addBusinessSection
+            .getByRole('button', { name: 'Done Editing' })
+            .last();
+        this.addAnotherBusinessBtn = this.page.getByRole('button', { name: /Add Another Business/i });
+
+        // Running total of all selected income sources — shown under the income
+        // checkboxes and recalculated as jobs/businesses are added.
+        this.totalAnnualIncomeLabel = this.page.getByText('Total Annual Income', { exact: true });
+
         // -- Loan Purpose (toggle buttons) -------------------------------------
         this.debtConsolidationBtn = this.page.getByRole('button', { name: 'Debt Consolidation' });
         this.homeImprovementBtn = this.page.getByRole('button', { name: 'Home Improvement' });
@@ -316,6 +338,35 @@ class NewApplicationPage {
         });
     };
 
+    /**
+     * Fills the currently open "Add Business" editor (revealed by checking the
+     * Self Employed income source, or by ADD ANOTHER BUSINESS) and closes it
+     * with DONE EDITING. The compensation field is the editor's only input.
+     * @param {{ totalAnnualCompensation: string }} business
+     */
+    async fillSelfEmployedBusiness(business) {
+        await test.step('Fill self-employed business details', async () => {
+            await this.businessCompensationInput.waitFor({ state: 'visible', timeout: 10000 });
+            await this.businessCompensationInput.fill(business.totalAnnualCompensation);
+            await this.businessCompensationInput.press('Tab');
+
+            await this.businessDoneEditingBtn.click({ force: true });
+        });
+    };
+
+    /**
+     * Clicks ADD ANOTHER BUSINESS (enabled only after the previous business
+     * editor was closed with DONE EDITING) and fills the new editor.
+     * @param {{ totalAnnualCompensation: string }} business
+     */
+    async addAnotherBusiness(business) {
+        await test.step('Add another self-employed business', async () => {
+            await expect(this.addAnotherBusinessBtn).toBeEnabled({ timeout: 10000 });
+            await this.addAnotherBusinessBtn.click();
+            await this.fillSelfEmployedBusiness(business);
+        });
+    };
+
     async fillApplicationDetails(data) {
         await test.step('Fill application details', async () => {
             await this.fillPropertyAddress(data.property.address);
@@ -363,6 +414,10 @@ class NewApplicationPage {
 
             if (data.applicant.incomeSources.includes('Salary or hourly wages') && data.applicant.job) {
                 await this.fillJobDetails(data.applicant.job);
+            }
+
+            if (data.applicant.incomeSources.includes('Self Employed') && data.applicant.business) {
+                await this.fillSelfEmployedBusiness(data.applicant.business);
             }
 
             await this.#selectToggleButton(this.#loanPurposeMap()[data.applicant.loanPurpose]);

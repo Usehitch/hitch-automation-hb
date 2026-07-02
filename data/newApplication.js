@@ -86,6 +86,30 @@ export const makeApplicationData = () => ({
 export const applicationData = makeApplicationData();
 
 /**
+ * Builds a fresh application payload whose ONLY income source is Self Employed.
+ *
+ * Same factory rationale as [[makeApplicationData]] — call inside each test
+ * body so every run/retry gets an unused email. The Self Employed checkbox
+ * reveals an "Add Business" editor with a single required field (Total Annual
+ * Compensation); `applicant.business` feeds it. `applicant.job` is left in
+ * place but unused — fillJobDetails only runs when 'Salary or hourly wages'
+ * is among the income sources.
+ */
+export const makeSelfEmployedApplicationData = () => {
+    const data = makeApplicationData();
+    return {
+        ...data,
+        applicant: {
+            ...data.applicant,
+            incomeSources: ['Self Employed'],
+            business: {
+                totalAnnualCompensation: '220000',
+            },
+        },
+    };
+};
+
+/**
  * Builds a fresh co-borrower application payload with NEW applicant and
  * co-borrower emails on every call.
  *

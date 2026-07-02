@@ -13,6 +13,27 @@ class LoanDetailPage {
         this.viewApplicationBtn   = this.page.getByRole('button', { name: /View Application/i });
         this.shadowBorrowerViewBtn = this.page.getByRole('button', { name: /Shadow Borrower View/i });
 
+        // -- Archive (kebab menu, top-right of the header) ----------------------
+        // The "..." button next to Shadow Borrower View opens a menu containing
+        // Archive. The button is icon-only, so match on menu-trigger semantics
+        // (aria-haspopup) or an aria-label containing more/option/action —
+        // whichever variant the portal renders.
+        this.moreActionsBtn = this.page
+            .locator('button[aria-haspopup="menu"], button[aria-label*="more" i], button[aria-label*="option" i], button[aria-label*="action" i]')
+            .first();
+        this.archiveMenuItem = this.page
+            .getByRole('menuitem', { name: /archive/i })
+            .or(this.page.getByRole('button', { name: /^archive/i }))
+            .first();
+        // Confirmation dialog — scoped by its own Archive text so the chat widget
+        // or other ambient dialogs are never matched.
+        this.archiveConfirmDialog = this.page.getByRole('dialog').filter({
+            has: this.page.getByText(/archive/i),
+        });
+        this.archiveConfirmBtn = this.archiveConfirmDialog
+            .getByRole('button', { name: /archive|confirm|yes/i })
+            .first();
+
         // -- Shadow Borrower View confirmation modal ---------------------------
         // Scoped to the dialog so Cancel/Continue don't collide with page buttons
         this.shadowViewModal          = this.page.getByRole('dialog');
@@ -812,6 +833,46 @@ class LoanDetailPage {
             // waitForLoadState('domcontentloaded') is a no-op for SPA refresh actions.
             // Wait for the button to remain visible, which confirms the tab didn't blank.
             await expect(this.documentsRefreshBtn).toBeVisible({ timeout: 10000 });
+        });
+    }
+
+    // -- Archive ----------------------------------------------------------------
+
+    /**
+     * Archives the loan from the detail page's kebab ("...") menu.
+     *
+     * Flow: open the more-actions menu → click Archive → confirm in the dialog
+     * (when the portal shows one) → wait for the completion signal.
+     *
+     * There is currently NO unarchive in the portal (confirmed with the client,
+     * NJ-823) — archiving is one-way, so only run this against loans the test
+     * itself created.
+     */
+    async archiveLoan() {
+        await test.step('Archive the loan via the more-actions menu', async () => {
+            await this.moreActionsBtn.waitFor({ state: 'visible', timeout: 15000 });
+            await this.moreActionsBtn.click();
+
+            await this.archiveMenuItem.waitFor({ state: 'visible', timeout: 10000 });
+            await this.archiveMenuItem.click();
+
+            // The confirm dialog is guarded — click through it only when the
+            // portal asks; some tenants archive immediately without confirming.
+            const needsConfirm = await this.archiveConfirmBtn
+                .isVisible({ timeout: 5000 })
+                .catch(() => false);
+            if (needsConfirm) {
+                await this.archiveConfirmBtn.click();
+                await expect(this.archiveConfirmDialog).toBeHidden({ timeout: 10000 });
+            }
+
+            // Completion signal: a success toast, or the portal navigating away
+            // from the (now archived) loan detail back to the pipeline.
+            const toast = this.page.getByText(/archived/i).first();
+            await Promise.race([
+                toast.waitFor({ state: 'visible', timeout: 15000 }).catch(() => {}),
+                this.page.waitForURL(/\/portal(?!.*loan)/i, { timeout: 15000 }).catch(() => {}),
+            ]);
         });
     }
 
