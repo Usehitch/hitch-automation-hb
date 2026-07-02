@@ -99,8 +99,12 @@ test.describe('My Loans - Inactive', () => {
 
         await activePage.clickCertify();
         await mloCertificationModal.waitForModal();
-        await mloCertificationModal.checkAllCertifications();
-        await mloCertificationModal.fillBrokerMloName(applicationData.consent.brokerMloName);
+        // Refresh-tolerant: prod's background pipeline refetch can unmount the
+        // modal mid-interaction — prepareCertification reopens and redoes.
+        await mloCertificationModal.prepareCertification({
+            reopen: () => activePage.clickCertify(),
+            name: applicationData.consent.brokerMloName,
+        });
 
         await mloCertificationModal.submit();
 

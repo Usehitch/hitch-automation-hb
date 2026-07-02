@@ -26,6 +26,7 @@
 // the real test failure (the workflow fails the job separately).
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
 const RESULTS = process.argv[2] || 'test-results.json';
@@ -99,6 +100,98 @@ function collectFailures(report) {
   return failures;
 }
 
+// ---------------------------------------------------------------------------
+// Annotation: stamp each screenshot with a banner naming the failing test and
+// its error, so the image itself carries the context (Slack previews show the
+// picture prominently but bury file titles). Rendered with Playwright's own
+// Chromium — already installed for the tests, so no extra dependency.
+// ---------------------------------------------------------------------------
+
+const escapeHtml = (s) =>
+  String(s).replace(/[&<>"']/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function bannerHtml({ title, errLine, location, dataUri }) {
+  const loc = location ? `<span class="loc">${escapeHtml(location)}</span>` : '';
+  const err = errLine ? `<div class="err">${escapeHtml(errLine)}</div>` : '';
+  return `<!DOCTYPE html><html><head><style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #fff; width: fit-content; }
+    .banner {
+      background: #1a1d24; color: #fff; padding: 14px 18px;
+      font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .head { display: flex; align-items: baseline; gap: 10px; }
+    .chip {
+      background: #d63b3b; color: #fff; font-size: 12px; font-weight: 700;
+      padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px; flex: none;
+    }
+    .title { font-size: 15px; font-weight: 600; line-height: 1.35; }
+    .loc { color: #9aa4b2; font-size: 12px; font-weight: 400; margin-left: 8px; }
+    .err {
+      color: #ff9d9d; font-family: Consolas, Menlo, monospace;
+      font-size: 12.5px; line-height: 1.4; white-space: pre-wrap;
+    }
+    img { display: block; }
+  </style></head><body>
+    <div class="banner" id="banner">
+      <div class="head"><span class="chip">FAILED</span><span class="title">${escapeHtml(title)}${loc}</span></div>
+      ${err}
+    </div>
+    <img id="shot" src="${dataUri}">
+  </body></html>`;
+}
+
+// Returns a map file → annotated file. Best-effort: on ANY problem the
+// original screenshots are uploaded unlabelled rather than not at all.
+async function annotateAll(shots) {
+  let chromium;
+  try {
+    ({ chromium } = require('playwright'));
+  } catch {
+    console.log('[slack-screenshots] playwright not available — uploading unannotated screenshots.');
+    return new Map();
+  }
+
+  const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'slack-shots-'));
+  const annotated = new Map();
+  let browser;
+  try {
+    browser = await chromium.launch();
+    const page = await browser.newPage({ deviceScaleFactor: 1 });
+    for (const s of shots) {
+      try {
+        const dataUri = `data:image/png;base64,${fs.readFileSync(s.file).toString('base64')}`;
+        await page.setContent(
+          bannerHtml({ title: s.title, errLine: s.errLine, location: s.location, dataUri }),
+          { waitUntil: 'load' }
+        );
+        // Match the banner width to the screenshot and size the viewport to
+        // the composed content so nothing is clipped or letterboxed.
+        const { w, h } = await page.evaluate(() => {
+          const img = document.getElementById('shot');
+          const width = Math.max(640, img.naturalWidth);
+          img.style.width = `${width}px`;
+          document.getElementById('banner').style.width = `${width}px`;
+          return { w: width, h: document.body.scrollHeight };
+        });
+        await page.setViewportSize({ width: w, height: Math.min(h, 4000) });
+        const out = path.join(outDir, `${annotated.size}-${path.basename(s.file)}`);
+        await page.screenshot({ path: out, fullPage: true });
+        annotated.set(s.file, out);
+      } catch (e) {
+        console.log(`[slack-screenshots] annotate failed for "${s.title}": ${e.message} — using original.`);
+      }
+    }
+  } catch (e) {
+    console.log(`[slack-screenshots] annotation disabled: ${e.message}`);
+  } finally {
+    if (browser) await browser.close().catch(() => {});
+  }
+  return annotated;
+}
+
 async function slack(method, body, isJson) {
   const res = await fetch(`${SLACK}/${method}`, {
     method: 'POST',
@@ -158,7 +251,12 @@ async function uploadOne({ title, file }) {
     for (const f of failures) {
       if (!f.files[i]) continue;
       const tag = f.files.length > 1 ? ` (page ${i + 1}/${f.files.length})` : '';
-      ordered.push({ title: `${f.title}${tag}`, file: f.files[i] });
+      ordered.push({
+        title: `${f.title}${tag}`,
+        file: f.files[i],
+        errLine: f.errLine,
+        location: f.location,
+      });
       added = true;
     }
     if (!added) break;
@@ -171,10 +269,14 @@ async function uploadOne({ title, file }) {
     `uploading ${shots.length} of ${ordered.length} screenshot(s).`
   );
 
+  // Burn the test name + error into each image so the Slack preview itself
+  // says what failed (falls back to the raw screenshot if annotation breaks).
+  const annotated = await annotateAll(shots);
+
   const uploaded = [];
   for (const s of shots) {
     try {
-      uploaded.push(await uploadOne(s));
+      uploaded.push(await uploadOne({ ...s, file: annotated.get(s.file) || s.file }));
     } catch (e) {
       console.log(`[slack-screenshots] skip "${s.title}": ${e.message}`);
     }

@@ -223,8 +223,23 @@ class TWNPage {
                 }
             }
 
-            // Job details — only when salary income is selected
-            if ((inc.incomeSources ?? []).some(s => /salary|hourly/i.test(s))) {
+            // Prod (2026-07) auto-verifies employment via TWN at this step:
+            // a banner ("We were able to automatically identify and pre-fill
+            // your employer information") plus a read-only Verified employer
+            // card replace the manual job form. There is nothing to type —
+            // and the leftover compensation input never passes Playwright's
+            // stability check, so clicking it burns the whole test timeout.
+            // Staging still renders the manual form, so this is detected from
+            // the page, not the environment.
+            const twnPrefilled = await this.page
+                .getByText(/pre-?fill your employer information|verified through The Work Number/i)
+                .first()
+                .isVisible({ timeout: 3000 })
+                .catch(() => false);
+
+            // Job details — only when salary income is selected and TWN did
+            // not already populate a verified employer card
+            if (!twnPrefilled && (inc.incomeSources ?? []).some(s => /salary|hourly/i.test(s))) {
                 if (inc.companyName) {
                     const companyInput = this.page.getByPlaceholder(/Company Name/i).first()
                         .or(this.page.getByLabel(/Company Name/i).first());
@@ -236,8 +251,13 @@ class TWNPage {
                     const compInput = this.page
                         .getByLabel(/Total Annual Compensation|Annual Compensation/i).first();
                     await compInput.waitFor({ state: 'visible', timeout: 10000 });
-                    await compInput.click({ clickCount: 3 });
-                    await compInput.fill(inc.annualCompensation);
+                    // fill() replaces the content itself (no select-all click
+                    // needed) and skips click's stability check — the prod
+                    // income section re-renders continuously, which left a
+                    // click({ clickCount: 3 }) retrying "element is not
+                    // stable" until the test timeout. Bound it so a genuine
+                    // failure surfaces in seconds, not 480 s.
+                    await compInput.fill(inc.annualCompensation, { timeout: 15000 });
                     await compInput.press('Tab');
                 }
 

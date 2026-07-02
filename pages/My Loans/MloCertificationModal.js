@@ -47,6 +47,44 @@ class MloCertificationModal {
         });
     }
 
+    /**
+     * Completes the in-modal steps (certification checkboxes + Broker MLO
+     * Name), tolerating the modal being unmounted mid-way.
+     *
+     * Prod (2026-07): shortly after the My Loans list renders, the app fires a
+     * background refetch of the pipeline buckets; when the response lands the
+     * list re-renders and any open certification dialog is unmounted. Tests
+     * click Certify within a second of the list appearing, so the modal
+     * reliably vanishes under them. The refetch is a one-shot per page load,
+     * so reopening the modal and redoing the steps succeeds.
+     *
+     * @param {object} opts
+     * @param {() => Promise<void>} opts.reopen  re-clicks the Certify button
+     * @param {string} opts.name                 Broker MLO Name to fill
+     */
+    async prepareCertification({ reopen, name }) {
+        await test.step('Complete certification modal (refresh-tolerant)', async () => {
+            const MAX_ATTEMPTS = 3;
+            for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+                const open = await this.modalHeading.isVisible().catch(() => false);
+                if (!open) {
+                    await reopen();
+                    await this.waitForModal();
+                }
+                try {
+                    await this.checkAllCertifications();
+                    await this.fillBrokerMloName(name);
+                    return;
+                } catch (err) {
+                    const stillOpen = await this.modalHeading.isVisible().catch(() => false);
+                    if (stillOpen || attempt === MAX_ATTEMPTS) throw err;
+                    // Modal was unmounted by the background list refresh —
+                    // loop around to reopen and redo both steps.
+                }
+            }
+        });
+    }
+
     async fillBrokerMloName(name) {
         await test.step('Fill Broker MLO Name', async () => {
             // Wait for the field to exist before acting, then let fill() do the

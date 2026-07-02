@@ -75,8 +75,12 @@ test('LO certifies the pending MLO application', async ({
         await activePage.clickCertify();
 
         await mloCertificationModal.waitForModal();
-        await mloCertificationModal.checkAllCertifications();
-        await mloCertificationModal.fillBrokerMloName(applicationData.consent.brokerMloName);
+        // Refresh-tolerant: prod's background pipeline refetch can unmount the
+        // modal mid-interaction — prepareCertification reopens and redoes.
+        await mloCertificationModal.prepareCertification({
+            reopen: () => activePage.clickCertify(),
+            name: applicationData.consent.brokerMloName,
+        });
         // Arm broker-certification-PDF capture and submit. The PDF promise is
         // awaited later — the transient success toast must be checked first.
         ({ pdfUrlPromise } = await mloCertificationModal.submitCertificationAndStartPdfCapture());

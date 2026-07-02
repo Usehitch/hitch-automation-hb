@@ -101,12 +101,26 @@ class NewApplicationPage {
         // accordion (the innermost div holding both the label and a radio) so its
         // "Yes"/"No" don't collide with the trust Yes/No radios. Only valid once
         // the section is expanded — callers must expand first.
+        // hasNot the trust question: if the co-borrower radios ever disappear
+        // (as happened in the 2026-07 prod redesign), the innermost div holding
+        // both a "Co-Borrower" label and a Yes radio is a page-level wrapper
+        // that also contains the trust radiogroup — without this filter the
+        // check() lands on the trust "Yes" and silently flips that answer.
         this.coBorrowerSection = this.page.locator('div')
             .filter({ has: this.page.getByText('Co-Borrower', { exact: true }) })
             .filter({ has: this.page.getByRole('radio', { name: 'Yes' }) })
+            .filter({ hasNot: this.page.getByText('Is the HELOC property currently held in a trust?') })
             .last();
         this.coBorrowerYesRadio = this.coBorrowerSection.getByRole('radio', { name: 'Yes' });
         this.coBorrowerNoRadio = this.coBorrowerSection.getByRole('radio', { name: 'No' });
+
+        // 2026-07 prod redesign: the co-borrower Yes/No radios became descriptive
+        // toggle buttons ("Yes I have a co-borrower who will apply with me" /
+        // "No I am applying by myself", with No pressed by default). Staging
+        // still renders the radio group — fillCoBorrowerDetails probes for the
+        // buttons first and falls back to the radios.
+        this.coBorrowerYesToggleBtn = this.page.getByRole('button', { name: /^Yes I have a co-borrower/i });
+        this.coBorrowerNoToggleBtn = this.page.getByRole('button', { name: /^No I am applying by myself/i });
 
         // First/Last name expose stable data-testids.
         this.coBorrowerFirstNameInput = this.page.getByTestId('coborrowerFirstName');
@@ -251,9 +265,17 @@ class NewApplicationPage {
             if (collapsed) {
                 await this.coBorrowerExpandBtn.click();
             }
-            await this.coBorrowerYesRadio.waitFor({ state: 'visible', timeout: 10000 });
-
-            await this.coBorrowerYesRadio.check();
+            // Prod renders toggle buttons, staging a radio group (see the
+            // coBorrowerYesToggleBtn locator note). Probe for the button first.
+            const hasToggle = await this.coBorrowerYesToggleBtn
+                .isVisible({ timeout: 3000 })
+                .catch(() => false);
+            if (hasToggle) {
+                await this.coBorrowerYesToggleBtn.click();
+            } else {
+                await this.coBorrowerYesRadio.waitFor({ state: 'visible', timeout: 10000 });
+                await this.coBorrowerYesRadio.check();
+            }
 
             // 30 s — checking "Yes" triggers the co-borrower fields to expand/render,
             // which occasionally runs past 10s on prod.

@@ -42,7 +42,11 @@ export const twnApplicationData = {
     },
 
     expectedIncome: {
-        companyName: 'Enterprise One-Verifier Integrations Only', // TWN sandbox employer
+        // TWN sandbox employer. verifyTwnPopulated matches this as a substring:
+        // staging renders the full "Enterprise One-Verifier Integrations Only",
+        // while prod (2026-07 redesign) shortens the card title to "Enterprise" —
+        // the common prefix satisfies both.
+        companyName: 'Enterprise',
         // totalAnnualCompensation: not asserted — TWN sandbox figures change periodically.
         // verifyTwnPopulated() falls back to a non-empty check on the input field instead.
         startDate:   '04/05/1995', // start date populated by TWN sandbox record

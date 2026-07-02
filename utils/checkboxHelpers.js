@@ -11,9 +11,13 @@ export async function checkAllCheckboxes(checkboxes) {
     for (let i = 0; i < count; i++) {
         const checkbox = checkboxes.nth(i);
         try {
-            if (await checkbox.isDisabled()) continue;
-            if (await checkbox.isChecked()) continue;
-            await checkbox.scrollIntoViewIfNeeded();
+            // Explicit timeouts: with none, these queries wait forever for the
+            // element to attach — when a containing dialog unmounts mid-loop
+            // (prod's My Loans background refresh closes the certification
+            // modal) an unbounded isDisabled() eats the entire test timeout.
+            if (await checkbox.isDisabled({ timeout: 5000 })) continue;
+            if (await checkbox.isChecked({ timeout: 5000 })) continue;
+            await checkbox.scrollIntoViewIfNeeded({ timeout: 5000 });
             await checkbox.evaluate(el => el.click());
         } catch {
             // Element was detached from DOM (modal re-rendered between steps) — skip it.
