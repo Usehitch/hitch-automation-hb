@@ -1,0 +1,240 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: Borrower Flow/invitation.spec.js >> Scenario A: LO creates pre-qual and borrower receives invitation
+- Location: tests/Borrower Flow/invitation.spec.js:88:5
+
+# Error details
+
+```
+TimeoutError: locator.waitFor: Timeout 300000ms exceeded.
+Call log:
+  - waiting for getByText('Finalizing pre-qualification').first() to be hidden
+    42 × locator resolved to visible <p class="MuiTypography-root MuiTypography-body1 css-yjbx3s">Finalizing pre-qualification</p>
+    560 × locator resolved to visible <p class="MuiTypography-root MuiTypography-body1 css-17fher9">Finalizing pre-qualification</p>
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - button [ref=e7] [cursor=pointer]:
+          - img [ref=e8]
+        - generic [ref=e10]: New Application
+      - generic [ref=e12]:
+        - generic [ref=e14]:
+          - img [ref=e16]:
+            - generic [ref=e18]: "1"
+          - paragraph [ref=e21]: APPLICATION DETAILS
+        - generic [ref=e25]:
+          - img [ref=e27]:
+            - generic [ref=e29]: "2"
+          - paragraph [ref=e32]: MORTGAGES & LIENS
+        - generic [ref=e36]:
+          - img [ref=e38]:
+            - generic [ref=e40]: "3"
+          - paragraph [ref=e43]: OFFER REVIEW
+        - generic [ref=e47]:
+          - img [ref=e49]:
+            - generic [ref=e51]: "4"
+          - paragraph [ref=e54]: CONSENTS
+    - generic [ref=e55]:
+      - progressbar [ref=e56]:
+        - img [ref=e57]
+      - paragraph [ref=e60]: Finalizing pre-qualification
+      - generic [ref=e62]:
+        - generic [ref=e63]:
+          - img [ref=e66]
+          - paragraph [ref=e68]: Connecting
+        - generic [ref=e69]:
+          - img [ref=e72]
+          - paragraph [ref=e74]: Pulling soft credit report
+        - generic [ref=e75]:
+          - img [ref=e78]
+          - paragraph [ref=e80]: Verifying employment
+        - generic [ref=e81]:
+          - img [ref=e84]
+          - paragraph [ref=e86]: Analyzing credit profile
+        - generic [ref=e87]:
+          - progressbar [ref=e89]:
+            - img [ref=e90]
+          - paragraph [ref=e92]: Finalizing pre-qualification
+      - generic [ref=e93]:
+        - img [ref=e94]
+        - paragraph [ref=e96]: This soft credit pull will not affect the borrower's credit score
+  - alert [ref=e97]: /portal/new-application
+  - generic [ref=e99]:
+    - iframe [ref=e100]:
+      - button "Close message from company" [ref=f9e4] [cursor=pointer]:
+        - img [ref=f9e5]
+    - iframe [ref=e101]:
+      - button "Get More Help!" [ref=f10e5] [cursor=pointer]
+  - iframe [ref=e102]:
+    - button "Open messaging window" [ref=f11e5] [cursor=pointer]:
+      - img [ref=f11e7]
+      - img [ref=f11e10]
+  - dialog [ref=e105]:
+    - generic [ref=e106]:
+      - generic [ref=e107]:
+        - img [ref=e108]
+        - paragraph [ref=e110]: You’re unable to continue at this time
+      - button [ref=e111] [cursor=pointer]:
+        - img [ref=e112]
+    - generic [ref=e115]:
+      - paragraph [ref=e116]: Credit pull timed out. Please try again.
+      - paragraph [ref=e117]: If you believe this is a mistake, please contact support.
+    - button "Exit" [ref=e119] [cursor=pointer]: Exit
+```
+
+# Test source
+
+```ts
+  333 | 
+  334 |             await this.phoneInput.fill(data.applicant.phoneNumber);
+  335 |             await this.phoneInput.press('Tab');
+  336 | 
+  337 |             const incomeMap = this.#incomeSourceMap();
+  338 |             for (const source of data.applicant.incomeSources) {
+  339 |                 await ensureChecked(incomeMap[source], { page: this.page, label: source });
+  340 |             }
+  341 | 
+  342 |             if (data.applicant.incomeSources.includes('Salary or hourly wages') && data.applicant.job) {
+  343 |                 await this.fillJobDetails(data.applicant.job);
+  344 |             }
+  345 | 
+  346 |             await this.#selectToggleButton(this.#loanPurposeMap()[data.applicant.loanPurpose]);
+  347 | 
+  348 |             if (data.coBorrower?.hasCoBorrower) {
+  349 |                 await this.fillCoBorrowerDetails(data.coBorrower);
+  350 |             }
+  351 | 
+  352 |             if (data.consent.softCreditCheck) {
+  353 |                 await ensureChecked(this.softCreditCheckConsent, {
+  354 |                     page: this.page,
+  355 |                     label: 'Consent to Soft Credit Check',
+  356 |                 });
+  357 |                 // Blur the consent block — Tab can land on inline Policy/TOS links
+  358 |                 // and leave the form thinking a required toggle is still unset.
+  359 |                 await this.applicationDetailsMarker.click({ force: true });
+  360 |             }
+  361 | 
+  362 |             await expect(this.nextBtn).toBeEnabled({ timeout: 45000 });
+  363 |         });
+  364 |     };
+  365 | 
+  366 |     /**
+  367 |      * Selects a trust-type toggle button (revealed after choosing "Yes" to the
+  368 |      * held-in-trust question). Accepts 'Revocable Trust', 'Irrevocable Trust',
+  369 |      * or 'LLC'.
+  370 |      */
+  371 |     async selectTrustType(trustType) {
+  372 |         await test.step(`Select trust type: ${trustType}`, async () => {
+  373 |             const btn = this.#trustTypeMap()[trustType];
+  374 |             await btn.waitFor({ state: 'visible', timeout: 10000 });
+  375 |             await btn.click({ force: true });
+  376 |         });
+  377 |     };
+  378 | 
+  379 |     /**
+  380 |      * Clicks Next expecting the irrevocable-trust / LLC lending block: asserts
+  381 |      * the "can not currently lend" message appears and the form stays on the
+  382 |      * Application Details step (does not advance to Mortgages & Liens). Used to
+  383 |      * verify the pause behavior without proceeding into finalization.
+  384 |      */
+  385 |     async clickNextExpectingTrustBlock() {
+  386 |         await test.step('Click Next and expect the trust/LLC lending block', async () => {
+  387 |             await this.nextBtn.click({ force: true });
+  388 |             await expect(this.trustLendingBlockMessage).toBeVisible({ timeout: 10000 });
+  389 |             // Confirm we did NOT advance — still on Application Details, step 2 not shown.
+  390 |             await expect(this.applicationDetailsMarker).toBeVisible();
+  391 |             await expect(this.mortgagesHeading).toBeHidden();
+  392 |         });
+  393 |     };
+  394 |     async clickNext() {
+  395 |         await test.step('Click Next to proceed to Mortgages & Liens', async () => {
+  396 |             // Collect ALL new pages that open during finalization.
+  397 |             // co-borrower flow opens two soft-credit consent PDFs — one per applicant.
+  398 |             // waitForEvent only catches the first; the uncaught second tab can call
+  399 |             // window.opener.close() and destroy the main page before line 74 runs.
+  400 |             const consentTabs = [];
+  401 |             const onPage = (p) => { if (p !== this.page) consentTabs.push(p); };
+  402 |             this.page.context().on('page', onPage);
+  403 | 
+  404 |             await withProcessAppRetry(this.page, async () => {
+  405 |                 // NEXT enables only after the Application Details form passes
+  406 |                 // validation. If a field value failed to commit (an intermittent
+  407 |                 // issue with MUI .fill() not firing the events the form's
+  408 |                 // validation listens to), NEXT stays disabled — and a plain
+  409 |                 // .click() then AUTO-WAITS for it to become enabled until the
+  410 |                 // whole test times out (~11 min). Bound that wait and fail fast
+  411 |                 // with a diagnostic message instead of a silent multi-minute hang.
+  412 |                 await expect(
+  413 |                     this.nextBtn,
+  414 |                     'NEXT did not enable within 45s — Application Details failed validation (a required field likely did not commit). See the attached screenshot.'
+  415 |                 ).toBeEnabled({ timeout: 45000 });
+  416 | 
+  417 |                 await this.nextBtn.click();
+  418 | 
+  419 |                 // The "Finalizing pre-qualification" overlay may be skipped when the
+  420 |                 // app processes faster than Playwright resolves the locator (especially
+  421 |                 // on co-borrower flows or CI retries).  Wait up to 5 s for it; if it
+  422 |                 // never appears proceed directly — mortgagesHeading waitFor below catches
+  423 |                 // any true failure.
+  424 |                 const appeared = await this.finalizingHeading
+  425 |                     .waitFor({ state: 'visible', timeout: 5000 })
+  426 |                     .then(() => true)
+  427 |                     .catch(() => false);
+  428 | 
+  429 |                 if (appeared) {
+  430 |                     // Wait for finalization to fully complete (URL stays the same — SPA).
+  431 |                     // 300s — raised from 200s after REMN prod exceeded that ceiling;
+  432 |                     // its finalization backend runs slower than HB prod/staging.
+> 433 |                     await this.finalizingHeading.waitFor({ state: 'hidden', timeout: 300000 });
+      |                                                  ^ TimeoutError: locator.waitFor: Timeout 300000ms exceeded.
+  434 |                 }
+  435 |             });
+  436 | 
+  437 |             // Confirm step 2 loaded.
+  438 |             // 120 s — on CI, the Finalizing overlay may hide quickly but the
+  439 |             // Mortgages & Liens page still takes many seconds to hydrate its data
+  440 |             // (especially on co-borrower flows where two credit pulls are in flight).
+  441 |             // Raised from 60s after prod nightlies hit the ceiling then passed clean
+  442 |             // on retry — backend hydration occasionally runs past 60s under load.
+  443 |             await this.mortgagesHeading.waitFor({ state: 'visible', timeout: 120000 });
+  444 | 
+  445 |             // Brief buffer so any late-opening tabs (e.g. co-borrower consent) are captured
+  446 |             await this.page.waitForTimeout(1500);
+  447 |             this.page.context().off('page', onPage);
+  448 | 
+  449 |             await test.step('Close soft credit consent PDF tab(s)', async () => {
+  450 |                 for (const tab of consentTabs) {
+  451 |                     if (tab.isClosed()) continue;
+  452 |                     await tab.waitForLoadState('load').catch(() => null);
+  453 |                     const url = tab.url();
+  454 |                     // Only close tabs that are the expected consent PDF or blank popups
+  455 |                     if (url.includes('borrowerSoftCreditConsentSignature') || url === 'about:blank') {
+  456 |                         await tab.close().catch(() => null);
+  457 |                     }
+  458 |                 }
+  459 |                 // Re-focus the main page in case the browser switched focus on tab close
+  460 |                 await this.page.bringToFront();
+  461 |             });
+  462 |         });
+  463 |     };
+  464 | };
+  465 | 
+  466 | export default NewApplicationPage;
+  467 | 
+  468 | 
+  469 | 
+  470 | 
+```
