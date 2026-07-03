@@ -1,0 +1,653 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: Borrower Flow/Co-Borrower/coborrower.spec.js >> Co-Borrower Flow — End-to-End via Shareable Link >> Unmarried co-borrower flow — no blocking errors end-to-end
+- Location: tests/Borrower Flow/Co-Borrower/coborrower.spec.js:228:9
+
+# Error details
+
+```
+TimeoutError: locator.waitFor: Timeout 15000ms exceeded.
+Call log:
+  - waiting for getByRole('button', { name: /Get Started Now/i }).first() to be visible
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e8]:
+      - list [ref=e10]:
+        - listitem [ref=e11]:
+          - button "logo":
+            - generic:
+              - generic:
+                - img "logo"
+          - button "Toggle Sidebar" [ref=e12] [cursor=pointer]:
+            - img
+            - generic [ref=e13]: Toggle Sidebar
+        - listitem [ref=e14]:
+          - generic [ref=e15]: REMN Wholesale
+      - generic [ref=e16]:
+        - list [ref=e19]:
+          - listitem [ref=e20]:
+            - button "You're in Dev":
+              - img
+              - text: You're in Dev
+        - list [ref=e23]:
+          - listitem [ref=e24]:
+            - button "My Loans Chevron down" [ref=e26] [cursor=pointer]:
+              - img [ref=e27]
+              - text: My Loans
+              - img [ref=e30]
+              - generic [ref=e32]: Chevron down
+          - listitem [ref=e33]:
+            - button "Manage Users" [ref=e35] [cursor=pointer]:
+              - img [ref=e36]
+              - text: Manage Users
+          - listitem [ref=e41]:
+            - button "Companies" [ref=e43] [cursor=pointer]:
+              - img [ref=e44]
+              - text: Companies
+          - listitem [ref=e48]:
+            - button "Company Branches" [ref=e50] [cursor=pointer]:
+              - img [ref=e51]
+              - text: Company Branches
+          - listitem [ref=e56]:
+            - button "Quick Pricer" [ref=e58] [cursor=pointer]:
+              - img [ref=e59]
+              - text: Quick Pricer
+          - listitem [ref=e61]:
+            - button "Release Notes" [ref=e63] [cursor=pointer]:
+              - img [ref=e64]
+              - text: Release Notes
+        - listitem [ref=e70]:
+          - button "Show Old Design" [ref=e72] [cursor=pointer]:
+            - img [ref=e73]
+            - text: Show Old Design
+      - list [ref=e76]:
+        - listitem [ref=e77]:
+          - button "HR HELIX REMN TestMLO stg_helix_remn_mlo@homebridge.com" [ref=e78] [cursor=pointer]:
+            - generic [ref=e80]: HR
+            - generic [ref=e81]:
+              - paragraph [ref=e82]: HELIX REMN TestMLO
+              - paragraph [ref=e83]: stg_helix_remn_mlo@homebridge.com
+            - img [ref=e84]
+    - main [ref=e88]:
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - heading "My Loans" [level=1] [ref=e91]
+          - generic [ref=e92]:
+            - button "Sharable App Link" [active] [ref=e93] [cursor=pointer]:
+              - img
+              - text: Sharable App Link
+            - button "Start App" [ref=e94] [cursor=pointer]:
+              - img
+              - text: Start App
+        - generic [ref=e95]:
+          - heading "Overview" [level=2] [ref=e97]
+          - generic [ref=e98]:
+            - generic [ref=e100]:
+              - generic [ref=e102]: My Loans
+              - generic [ref=e103]:
+                - generic [ref=e104]: "179"
+                - generic [ref=e105]: / $20,083,779
+            - generic [ref=e107]:
+              - generic [ref=e108]:
+                - img [ref=e110]
+                - generic [ref=e115]: Pre-Qual
+              - generic [ref=e116]:
+                - generic [ref=e117]: "97"
+                - generic [ref=e118]: / $6,758,655
+            - generic [ref=e120]:
+              - generic [ref=e121]:
+                - img [ref=e123]
+                - generic [ref=e125]: In Process
+              - generic [ref=e126]:
+                - generic [ref=e127]: "82"
+                - generic [ref=e128]: / $13,325,124
+            - generic [ref=e130]:
+              - generic [ref=e131]:
+                - img [ref=e133]
+                - generic [ref=e135]: Closing
+              - generic [ref=e136]:
+                - generic [ref=e137]: "0"
+                - generic [ref=e138]: / $0
+            - generic [ref=e140]:
+              - generic [ref=e141]:
+                - img [ref=e143]
+                - generic [ref=e145]: Funded
+              - generic [ref=e146]:
+                - generic [ref=e147]: "0"
+                - generic [ref=e148]: / $0
+        - generic [ref=e149]:
+          - generic [ref=e150]:
+            - generic [ref=e151]:
+              - generic [ref=e152]:
+                - img [ref=e153]
+                - textbox "Search by email, name, full address or loan number" [ref=e156]
+              - button "Filter" [ref=e158] [cursor=pointer]:
+                - img
+                - text: Filter
+            - tablist "View mode" [ref=e159]:
+              - tab "List" [selected] [ref=e160] [cursor=pointer]:
+                - img [ref=e162]
+                - text: List
+          - generic [ref=e163]:
+            - generic [ref=e164]:
+              - button "0 Pending MLO Certification 100 applications / $8,722,803" [ref=e165] [cursor=pointer]:
+                - generic [ref=e166]:
+                  - generic [ref=e167]: "0"
+                  - heading "Pending MLO Certification" [level=3] [ref=e168]
+                  - generic [ref=e169]: 100 applications / $8,722,803
+                - img [ref=e170]
+              - generic [ref=e173]:
+                - table [ref=e175]:
+                  - rowgroup [ref=e176]:
+                    - row "Applicant Property Address Loan Amount Status LO Assistant Time in Stage" [ref=e177]:
+                      - columnheader "Applicant" [ref=e178]:
+                        - generic [ref=e179]: Applicant
+                      - columnheader "Property Address" [ref=e180]:
+                        - generic [ref=e181]: Property Address
+                      - columnheader "Loan Amount" [ref=e182]:
+                        - generic [ref=e183]: Loan Amount
+                      - columnheader "Status" [ref=e184]:
+                        - generic [ref=e185]: Status
+                      - columnheader "LO Assistant" [ref=e186]:
+                        - generic [ref=e187]: LO Assistant
+                      - columnheader "Time in Stage" [ref=e188]:
+                        - generic [ref=e189]: Time in Stage
+                      - columnheader [ref=e190]
+                  - rowgroup [ref=e191]:
+                    - row "Amy America 9832759280 4556 Eliot St, Denver, CO 80211 $50,000 Pending MLO Certification — 0d 2h Time since application was created Certify View" [ref=e192]:
+                      - cell "Amy America 9832759280" [ref=e193]:
+                        - generic [ref=e194]:
+                          - link "Amy America" [ref=e195] [cursor=pointer]:
+                            - /url: /portal/loan/6a474855fe721e1372402a91/summary/overview
+                          - generic [ref=e196]: "9832759280"
+                      - cell "4556 Eliot St, Denver, CO 80211" [ref=e197]
+                      - cell "$50,000" [ref=e198]
+                      - cell "Pending MLO Certification" [ref=e199]:
+                        - generic [ref=e200]: Pending MLO Certification
+                      - cell "—" [ref=e201]
+                      - cell "0d 2h Time since application was created" [ref=e202]:
+                        - generic [ref=e203]:
+                          - text: 0d 2h
+                          - img "Time since application was created" [ref=e204]
+                      - cell "Certify View" [ref=e206]:
+                        - generic [ref=e207]:
+                          - button "Certify" [ref=e208] [cursor=pointer]
+                          - button "View" [ref=e209] [cursor=pointer]
+                    - row "Andy America 3025614161 43571 FREEPORT PL, STERLING, VA 20166 $300,000 Pending MLO Certification — 0d 8h Time since application was created Certify View" [ref=e210]:
+                      - cell "Andy America 3025614161" [ref=e211]:
+                        - generic [ref=e212]:
+                          - link "Andy America" [ref=e213] [cursor=pointer]:
+                            - /url: /portal/loan/6a46e702fe721e1372402a26/summary/overview
+                          - generic [ref=e214]: "3025614161"
+                      - cell "43571 FREEPORT PL, STERLING, VA 20166" [ref=e215]
+                      - cell "$300,000" [ref=e216]
+                      - cell "Pending MLO Certification" [ref=e217]:
+                        - generic [ref=e218]: Pending MLO Certification
+                      - cell "—" [ref=e219]
+                      - cell "0d 8h Time since application was created" [ref=e220]:
+                        - generic [ref=e221]:
+                          - text: 0d 8h
+                          - img "Time since application was created" [ref=e222]
+                      - cell "Certify View" [ref=e224]:
+                        - generic [ref=e225]:
+                          - button "Certify" [ref=e226] [cursor=pointer]
+                          - button "View" [ref=e227] [cursor=pointer]
+                    - row "Patrick Purchaser 3025889458 4556 ELIOT ST, DENVER, CO 80211 $29,000 Pending MLO Certification — 0d 9h Time since application was created Certify View" [ref=e228]:
+                      - cell "Patrick Purchaser 3025889458" [ref=e229]:
+                        - generic [ref=e230]:
+                          - link "Patrick Purchaser" [ref=e231] [cursor=pointer]:
+                            - /url: /portal/loan/6a46dbcefe721e13724029b5/summary/overview
+                          - generic [ref=e232]: "3025889458"
+                      - cell "4556 ELIOT ST, DENVER, CO 80211" [ref=e233]
+                      - cell "$29,000" [ref=e234]
+                      - cell "Pending MLO Certification" [ref=e235]:
+                        - generic [ref=e236]: Pending MLO Certification
+                      - cell "—" [ref=e237]
+                      - cell "0d 9h Time since application was created" [ref=e238]:
+                        - generic [ref=e239]:
+                          - text: 0d 9h
+                          - img "Time since application was created" [ref=e240]
+                      - cell "Certify View" [ref=e242]:
+                        - generic [ref=e243]:
+                          - button "Certify" [ref=e244] [cursor=pointer]
+                          - button "View" [ref=e245] [cursor=pointer]
+                    - row "Andy America 5121231113 4556 Eliot St, Denver, CO 80211 $50,000 Pending MLO Certification — 0d 23h Time since application was created Certify View" [ref=e246]:
+                      - cell "Andy America 5121231113" [ref=e247]:
+                        - generic [ref=e248]:
+                          - link "Andy America" [ref=e249] [cursor=pointer]:
+                            - /url: /portal/loan/6a4616b90a933de550c98c38/summary/overview
+                          - generic [ref=e250]: "5121231113"
+                      - cell "4556 Eliot St, Denver, CO 80211" [ref=e251]
+                      - cell "$50,000" [ref=e252]
+                      - cell "Pending MLO Certification" [ref=e253]:
+                        - generic [ref=e254]: Pending MLO Certification
+                      - cell "—" [ref=e255]
+                      - cell "0d 23h Time since application was created" [ref=e256]:
+                        - generic [ref=e257]:
+                          - text: 0d 23h
+                          - img "Time since application was created" [ref=e258]
+                      - cell "Certify View" [ref=e260]:
+                        - generic [ref=e261]:
+                          - button "Certify" [ref=e262] [cursor=pointer]
+                          - button "View" [ref=e263] [cursor=pointer]
+                    - row "Andy America, Amy America 5121231113 4556 ELIOT ST, DENVER, CO 80211 $180,000 Pending MLO Certification — 0d 23h Time since application was created Certify View" [ref=e264]:
+                      - cell "Andy America, Amy America 5121231113" [ref=e265]:
+                        - generic [ref=e266]:
+                          - link "Andy America, Amy America" [ref=e267] [cursor=pointer]:
+                            - /url: /portal/loan/6a4614590a933de550c98a7f/summary/overview
+                          - generic [ref=e268]: "5121231113"
+                      - cell "4556 ELIOT ST, DENVER, CO 80211" [ref=e269]
+                      - cell "$180,000" [ref=e270]
+                      - cell "Pending MLO Certification" [ref=e271]:
+                        - generic [ref=e272]: Pending MLO Certification
+                      - cell "—" [ref=e273]
+                      - cell "0d 23h Time since application was created" [ref=e274]:
+                        - generic [ref=e275]:
+                          - text: 0d 23h
+                          - img "Time since application was created" [ref=e276]
+                      - cell "Certify View" [ref=e278]:
+                        - generic [ref=e279]:
+                          - button "Certify" [ref=e280] [cursor=pointer]
+                          - button "View" [ref=e281] [cursor=pointer]
+                    - row "Andy America, Amy America 5121231113 4556 ELIOT ST, DENVER, CO 80211 $180,000 Pending MLO Certification — 0d 23h Time since application was created Certify View" [ref=e282]:
+                      - cell "Andy America, Amy America 5121231113" [ref=e283]:
+                        - generic [ref=e284]:
+                          - link "Andy America, Amy America" [ref=e285] [cursor=pointer]:
+                            - /url: /portal/loan/6a4613a60a933de550c98a26/summary/overview
+                          - generic [ref=e286]: "5121231113"
+                      - cell "4556 ELIOT ST, DENVER, CO 80211" [ref=e287]
+                      - cell "$180,000" [ref=e288]
+                      - cell "Pending MLO Certification" [ref=e289]:
+                        - generic [ref=e290]: Pending MLO Certification
+                      - cell "—" [ref=e291]
+                      - cell "0d 23h Time since application was created" [ref=e292]:
+                        - generic [ref=e293]:
+                          - text: 0d 23h
+                          - img "Time since application was created" [ref=e294]
+                      - cell "Certify View" [ref=e296]:
+                        - generic [ref=e297]:
+                          - button "Certify" [ref=e298] [cursor=pointer]
+                          - button "View" [ref=e299] [cursor=pointer]
+                - generic [ref=e300]:
+                  - button "Previous" [disabled]:
+                    - img
+                    - text: Previous
+                  - button "1" [ref=e301] [cursor=pointer]
+                  - button "2" [ref=e302] [cursor=pointer]
+                  - generic [ref=e303]: ...
+                  - button "17" [ref=e304] [cursor=pointer]
+                  - button "Next" [ref=e305] [cursor=pointer]:
+                    - text: Next
+                    - img
+            - generic [ref=e306]:
+              - button "1 Pre-Qual 97 applications / $6,758,655" [ref=e307] [cursor=pointer]:
+                - generic [ref=e308]:
+                  - generic [ref=e309]: "1"
+                  - heading "Pre-Qual" [level=3] [ref=e310]
+                  - generic [ref=e311]: 97 applications / $6,758,655
+                - img [ref=e312]
+              - generic [ref=e315]:
+                - table [ref=e317]:
+                  - rowgroup [ref=e318]:
+                    - row "Applicant Property Address Loan Amount Processor / LOA Time in Stage" [ref=e319]:
+                      - columnheader "Applicant" [ref=e320]:
+                        - generic [ref=e321]: Applicant
+                      - columnheader "Property Address" [ref=e322]:
+                        - generic [ref=e323]: Property Address
+                      - columnheader "Loan Amount" [ref=e324]:
+                        - generic [ref=e325]: Loan Amount
+                      - columnheader "Processor / LOA" [ref=e326]:
+                        - generic [ref=e327]: Processor / LOA
+                      - columnheader "Time in Stage" [ref=e328]:
+                        - generic [ref=e329]: Time in Stage
+                      - columnheader [ref=e330]
+                  - rowgroup [ref=e331]:
+                    - 'row "Andy America test.zasiu.1783063415789@mailinator.com Loan: #301000000000400 4556 Eliot St Denver, CO 80211 $100,000 HELIX REMN TestMLO 0 d 0 h View" [ref=e332]':
+                      - 'cell "Andy America test.zasiu.1783063415789@mailinator.com Loan: #301000000000400" [ref=e333]':
+                        - generic [ref=e334]:
+                          - link "Andy America" [ref=e335] [cursor=pointer]:
+                            - /url: /portal/loan/6a476381fe721e1372402c3c/summary/overview
+                          - generic [ref=e336]: test.zasiu.1783063415789@mailinator.com
+                          - generic [ref=e337]: "Loan: #301000000000400"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e338]:
+                        - generic [ref=e339]:
+                          - generic [ref=e340]: 4556 Eliot St
+                          - generic [ref=e341]: Denver, CO 80211
+                      - cell "$100,000" [ref=e342]
+                      - cell "HELIX REMN TestMLO" [ref=e343]
+                      - cell "0 d 0 h" [ref=e344]:
+                        - generic [ref=e345]:
+                          - generic [ref=e346]: 0 d 0 h
+                          - img [ref=e347]
+                      - cell "View" [ref=e349]:
+                        - button "View" [ref=e350] [cursor=pointer]
+                    - 'row "Andy America test.4spr2.1783063313611@mailinator.com Loan: #301000000000399 4556 Eliot St Denver, CO 80211 $100,000 HELIX REMN TestMLO 0 d 0 h View" [ref=e351]':
+                      - 'cell "Andy America test.4spr2.1783063313611@mailinator.com Loan: #301000000000399" [ref=e352]':
+                        - generic [ref=e353]:
+                          - link "Andy America" [ref=e354] [cursor=pointer]:
+                            - /url: /portal/loan/6a476317fe721e1372402bf0/summary/overview
+                          - generic [ref=e355]: test.4spr2.1783063313611@mailinator.com
+                          - generic [ref=e356]: "Loan: #301000000000399"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e357]:
+                        - generic [ref=e358]:
+                          - generic [ref=e359]: 4556 Eliot St
+                          - generic [ref=e360]: Denver, CO 80211
+                      - cell "$100,000" [ref=e361]
+                      - cell "HELIX REMN TestMLO" [ref=e362]
+                      - cell "0 d 0 h" [ref=e363]:
+                        - generic [ref=e364]:
+                          - generic [ref=e365]: 0 d 0 h
+                          - img [ref=e366]
+                      - cell "View" [ref=e368]:
+                        - button "View" [ref=e369] [cursor=pointer]
+                    - 'row "Andy America test.i56u7.1783063035541@mailinator.com Loan: #301000000000398 4556 Eliot St Denver, CO 80211 $100,000 HELIX REMN TestMLO 0 d 0 h View" [ref=e370]':
+                      - 'cell "Andy America test.i56u7.1783063035541@mailinator.com Loan: #301000000000398" [ref=e371]':
+                        - generic [ref=e372]:
+                          - link "Andy America" [ref=e373] [cursor=pointer]:
+                            - /url: /portal/loan/6a476208fe721e1372402b69/summary/overview
+                          - generic [ref=e374]: test.i56u7.1783063035541@mailinator.com
+                          - generic [ref=e375]: "Loan: #301000000000398"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e376]:
+                        - generic [ref=e377]:
+                          - generic [ref=e378]: 4556 Eliot St
+                          - generic [ref=e379]: Denver, CO 80211
+                      - cell "$100,000" [ref=e380]
+                      - cell "HELIX REMN TestMLO" [ref=e381]
+                      - cell "0 d 0 h" [ref=e382]:
+                        - generic [ref=e383]:
+                          - generic [ref=e384]: 0 d 0 h
+                          - img [ref=e385]
+                      - cell "View" [ref=e387]:
+                        - button "View" [ref=e388] [cursor=pointer]
+                    - 'row "Andy America test.r3h0k.1783062981312@mailinator.com Loan: #301000000000397 4556 Eliot St Denver, CO 80211 $100,000 HELIX REMN TestMLO 0 d 0 h View" [ref=e389]':
+                      - 'cell "Andy America test.r3h0k.1783062981312@mailinator.com Loan: #301000000000397" [ref=e390]':
+                        - generic [ref=e391]:
+                          - link "Andy America" [ref=e392] [cursor=pointer]:
+                            - /url: /portal/loan/6a4761ccfe721e1372402b52/summary/overview
+                          - generic [ref=e393]: test.r3h0k.1783062981312@mailinator.com
+                          - generic [ref=e394]: "Loan: #301000000000397"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e395]:
+                        - generic [ref=e396]:
+                          - generic [ref=e397]: 4556 Eliot St
+                          - generic [ref=e398]: Denver, CO 80211
+                      - cell "$100,000" [ref=e399]
+                      - cell "HELIX REMN TestMLO" [ref=e400]
+                      - cell "0 d 0 h" [ref=e401]:
+                        - generic [ref=e402]:
+                          - generic [ref=e403]: 0 d 0 h
+                          - img [ref=e404]
+                      - cell "View" [ref=e406]:
+                        - button "View" [ref=e407] [cursor=pointer]
+                    - 'row "Any H America anyh123@mailinator.com Loan: #301000000000396 5392 Otten Rd N Ridgeville, OH 44039 $50,000 HELIX REMN TestMLO 0 d 1 h View" [ref=e408]':
+                      - 'cell "Any H America anyh123@mailinator.com Loan: #301000000000396" [ref=e409]':
+                        - generic [ref=e410]:
+                          - link "Any H America" [ref=e411] [cursor=pointer]:
+                            - /url: /portal/loan/6a475450fe721e1372402b06/summary/overview
+                          - generic [ref=e412]: anyh123@mailinator.com
+                          - generic [ref=e413]: "Loan: #301000000000396"
+                      - cell "5392 Otten Rd N Ridgeville, OH 44039" [ref=e414]:
+                        - generic [ref=e415]:
+                          - generic [ref=e416]: 5392 Otten Rd
+                          - generic [ref=e417]: N Ridgeville, OH 44039
+                      - cell "$50,000" [ref=e418]
+                      - cell "HELIX REMN TestMLO" [ref=e419]
+                      - cell "0 d 1 h" [ref=e420]:
+                        - generic [ref=e421]:
+                          - generic [ref=e422]: 0 d 1 h
+                          - img [ref=e423]
+                      - cell "View" [ref=e425]:
+                        - button "View" [ref=e426] [cursor=pointer]
+                    - 'row "Andy K America andyk123@mailinator.com Loan: #301000000000395 829 Farmington Dr Junction City, OR 97448 $50,000 HELIX REMN TestMLO 0 d 1 h View" [ref=e427]':
+                      - 'cell "Andy K America andyk123@mailinator.com Loan: #301000000000395" [ref=e428]':
+                        - generic [ref=e429]:
+                          - link "Andy K America" [ref=e430] [cursor=pointer]:
+                            - /url: /portal/loan/6a474efafe721e1372402ada/summary/overview
+                          - generic [ref=e431]: andyk123@mailinator.com
+                          - generic [ref=e432]: "Loan: #301000000000395"
+                      - cell "829 Farmington Dr Junction City, OR 97448" [ref=e433]:
+                        - generic [ref=e434]:
+                          - generic [ref=e435]: 829 Farmington Dr
+                          - generic [ref=e436]: Junction City, OR 97448
+                      - cell "$50,000" [ref=e437]
+                      - cell "HELIX REMN TestMLO" [ref=e438]
+                      - cell "0 d 1 h" [ref=e439]:
+                        - generic [ref=e440]:
+                          - generic [ref=e441]: 0 d 1 h
+                          - img [ref=e442]
+                      - cell "View" [ref=e444]:
+                        - button "View" [ref=e445] [cursor=pointer]
+                - generic [ref=e446]:
+                  - button "Previous" [disabled]:
+                    - img
+                    - text: Previous
+                  - button "1" [ref=e447] [cursor=pointer]
+                  - button "2" [ref=e448] [cursor=pointer]
+                  - generic [ref=e449]: ...
+                  - button "17" [ref=e450] [cursor=pointer]
+                  - button "Next" [ref=e451] [cursor=pointer]:
+                    - text: Next
+                    - img
+            - button "2 In Process 82 applications / $13,325,124" [ref=e453] [cursor=pointer]:
+              - generic [ref=e454]:
+                - generic [ref=e455]: "2"
+                - heading "In Process" [level=3] [ref=e456]
+                - generic [ref=e457]: 82 applications / $13,325,124
+              - img [ref=e458]
+            - button "3 Closing 0 applications / $0" [ref=e461] [cursor=pointer]:
+              - generic [ref=e462]:
+                - generic [ref=e463]: "3"
+                - heading "Closing" [level=3] [ref=e464]
+                - generic [ref=e465]: 0 applications / $0
+              - img [ref=e466]
+            - button "4 Funded 0 applications / $0" [ref=e469] [cursor=pointer]:
+              - generic [ref=e470]:
+                - generic [ref=e471]: "4"
+                - heading "Funded" [level=3] [ref=e472]
+                - generic [ref=e473]: 0 applications / $0
+              - img [ref=e474]
+  - alert [ref=e476]
+  - generic:
+    - generic:
+      - generic [ref=e478]:
+        - iframe [ref=e479]:
+          - button "Close message from company" [ref=f9e4] [cursor=pointer]:
+            - img [ref=f9e5]
+        - iframe [ref=e480]:
+          - button "Get More Help!" [ref=f10e5] [cursor=pointer]
+      - iframe [ref=e481]:
+        - button "Open messaging window" [ref=f11e5] [cursor=pointer]:
+          - img [ref=f11e7]
+          - img [ref=f11e10]
+```
+
+# Test source
+
+```ts
+  1   | import { expect, test } from '../../fixtures';
+  2   | import HelpDeskWidget from '../Support/HelpDeskWidget';
+  3   | 
+  4   | class TWNPage {
+  5   |     constructor(page) {
+  6   |         this.page = page;
+  7   |         this.helpDesk = new HelpDeskWidget(page);
+  8   | 
+  9   |         // -- Landing page ------------------------------------------------------
+  10  |         this.getStartedNowBtn = this.page.getByRole('button', { name: /Get Started Now/i }).first();
+  11  | 
+  12  |         // -- Select Property Type (card-style, no button role) -----------------
+  13  |         this.singleFamilyCard = this.page.getByText('Single Family', { exact: true });
+  14  |         this.twoToFourUnitCard = this.page.getByText('2-4 Unit', { exact: true });
+  15  |         this.condoCard         = this.page.getByText('Condo', { exact: true });
+  16  | 
+  17  |         // -- Loan Purpose (card-style) -----------------------------------------
+  18  |         this.debtConsolidationCard  = this.page.getByText('Debt Consolidation', { exact: true });
+  19  |         this.homeImprovementCard    = this.page.getByText('Home Improvement', { exact: true });
+  20  |         this.otherLoanPurposeCard   = this.page.getByText('Other', { exact: true }).first();
+  21  | 
+  22  |         // -- Tell us about your property ---------------------------------------
+  23  |         this.addressInput        = this.page.getByLabel(/Address/i).first();
+  24  |         this.cityInput           = this.page.getByLabel(/City/i);
+  25  |         this.countyInput         = this.page.getByLabel(/County/i);
+  26  |         this.stateInput          = this.page.getByRole('combobox', { name: /State/i });
+  27  |         this.zipInput            = this.page.getByLabel(/Zip/i);
+  28  |         // Property Status radios — scoped to their radiogroup
+  29  |         const propertyStatusGroup = this.page.getByRole('radiogroup', { name: /listed for sale|Property Status/i }).first();
+  30  |         this.notListedRadio = propertyStatusGroup.getByRole('radio', { name: /No|Not listed/i }).first();
+  31  |         this.listedRadio    = propertyStatusGroup.getByRole('radio', { name: /Yes|listed/i }).first();
+  32  | 
+  33  |         // Trust radios — aria-labels are "No for Held in trust" / "Yes for Held in trust"
+  34  |         const trustGroup       = this.page.getByRole('radiogroup', { name: /Held in trust/i });
+  35  |         this.trustNoRadio      = trustGroup.getByRole('radio', { name: /No/i }).first();
+  36  |         this.trustYesRadio     = trustGroup.getByRole('radio', { name: /Yes/i }).first();
+  37  |         this.estimatedValueInput = this.page.getByLabel(/Estimated Home Value/i)
+  38  |                                        .or(this.page.getByLabel(/Estimated Value/i)).first();
+  39  |         this.primaryResidenceRadio = this.page.getByRole('radio', { name: /Primary Residence/i });
+  40  |         this.continueBtn         = this.page.getByRole('button', { name: /Continue/i }).first();
+  41  | 
+  42  |         // -- Tell us about yourself --------------------------------------------
+  43  |         this.firstNameInput   = this.page.getByLabel(/First Name/i);
+  44  |         this.lastNameInput    = this.page.getByLabel(/Last Name/i);
+  45  |         this.emailInput       = this.page.getByLabel(/Email Address/i);
+  46  |         this.phoneInput       = this.page.getByLabel(/Cell Phone Number/i)
+  47  |                                     .or(this.page.getByLabel(/Phone Number/i)).first();
+  48  |         this.passwordInput    = this.page.getByLabel(/^Password/i);
+  49  |         this.eConsentCheckbox = this.page.locator("input[type='checkbox']");
+  50  | 
+  51  |         // -- Secure Identity Check (credit-check step) -------------------------
+  52  |         this.ssnInput = this.page.getByLabel(/Social Security Number/i);
+  53  |         this.dobInput = this.page.getByLabel(/Date of Birth/i);
+  54  | 
+  55  |         // -- Income Sources (TWN auto-populates) -------------------------------
+  56  |         this.salaryCheckbox   = this.page.getByRole('checkbox', { name: /Salary or Hourly Wages/i });
+  57  |         this.companyNameInput = this.page.getByLabel(/Company Name/i);
+  58  |         this.startDateInput   = this.page.getByLabel(/Start Date/i);
+  59  |         // Note: totalAnnualCompensation is rendered as read-only TEXT in the
+  60  |         // verified employer card (not as an <input>), so no input locator is defined.
+  61  |         // verifyTwnPopulated() checks it via getByText() instead.
+  62  | 
+  63  |         // -- Shared navigation -------------------------------------------------
+  64  |         this.nextBtn = this.page.getByRole('button', { name: /^Next$/i }).first();
+  65  |     };
+  66  | 
+  67  |     // -------------------------------------------------------------------------
+  68  | 
+  69  |     async clickGetStartedNow() {
+  70  |         await test.step('Click Get Started Now', async () => {
+  71  |             // Close the "Hi. Need any help?" chat bubble first — it floats over
+  72  |             // the bottom-right corner and can intercept clicks on the page.
+  73  |             await this.helpDesk.dismissProactiveBubble();
+> 74  |             await this.getStartedNowBtn.waitFor({ state: 'visible', timeout: 15000 });
+      |                                         ^ TimeoutError: locator.waitFor: Timeout 15000ms exceeded.
+  75  |             await this.getStartedNowBtn.click();
+  76  |         });
+  77  |     };
+  78  | 
+  79  |     async selectPropertyType(data) {
+  80  |         await test.step('Select property type', async () => {
+  81  |             const map = {
+  82  |                 'Single Family': this.singleFamilyCard,
+  83  |                 '2-4 Unit':      this.twoToFourUnitCard,
+  84  |                 'Condo':         this.condoCard,
+  85  |             };
+  86  |             const card = map[data.propertyType] ?? this.singleFamilyCard;
+  87  |             await card.waitFor({ state: 'visible', timeout: 10000 });
+  88  |             await card.click({ force: true });
+  89  |         });
+  90  |     };
+  91  | 
+  92  |     async selectLoanPurpose(data) {
+  93  |         await test.step('Select loan purpose', async () => {
+  94  |             const map = {
+  95  |                 'Debt Consolidation': this.debtConsolidationCard,
+  96  |                 'Home Improvement':   this.homeImprovementCard,
+  97  |                 'Other':              this.otherLoanPurposeCard,
+  98  |             };
+  99  |             const card = map[data.loanPurpose] ?? this.homeImprovementCard;
+  100 |             await card.waitFor({ state: 'visible', timeout: 10000 });
+  101 |             await card.click({ force: true });
+  102 |         });
+  103 |     };
+  104 | 
+  105 |     async fillPropertyInfo(data) {
+  106 |         await test.step('Fill property info', async () => {
+  107 |             const p = data.property;
+  108 | 
+  109 |             await this.addressInput.waitFor({ state: 'visible', timeout: 10000 });
+  110 |             await this.addressInput.fill(p.address);
+  111 |             await this.addressInput.press('Tab');
+  112 | 
+  113 |             await this.cityInput.fill(p.city);
+  114 |             await this.cityInput.press('Tab');
+  115 | 
+  116 |             if (p.county) {
+  117 |                 await this.countyInput.fill(p.county);
+  118 |                 await this.countyInput.press('Tab');
+  119 |             }
+  120 | 
+  121 |             // State is MUI Autocomplete — fill then click the matching option
+  122 |             await this.stateInput.fill(p.state);
+  123 |             await this.page.getByRole('option', { name: p.state, exact: true }).click();
+  124 | 
+  125 |             await this.zipInput.fill(p.zip);
+  126 |             await this.zipInput.press('Tab');
+  127 | 
+  128 |             // Property Status
+  129 |             if (!p.isListed) {
+  130 |                 await this.notListedRadio.check({ force: true });
+  131 |             } else {
+  132 |                 await this.listedRadio.check({ force: true });
+  133 |             }
+  134 | 
+  135 |             // HELOC held in trust
+  136 |             // Trust radios are the second set of Yes/No on the page
+  137 |             if (!p.heldInTrust) {
+  138 |                 await this.trustNoRadio.check({ force: true });
+  139 |             } else {
+  140 |                 await this.trustYesRadio.check({ force: true });
+  141 |             }
+  142 | 
+  143 |             await this.estimatedValueInput.clear();
+  144 |             await this.estimatedValueInput.fill(p.estimatedValue);
+  145 |             await this.estimatedValueInput.press('Tab');
+  146 | 
+  147 |             await this.primaryResidenceRadio.check({ force: true });
+  148 | 
+  149 |             await this.continueBtn.scrollIntoViewIfNeeded();
+  150 |             await expect(this.continueBtn).toBeEnabled({ timeout: 15000 });
+  151 |             await this.continueBtn.click({ force: true });
+  152 |             await this.page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => { });
+  153 |         });
+  154 |     };
+  155 | 
+  156 |     async fillAboutYourself(data) {
+  157 |         await test.step('Fill about yourself', async () => {
+  158 |             const b = data.borrower;
+  159 | 
+  160 |             await this.firstNameInput.waitFor({ state: 'visible', timeout: 60000 });
+  161 |             await this.firstNameInput.fill(b.firstName);
+  162 |             await this.firstNameInput.press('Tab');
+  163 | 
+  164 |             await this.lastNameInput.fill(b.lastName);
+  165 |             await this.lastNameInput.press('Tab');
+  166 | 
+  167 |             await this.emailInput.fill(b.email);
+  168 |             await this.emailInput.press('Tab');
+  169 | 
+  170 |             await this.phoneInput.fill(b.phoneNumber);
+  171 |             await this.phoneInput.press('Tab');
+  172 | 
+  173 |             await this.passwordInput.fill(b.password);
+  174 |             await this.passwordInput.press('Tab');
+```
