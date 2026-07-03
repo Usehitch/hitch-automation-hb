@@ -306,12 +306,18 @@ jobs:
         if: always() && github.event_name == 'schedule'       # schedule-only: "consecutive nightlies" must mean nightly runs
         with:
           path: failure-state.json                            # per-test streak/notified state
-          key: failure-state-${{ github.run_id }}
+          key: failure-state-hb-whs-stg-${{ github.run_id }}  # workflow-scoped prefix — caches are repo-wide, so each nightly needs its own
           restore-keys: |
-            failure-state-
+            failure-state-hb-whs-stg-
 
       - name: Classify failures
         if: always() && github.event_name == 'schedule'
+        env:
+          TENANT_LABEL: HB-WHS-STG                            # names the run in Slack (this workflow publishes at the gh-pages root, so no PAGES_PREFIX)
+          # Optional — when set, unrecognized error shapes get a plain-English
+          # LLM summary in the Slack report (known shapes are handled by
+          # built-in rules at zero cost). Absent key = fallback silently skipped.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node scripts/classify-failures.js test-results.json failure-state.json  # writes slack-bug-report.json when there's something to report
 
       - name: Slack Alert - Confirmed regressions

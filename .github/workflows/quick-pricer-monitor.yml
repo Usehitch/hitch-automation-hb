@@ -142,10 +142,15 @@ jobs:
           RUN_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/quick-pricer-monitor/${{ github.run_id }}/"
           RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
+          # Plain-English failure description (Slack-JSON-safe output; empty if
+          # the run died before test-results.json was written).
+          HUMAN=$(node scripts/humanize-failure.js test-results.json 2>/dev/null || true)
+          [ -n "$HUMAN" ] && HUMAN="\n\n📝 What broke: ${HUMAN}"
+
           curl -X POST -H 'Content-type: application/json' \
           --data "{
             \"channel\": \"#automation-alerts\",
-            \"text\": \"🚨 *Quick Pricer Check FAILED* — no valid offer generated (possible pricing-engine outage)\n\n📦 Repo: ${{ github.repository }}\n🌿 Event: ${{ github.event_name }}\n\n📊 Report:\n🔹 ${RUN_REPORT}\n\n🔍 Logs: ${RUN_URL}\"
+            \"text\": \"🚨 *Quick Pricer Check FAILED* — no valid offer generated (possible pricing-engine outage)${HUMAN}\n\n📦 Repo: ${{ github.repository }}\n🌿 Event: ${{ github.event_name }}\n\n📊 Report:\n🔹 ${RUN_REPORT}\n\n🔍 Logs: ${RUN_URL}\"
           }" \
           ${{ secrets.SLACK_WEBHOOK_URL }}
 

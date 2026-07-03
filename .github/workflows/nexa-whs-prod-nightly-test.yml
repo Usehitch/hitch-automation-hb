@@ -304,6 +304,44 @@ jobs:
         run: node scripts/slack-upload-screenshots.js test-results.json 12
 
       # -----------------------------
+      # Bug-report classifier (nightly schedule only — the confirmation
+      # threshold counts consecutive *nightly* runs). Filters flaky/infra,
+      # requires 2 consecutive nightly failures, dedups, guards against
+      # environment outages, and describes each failure in plain English
+      # (scripts/classify-failures.js + scripts/humanize-failure.js).
+      # State persists across nights via actions/cache (workflow-scoped key —
+      # caches are repo-wide, so each nightly needs its own prefix).
+      # -----------------------------
+      - name: Restore failure-tracking state
+        uses: actions/cache@v4
+        if: always() && github.event_name == 'schedule'
+        with:
+          path: failure-state.json
+          key: failure-state-nexa-whs-prod-${{ github.run_id }}
+          restore-keys: |
+            failure-state-nexa-whs-prod-
+
+      - name: Classify failures
+        if: always() && github.event_name == 'schedule'
+        env:
+          TENANT_LABEL: NEXA-WHS-PROD
+          PAGES_PREFIX: nexa-whs-prod                     # this workflow's gh-pages subdir (Allure link)
+          # Optional — plain-English LLM summaries for error shapes the
+          # built-in rules don't recognize. Absent key = silently skipped.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/classify-failures.js test-results.json failure-state.json  # writes slack-bug-report.json when there's something to report
+
+      - name: Slack Alert - Confirmed regressions
+        if: always() && github.event_name == 'schedule'
+        run: |
+          if [ -s slack-bug-report.json ]; then               # -s = file exists and is non-empty
+            curl -sS -X POST -H 'Content-type: application/json' \
+              -d @slack-bug-report.json ${{ secrets.SLACK_WEBHOOK_URL }}
+          else
+            echo "No confirmed regressions to report."
+          fi
+
+      # -----------------------------
       # Mark Workflow Failed — the test step used continue-on-error, so fail
       # the job explicitly here if any test failed (so the run shows red).
       # -----------------------------
