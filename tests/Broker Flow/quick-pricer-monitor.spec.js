@@ -26,21 +26,29 @@ test.describe('Quick Pricer — Pricing Engine Monitor', () => {
         page,
         quickPricerPage,
     }) => {
-        // Step 1 — Land on the Quick Pricer page
-        await page.goto('/portal');
-        await page.waitForLoadState('load');
-        await quickPricerPage.navigateToQuickPricer();
+        await test.step('Open the Quick Pricer page', async () => {
+            // Step 1 — Land on the Quick Pricer page
+            await page.goto('/portal');
+            await page.waitForLoadState('load');
+            await quickPricerPage.navigateToQuickPricer();
+        });
 
-        // Step 2 — Fill the known-valid sample scenario
-        await quickPricerPage.clickFillSampleData();
-        await quickPricerPage.verifyFilledFormValues();
+        await test.step('Fill the known-valid sample scenario', async () => {
+            // Step 2 — Fill the known-valid sample scenario
+            await quickPricerPage.clickFillSampleData();
+            await quickPricerPage.verifyFilledFormValues();
+        });
 
-        // Step 3 — Run the scenario against the live pricing engine
-        await quickPricerPage.runScenario();
+        await test.step('Run the scenario against the live pricing engine', async () => {
+            // Step 3 — Run the scenario against the live pricing engine
+            await quickPricerPage.runScenario();
+        });
 
-        // Step 4 — Confirm the engine produced a valid offer.
-        //   • Your Amount + pricing table render
-        //   • at least one row has a non-zero interest rate AND monthly payment
-        await quickPricerPage.verifyQuoteResults();
+        await test.step('Verify the engine produced a valid offer', async () => {
+            // Step 4 — Confirm the engine produced a valid offer.
+            //   • Your Amount + pricing table render
+            //   • at least one row has a non-zero interest rate AND monthly payment
+            await quickPricerPage.verifyQuoteResults();
+        });
     });
 });

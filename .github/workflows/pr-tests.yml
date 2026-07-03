@@ -122,7 +122,12 @@ jobs:
       - name: Run Playwright tests
         id: playwright
         if: steps.scope.outputs.mode != 'none'                           # skip entirely when nothing test-relevant changed
+        # rm -f first: test-results.json is generated output — if Playwright is
+        # killed before writing a fresh one, NO file must be left behind, or the
+        # reporting steps below would read a stale report and alert on phantom
+        # results (this happened when a leftover copy was committed to the repo).
         run: |
+          rm -f test-results.json
           if [ "${{ steps.scope.outputs.mode }}" = "scoped" ]; then
             npx playwright test ${{ steps.scope.outputs.specs }}         # Playwright treats each basename as a filename filter
           else
@@ -150,7 +155,10 @@ jobs:
       # channel is for the nightly; PR status is shown here + via the check).
       # -----------------------------
       - name: Build summary
-        if: always()                                                     # run even on failure so we still report results
+        # !cancelled() (not always()): run even on failure so we still report
+        # results, but a CANCELLED run — which has no real results — must not
+        # build a summary from a stale/absent report.
+        if: ${{ !cancelled() }}
         id: summary
         run: |
           if [ "${{ steps.scope.outputs.mode }}" = "none" ]; then
@@ -207,7 +215,10 @@ jobs:
           fi
 
       - name: Comment on PR
-        if: always() && github.event_name == 'pull_request'              # only when a PR exists (bare branch pushes just get the run summary)
+        # !cancelled() (not always()): a cancelled run has no summary to post
+        # (Build summary is skipped), so don't comment. Only when a PR exists
+        # (bare branch pushes just get the run summary).
+        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
         uses: actions/github-script@v7                                   # lets us call the GitHub API in JS
         with:
           script: |

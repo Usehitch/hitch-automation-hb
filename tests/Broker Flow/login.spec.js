@@ -15,8 +15,13 @@ test.describe('Login', () => {
         const otpService = new OTPService(process.env.OTP_SECRET);
         const code = otpService.generateOTP();
 
-        await loginPage.loginUser(process.env.EMAIL, process.env.PASSWORD, code);
-        await expect(page).toHaveURL('/portal');
+        await test.step('Log in with email, password and OTP code', async () => {
+            await loginPage.loginUser(process.env.EMAIL, process.env.PASSWORD, code);
+        });
+
+        await test.step('Verify landing on the portal', async () => {
+            await expect(page).toHaveURL('/portal');
+        });
     });
     test.afterEach(async ({ context }) => {
         await context.clearCookies();

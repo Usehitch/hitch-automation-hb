@@ -20,3 +20,7 @@ node_modules/
 /failure-state.json
 /failure-classification.json
 /slack-bug-report.json
+
+# Playwright JSON report (generated per run; a committed copy once fed a
+# cancelled CI run stale results and produced a phantom Slack alert)
+/test-results.json

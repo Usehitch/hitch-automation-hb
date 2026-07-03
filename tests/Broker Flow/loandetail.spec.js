@@ -225,19 +225,29 @@ test.describe('Loan Detail — Conditions tab', () => {
     test('Lender Tasks sub-tab renders correct task area', async ({
         loanDetailPage,
     }) => {
-        await loanDetailPage.clickLenderTasksTab();
-        // Same acceptance: empty-state OR populated task list
-        await loanDetailPage.verifyConditionsTaskArea();
+        await test.step('Open the Lender Tasks sub-tab', async () => {
+            await loanDetailPage.clickLenderTasksTab();
+        });
+
+        await test.step('Verify the task area renders', async () => {
+            // Same acceptance: empty-state OR populated task list
+            await loanDetailPage.verifyConditionsTaskArea();
+        });
     });
 
     test('Switching back to Borrower Tasks re-renders without error', async ({
         loanDetailPage,
     }) => {
-        // Navigate away to Lender Tasks then back — guards against a re-render bug
-        await loanDetailPage.clickLenderTasksTab();
-        await loanDetailPage.clickBorrowerTasksTab();
-        await loanDetailPage.verifyConditionsChrome();
-        await loanDetailPage.verifyConditionsTaskArea();
+        await test.step('Switch to Lender Tasks and back to Borrower Tasks', async () => {
+            // Navigate away to Lender Tasks then back — guards against a re-render bug
+            await loanDetailPage.clickLenderTasksTab();
+            await loanDetailPage.clickBorrowerTasksTab();
+        });
+
+        await test.step('Verify the Conditions chrome and task area re-render', async () => {
+            await loanDetailPage.verifyConditionsChrome();
+            await loanDetailPage.verifyConditionsTaskArea();
+        });
     });
 
     test('Conditions tab does not render a JS error boundary', async ({
@@ -268,67 +278,97 @@ test.describe('Loan Detail — Documents tab', () => {
     });
 
     test('Soft Credit Pull Consent opens PDF viewer when present', async ({ loanDetailPage }) => {
-        const present = await loanDetailPage.docSoftCreditConsent
-            .isVisible().catch(() => false);
+        const present = await test.step('Check whether Soft Credit Pull Consent is listed', async () => {
+            return await loanDetailPage.docSoftCreditConsent
+                .isVisible().catch(() => false);
+        });
         if (!present) return;
-        await loanDetailPage.openDocumentAndVerifyViewer(
-            loanDetailPage.docSoftCreditConsent,
-            'Soft Credit Pull Consent',
-        );
+
+        await test.step('Open the document and verify the PDF viewer', async () => {
+            await loanDetailPage.openDocumentAndVerifyViewer(
+                loanDetailPage.docSoftCreditConsent,
+                'Soft Credit Pull Consent',
+            );
+        });
     });
 
     test('Broker MLO Certification opens PDF viewer when present', async ({
         loanDetailPage,
     }) => {
-        const present = await loanDetailPage.docBrokerMloCert
-            .isVisible().catch(() => false);
+        const present = await test.step('Check whether Broker MLO Certification is listed', async () => {
+            return await loanDetailPage.docBrokerMloCert
+                .isVisible().catch(() => false);
+        });
         if (!present) return;
-        await loanDetailPage.openDocumentAndVerifyViewer(
-            loanDetailPage.docBrokerMloCert,
-            'Broker MLO Certification',
-        );
+
+        await test.step('Open the document and verify the PDF viewer', async () => {
+            await loanDetailPage.openDocumentAndVerifyViewer(
+                loanDetailPage.docBrokerMloCert,
+                'Broker MLO Certification',
+            );
+        });
     });
 
     test('CFPB Acknowledgement opens PDF viewer when present', async ({ loanDetailPage }) => {
-        const present = await loanDetailPage.docCfpbAcknowledgement
-            .isVisible().catch(() => false);
+        const present = await test.step('Check whether CFPB Acknowledgement is listed', async () => {
+            return await loanDetailPage.docCfpbAcknowledgement
+                .isVisible().catch(() => false);
+        });
         if (!present) return;
-        await loanDetailPage.openDocumentAndVerifyViewer(
-            loanDetailPage.docCfpbAcknowledgement,
-            'CFPB Acknowledgement',
-        );
+
+        await test.step('Open the document and verify the PDF viewer', async () => {
+            await loanDetailPage.openDocumentAndVerifyViewer(
+                loanDetailPage.docCfpbAcknowledgement,
+                'CFPB Acknowledgement',
+            );
+        });
     });
 
     test('Borrower Consent opens PDF viewer when present', async ({ loanDetailPage }) => {
-        const present = await loanDetailPage.docBorrowerConsent
-            .isVisible().catch(() => false);
+        const present = await test.step('Check whether Borrower Consent is listed', async () => {
+            return await loanDetailPage.docBorrowerConsent
+                .isVisible().catch(() => false);
+        });
         if (!present) return;
-        await loanDetailPage.openDocumentAndVerifyViewer(
-            loanDetailPage.docBorrowerConsent,
-            'Borrower Consent',
-        );
+
+        await test.step('Open the document and verify the PDF viewer', async () => {
+            await loanDetailPage.openDocumentAndVerifyViewer(
+                loanDetailPage.docBorrowerConsent,
+                'Borrower Consent',
+            );
+        });
     });
 
     test('esigned_method_consent opens PDF viewer when present', async ({
         loanDetailPage,
     }) => {
-        const present = await loanDetailPage.docEsignedMethodConsent
-            .isVisible().catch(() => false);
+        const present = await test.step('Check whether esigned_method_consent is listed', async () => {
+            return await loanDetailPage.docEsignedMethodConsent
+                .isVisible().catch(() => false);
+        });
         if (!present) return; // document not yet generated for this loan
-        await loanDetailPage.openDocumentAndVerifyViewer(
-            loanDetailPage.docEsignedMethodConsent,
-            'esigned_method_consent',
-        );
+
+        await test.step('Open the document and verify the PDF viewer', async () => {
+            await loanDetailPage.openDocumentAndVerifyViewer(
+                loanDetailPage.docEsignedMethodConsent,
+                'esigned_method_consent',
+            );
+        });
     });
 
     test('AVM Report opens PDF viewer when present', async ({ loanDetailPage }) => {
-        const present = await loanDetailPage.docAvmReport
-            .isVisible().catch(() => false);
+        const present = await test.step('Check whether AVM Report is listed', async () => {
+            return await loanDetailPage.docAvmReport
+                .isVisible().catch(() => false);
+        });
         if (!present) return;
-        await loanDetailPage.openDocumentAndVerifyViewer(
-            loanDetailPage.docAvmReport,
-            'AVM Report',
-        );
+
+        await test.step('Open the document and verify the PDF viewer', async () => {
+            await loanDetailPage.openDocumentAndVerifyViewer(
+                loanDetailPage.docAvmReport,
+                'AVM Report',
+            );
+        });
     });
 
     test('Refresh button keeps sidebar intact', async ({ loanDetailPage }) => {

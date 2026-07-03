@@ -128,7 +128,12 @@ jobs:
       # the job fails → the caller's `needs: e2e-gate` deploy job is skipped.
       - name: Run E2E gate
         id: gate                                                            # id so the next step can read steps.gate.outcome
+        # rm -f first: test-results.json is generated output — if Playwright is
+        # killed before writing a fresh one, NO file must be left behind, or the
+        # reporting steps below would read a stale report and alert on phantom
+        # results (this happened when a leftover copy was committed to the repo).
         run: |
+          rm -f test-results.json
           if [ -n "$GREP" ]; then                                           # a filter was provided → scoped gate
             echo "Running scoped gate: --grep \"$GREP\""
             npx playwright test --grep "$GREP"
@@ -148,7 +153,11 @@ jobs:
       # then fail the job explicitly so callers gating on job success alone are safe too.
       - name: Set gate result
         id: result
-        if: always()                                                        # run even if the gate step failed
+        # !cancelled() (not always()): run even if the gate step failed, but a
+        # CANCELLED run — which has no real results — must not compute a verdict
+        # from a stale/absent report. (Skipped → passed stays empty → the final
+        # "Fail gate if not passed" step still fails the job.)
+        if: ${{ !cancelled() }}
         run: |
           F=0
           if [ -f test-results.json ]; then

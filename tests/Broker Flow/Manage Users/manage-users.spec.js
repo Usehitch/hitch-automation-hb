@@ -68,26 +68,30 @@ test.describe('Manage Users', () => {
         // counter updates — guards against pagination being completely broken.
         const counterBefore = await manageUsersPage.paginationCounter.innerText();
 
-        // The pagination arrows are SVG buttons; click via page locator to avoid
-        // strict-mode issues with the .or() combinator
-        const nextBtn = manageUsersPage.page
-            .locator('button')
-            .filter({ hasText: '' })      // icon-only buttons
-            .last();                       // last icon button in the pagination bar
+        await test.step('Click the Next Page button', async () => {
+            // The pagination arrows are SVG buttons; click via page locator to avoid
+            // strict-mode issues with the .or() combinator
+            const nextBtn = manageUsersPage.page
+                .locator('button')
+                .filter({ hasText: '' })      // icon-only buttons
+                .last();                       // last icon button in the pagination bar
 
-        // Prefer the aria-label variant; fall back to the last pagination button
-        const arrowNext = manageUsersPage.page
-            .locator('[aria-label*="next" i], [title*="next" i]')
-            .first();
-        const hasAriaNext = await arrowNext.isVisible().catch(() => false);
-        const btnToClick  = hasAriaNext ? arrowNext : nextBtn;
+            // Prefer the aria-label variant; fall back to the last pagination button
+            const arrowNext = manageUsersPage.page
+                .locator('[aria-label*="next" i], [title*="next" i]')
+                .first();
+            const hasAriaNext = await arrowNext.isVisible().catch(() => false);
+            const btnToClick  = hasAriaNext ? arrowNext : nextBtn;
 
-        await btnToClick.click();
-        await manageUsersPage.page.waitForLoadState('load');
+            await btnToClick.click();
+            await manageUsersPage.page.waitForLoadState('load');
+        });
 
-        // Counter should now read "11–20 of N" — just assert it changed
-        const counterAfter = await manageUsersPage.paginationCounter.innerText();
-        expect(counterAfter).not.toBe(counterBefore);
+        await test.step('Verify the pagination counter changed', async () => {
+            // Counter should now read "11–20 of N" — just assert it changed
+            const counterAfter = await manageUsersPage.paginationCounter.innerText();
+            expect(counterAfter).not.toBe(counterBefore);
+        });
     });
 
     // -- Search ---------------------------------------------------------------
@@ -97,15 +101,19 @@ test.describe('Manage Users', () => {
         // any environment regardless of which users exist.
         const firstEmail = await manageUsersPage.getFirstRowEmail();
 
-        await manageUsersPage.search(firstEmail);
-        await manageUsersPage.verifyPageHeading(); // page still loaded
+        await test.step(`Search for the user (${firstEmail})`, async () => {
+            await manageUsersPage.search(firstEmail);
+            await manageUsersPage.verifyPageHeading(); // page still loaded
+        });
 
-        // The full email must appear in at least one result cell
-        const match = manageUsersPage.page
-            .locator('td, [role="cell"]')
-            .filter({ hasText: firstEmail })
-            .first();
-        await expect(match).toBeVisible({ timeout: 10000 });
+        await test.step('Verify the email appears in the results', async () => {
+            // The full email must appear in at least one result cell
+            const match = manageUsersPage.page
+                .locator('td, [role="cell"]')
+                .filter({ hasText: firstEmail })
+                .first();
+            await expect(match).toBeVisible({ timeout: 10000 });
+        });
     });
 
     test('Search by name narrows the user list', async ({ manageUsersPage }) => {
@@ -114,28 +122,36 @@ test.describe('Manage Users', () => {
         // Use only the first word so the search is resilient to middle/last names.
         const firstWord = firstName.trim().split(/\s+/)[0];
 
-        await manageUsersPage.search(firstWord);
-        await manageUsersPage.verifyPageHeading();
+        await test.step(`Search for the user by name (${firstWord})`, async () => {
+            await manageUsersPage.search(firstWord);
+            await manageUsersPage.verifyPageHeading();
+        });
 
-        const match = manageUsersPage.page
-            .locator('td, [role="cell"]')
-            .filter({ hasText: firstWord })
-            .first();
-        await expect(match).toBeVisible({ timeout: 10000 });
+        await test.step('Verify the name appears in the results', async () => {
+            const match = manageUsersPage.page
+                .locator('td, [role="cell"]')
+                .filter({ hasText: firstWord })
+                .first();
+            await expect(match).toBeVisible({ timeout: 10000 });
+        });
     });
 
     test('Clearing search restores full user list', async ({ manageUsersPage }) => {
         // Search by the full email from the first row (guaranteed match)
         const firstEmail = await manageUsersPage.getFirstRowEmail();
 
-        await manageUsersPage.search(firstEmail);
-        await manageUsersPage.clearSearch();
+        await test.step(`Search for the user and clear the search (${firstEmail})`, async () => {
+            await manageUsersPage.search(firstEmail);
+            await manageUsersPage.clearSearch();
+        });
 
-        // The counter should reflect the full list again (more than the searched subset)
-        await expect(manageUsersPage.paginationCounter).toBeVisible({ timeout: 10000 });
-        const counterText = await manageUsersPage.paginationCounter.innerText();
-        // Full list shows a large total, e.g. "1–10 of 9495"
-        expect(counterText).toMatch(/of\s+\d{2,}/i);
+        await test.step('Verify the full user list is restored', async () => {
+            // The counter should reflect the full list again (more than the searched subset)
+            await expect(manageUsersPage.paginationCounter).toBeVisible({ timeout: 10000 });
+            const counterText = await manageUsersPage.paginationCounter.innerText();
+            // Full list shows a large total, e.g. "1–10 of 9495"
+            expect(counterText).toMatch(/of\s+\d{2,}/i);
+        });
     });
 
     // -- Add User modal -------------------------------------------------------
@@ -143,35 +159,54 @@ test.describe('Manage Users', () => {
     test('Add User modal opens with correct heading and Cancel closes it', async ({
         manageUsersPage,
     }) => {
-        await manageUsersPage.openAddNewUserModal();
+        await test.step('Open the Add User modal and verify the heading', async () => {
+            await manageUsersPage.openAddNewUserModal();
 
-        // Heading must read "Add User"
-        await expect(manageUsersPage.addUserModalHeading).toBeVisible({ timeout: 10000 });
+            // Heading must read "Add User"
+            await expect(manageUsersPage.addUserModalHeading).toBeVisible({ timeout: 10000 });
+        });
 
-        // Cancel without creating a user — returns to the list page
-        await manageUsersPage.cancelAddNewUser();
-        await expect(manageUsersPage.addNewUserBtn).toBeVisible({ timeout: 10000 });
+        await test.step('Cancel and verify return to the user list', async () => {
+            // Cancel without creating a user — returns to the list page
+            await manageUsersPage.cancelAddNewUser();
+            await expect(manageUsersPage.addNewUserBtn).toBeVisible({ timeout: 10000 });
+        });
     });
 
     test('Add User modal contains all required fields', async ({ manageUsersPage }) => {
-        await manageUsersPage.openAddNewUserModal();
-        await manageUsersPage.verifyAddUserModalFields();
-        await manageUsersPage.cancelAddNewUser();
+        await test.step('Open the Add User modal and verify all required fields', async () => {
+            await manageUsersPage.openAddNewUserModal();
+            await manageUsersPage.verifyAddUserModalFields();
+        });
+
+        await test.step('Cancel the modal', async () => {
+            await manageUsersPage.cancelAddNewUser();
+        });
     });
 
     test('Add User modal — Role dropdown lists all expected roles', async ({
         manageUsersPage,
     }) => {
-        await manageUsersPage.openAddNewUserModal();
-        await manageUsersPage.verifyRoleDropdownOptions();
-        // Roles (grouped External / Internal): TPO Admin, Loan Officer,
-        //        Loan Officer Assistant, Platform Admin, Account Executive
-        await manageUsersPage.cancelAddNewUser();
+        await test.step('Open the Add User modal and verify the Role dropdown options', async () => {
+            await manageUsersPage.openAddNewUserModal();
+            await manageUsersPage.verifyRoleDropdownOptions();
+            // Roles (grouped External / Internal): TPO Admin, Loan Officer,
+            //        Loan Officer Assistant, Platform Admin, Account Executive
+        });
+
+        await test.step('Cancel the modal', async () => {
+            await manageUsersPage.cancelAddNewUser();
+        });
     });
 
     test('Add User modal — Company dropdown is populated', async ({ manageUsersPage }) => {
-        await manageUsersPage.openAddNewUserModal();
-        await manageUsersPage.verifyCompanyDropdownPopulated();
-        await manageUsersPage.cancelAddNewUser();
+        await test.step('Open the Add User modal and verify the Company dropdown is populated', async () => {
+            await manageUsersPage.openAddNewUserModal();
+            await manageUsersPage.verifyCompanyDropdownPopulated();
+        });
+
+        await test.step('Cancel the modal', async () => {
+            await manageUsersPage.cancelAddNewUser();
+        });
     });
 });

@@ -62,7 +62,13 @@ jobs:
       - name: Run TWN monitor test
         # Filename regex (not a path) — matches tests/Broker Flow/twn-monitor.spec.js
         # without the space/separator fragility of a full path argument.
-        run: npx playwright test twn-monitor
+        # rm -f first: test-results.json is generated output — if Playwright is
+        # killed before writing a fresh one, NO file must be left behind, or the
+        # reporting steps below would read a stale report and alert on phantom
+        # results (this happened when a leftover copy was committed to the repo).
+        run: |
+          rm -f test-results.json
+          npx playwright test twn-monitor
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
           EMAIL: ${{ secrets.EMAIL }}

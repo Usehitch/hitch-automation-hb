@@ -75,20 +75,29 @@ test.describe('Companies (CRU)', () => {
         // name may not be in the search index — the verification therefore checks
         // that the search returned at least one result (table is not empty) rather
         // than asserting a specific name appears in a row.
-        const companyName = await companiesPage.getFirstRowName();
-        const searchTerm  = companyName.split(' ')[0].slice(0, 10);
+        const searchTerm = await test.step('Read a search term from the first company row', async () => {
+            const companyName = await companiesPage.getFirstRowName();
+            return companyName.split(' ')[0].slice(0, 10);
+        });
 
-        await companiesPage.search(searchTerm);
-        await companiesPage.verifyTableHasRows();
+        await test.step('Search and verify matching rows are returned', async () => {
+            await companiesPage.search(searchTerm);
+            await companiesPage.verifyTableHasRows();
+        });
     });
 
     test('Clearing search restores the full company list', async ({ companiesPage }) => {
-        // Apply a short search to change the visible set
-        await companiesPage.search('Test');
-        // Clear and verify the pagination counter is back (≥1 result means
-        // the full unfiltered list reloaded)
-        await companiesPage.clearSearch();
-        await expect(companiesPage.paginationCounter).toBeVisible({ timeout: 10000 });
+        await test.step('Apply a search to narrow the visible set', async () => {
+            // Apply a short search to change the visible set
+            await companiesPage.search('Test');
+        });
+
+        await test.step('Clear the search and verify the full list is restored', async () => {
+            // Clear and verify the pagination counter is back (≥1 result means
+            // the full unfiltered list reloaded)
+            await companiesPage.clearSearch();
+            await expect(companiesPage.paginationCounter).toBeVisible({ timeout: 10000 });
+        });
     });
 
     // -- Add New Company modal ------------------------------------------------
@@ -96,36 +105,48 @@ test.describe('Companies (CRU)', () => {
     test('Add New Company modal opens with all expected sections and fields', async ({
         companiesPage,
     }) => {
-        await companiesPage.openAddNewCompanyModal();
+        await test.step('Open the Add New Company modal', async () => {
+            await companiesPage.openAddNewCompanyModal();
+        });
 
-        // Verify heading + all four sections (Company Details, Address Information,
-        // License Information, Admin Information) with every field and both
-        // action buttons (CANCEL · CREATE)
-        await companiesPage.verifyAddCompanyModalFields();
+        await test.step('Verify all modal sections and fields', async () => {
+            // Verify heading + all four sections (Company Details, Address Information,
+            // License Information, Admin Information) with every field and both
+            // action buttons (CANCEL · CREATE)
+            await companiesPage.verifyAddCompanyModalFields();
+        });
 
-        // Cancel — no company is created
-        await companiesPage.cancelCompanyModal();
+        await test.step('Cancel the modal and verify the company list is shown', async () => {
+            // Cancel — no company is created
+            await companiesPage.cancelCompanyModal();
 
-        // Page must still show the company list after cancel
-        await expect(companiesPage.pageHeading).toBeVisible({ timeout: 10000 });
+            // Page must still show the company list after cancel
+            await expect(companiesPage.pageHeading).toBeVisible({ timeout: 10000 });
+        });
     });
 
     test('Create a new company with generated data and verify it appears in the table', async ({
         companiesPage,
     }) => {
-        // Step 1 — Open the Add New Company modal
-        await companiesPage.openAddNewCompanyModal();
+        await test.step('Open the Add New Company modal', async () => {
+            // Step 1 — Open the Add New Company modal
+            await companiesPage.openAddNewCompanyModal();
+        });
 
-        // Step 2 — Fill all four sections and submit:
-        //   Company Details  : Display Name, tag, Full Name, Phone, Email
-        //   Address Info     : Street, State (plain text), Postal Code, City
-        //   License Info     : NMLS, TPO ID, Privacy Policy URL, Terms URL
-        //   Admin Information: select first existing admin from dropdown
-        await companiesPage.fillAndSubmitAddCompanyForm(createCompanyData);
+        await test.step('Fill all four sections and submit the form', async () => {
+            // Step 2 — Fill all four sections and submit:
+            //   Company Details  : Display Name, tag, Full Name, Phone, Email
+            //   Address Info     : Street, State (plain text), Postal Code, City
+            //   License Info     : NMLS, TPO ID, Privacy Policy URL, Terms URL
+            //   Admin Information: select first existing admin from dropdown
+            await companiesPage.fillAndSubmitAddCompanyForm(createCompanyData);
+        });
 
-        // Step 3 — Search by display name and confirm the row is visible in the
-        //          table (Name column = Display Name value; count increments by 1)
-        await companiesPage.verifyCompanyInTable(createCompanyData.displayName);
+        await test.step('Verify the new company appears in the table', async () => {
+            // Step 3 — Search by display name and confirm the row is visible in the
+            //          table (Name column = Display Name value; count increments by 1)
+            await companiesPage.verifyCompanyInTable(createCompanyData.displayName);
+        });
     });
 
     // -- Edit Company modal ---------------------------------------------------
@@ -133,17 +154,23 @@ test.describe('Companies (CRU)', () => {
     test('Edit Company modal opens from the first row and Cancel closes it', async ({
         companiesPage,
     }) => {
-        await companiesPage.verifyTableHasRows(); // guard: need ≥1 row
-        await companiesPage.openEditCompanyModal();
+        await test.step('Open the Edit Company modal from the first row', async () => {
+            await companiesPage.verifyTableHasRows(); // guard: need ≥1 row
+            await companiesPage.openEditCompanyModal();
+        });
 
-        // openEditCompanyModal() guards on the dialog heading — confirm an
-        // editable field (Full Company Name) is also rendered before cancelling.
-        await expect(companiesPage.editCompanyFullNameInput).toBeVisible({ timeout: 10000 });
+        await test.step('Verify an editable field is rendered in the modal', async () => {
+            // openEditCompanyModal() guards on the dialog heading — confirm an
+            // editable field (Full Company Name) is also rendered before cancelling.
+            await expect(companiesPage.editCompanyFullNameInput).toBeVisible({ timeout: 10000 });
+        });
 
-        await companiesPage.cancelEditCompanyModal();
+        await test.step('Cancel the modal and verify the company list is shown', async () => {
+            await companiesPage.cancelEditCompanyModal();
 
-        // Page must still show the company list after cancel
-        await expect(companiesPage.pageHeading).toBeVisible({ timeout: 10000 });
+            // Page must still show the company list after cancel
+            await expect(companiesPage.pageHeading).toBeVisible({ timeout: 10000 });
+        });
     });
 
     test('Edit an existing company with new random data and verify the table', async ({
@@ -152,23 +179,29 @@ test.describe('Companies (CRU)', () => {
         // This test is self-contained — it edits the first company already in
         // the table, so it does not depend on the Create test having run first.
 
-        // Step 1 — Guard: at least one row must exist
-        await companiesPage.verifyTableHasRows();
+        await test.step('Open the Edit Company modal for the first row', async () => {
+            // Step 1 — Guard: at least one row must exist
+            await companiesPage.verifyTableHasRows();
 
-        // Step 2 — Open the Edit Company modal for the first row
-        await companiesPage.openEditCompanyModal();
+            // Step 2 — Open the Edit Company modal for the first row
+            await companiesPage.openEditCompanyModal();
+        });
 
-        // Step 3 — Update with fully independent random values from editCompanyData:
-        //   Display Name → "Pacific Coast Financial <suffix>"
-        //   Full Name    → "Pacific Coast Financial Partners LLC"
-        //   NMLS         → new random 7-digit number
-        //   TPO ID       → new random 5-digit number
-        await companiesPage.fillEditCompanyForm(editCompanyData);
+        await test.step('Fill the edit form with new random data and submit', async () => {
+            // Step 3 — Update with fully independent random values from editCompanyData:
+            //   Display Name → "Pacific Coast Financial <suffix>"
+            //   Full Name    → "Pacific Coast Financial Partners LLC"
+            //   NMLS         → new random 7-digit number
+            //   TPO ID       → new random 5-digit number
+            await companiesPage.fillEditCompanyForm(editCompanyData);
 
-        // Step 4 — Submit via UPDATE
-        await companiesPage.submitEditCompany();
+            // Step 4 — Submit via UPDATE
+            await companiesPage.submitEditCompany();
+        });
 
-        // Step 5 — Search by the new display name and confirm the row is present
-        await companiesPage.verifyCompanyInTable(editCompanyData.displayName);
+        await test.step('Verify the updated company appears in the table', async () => {
+            // Step 5 — Search by the new display name and confirm the row is present
+            await companiesPage.verifyCompanyInTable(editCompanyData.displayName);
+        });
     });
 });

@@ -64,124 +64,140 @@ import { makeMarriedCoBorrowerData, makeUnmarriedCoBorrowerData } from '../../..
 async function runCoBorrowerFlow(preQualManualPage, data) {
 
     // -- Step 1: Open shareable link in a new tab ----------------------------
-    const borrowerTab = await preQualManualPage.openShareableLinkInNewTab();
+    const borrowerTab = await test.step('Open the borrower app from the shareable link', async () => {
+        return preQualManualPage.openShareableLinkInNewTab();
+    });
     const twnPage  = new TWNPage(borrowerTab);
     const flow     = new CoBorrowerFlowPage(borrowerTab);
 
-    // -- Step 2: Landing page -------------------------------------------------
-    await twnPage.clickGetStartedNow();
-    await flow.assertNoBlockingError('Landing page');
+    await test.step('Start the application and fill property details', async () => {
+        // -- Step 2: Landing page -------------------------------------------------
+        await twnPage.clickGetStartedNow();
+        await flow.assertNoBlockingError('Landing page');
 
-    // -- Step 3: Property type ------------------------------------------------
-    await twnPage.selectPropertyType(data);
-    await flow.assertNoBlockingError('Property type');
+        // -- Step 3: Property type ------------------------------------------------
+        await twnPage.selectPropertyType(data);
+        await flow.assertNoBlockingError('Property type');
 
-    // -- Step 4: Loan purpose -------------------------------------------------
-    await twnPage.selectLoanPurpose(data);
-    await flow.assertNoBlockingError('Loan purpose');
+        // -- Step 4: Loan purpose -------------------------------------------------
+        await twnPage.selectLoanPurpose(data);
+        await flow.assertNoBlockingError('Loan purpose');
 
-    // -- Step 5: Property info ------------------------------------------------
-    // twnPage.fillPropertyInfo already handles county (added earlier in session)
-    await twnPage.fillPropertyInfo(data);
-    await flow.assertNoBlockingError('Property info');
+        // -- Step 5: Property info ------------------------------------------------
+        // twnPage.fillPropertyInfo already handles county (added earlier in session)
+        await twnPage.fillPropertyInfo(data);
+        await flow.assertNoBlockingError('Property info');
+    });
 
-    // -- Step 6: About yourself (primary borrower) ----------------------------
-    await twnPage.fillAboutYourself(data);
-    await flow.assertNoBlockingError('About yourself');
+    await test.step('Fill borrower info, credit check, and income sources', async () => {
+        // -- Step 6: About yourself (primary borrower) ----------------------------
+        await twnPage.fillAboutYourself(data);
+        await flow.assertNoBlockingError('About yourself');
 
-    // -- Step 7: Credit check — primary borrower SSN + DOB -------------------
-    await twnPage.fillCreditCheck(data);
-    await flow.assertNoBlockingError('Primary credit check');
+        // -- Step 7: Credit check — primary borrower SSN + DOB -------------------
+        await twnPage.fillCreditCheck(data);
+        await flow.assertNoBlockingError('Primary credit check');
 
-    // -- Step 7b: Fill primary borrower income sources ------------------------
-    // After SSN + DOB are entered, the income sources section appears.
-    // TWN may not auto-populate for this SSN, so we fill manually.
-    await twnPage.fillPrimaryIncomeSources(data);
-    await flow.assertNoBlockingError('Primary income sources');
+        // -- Step 7b: Fill primary borrower income sources ------------------------
+        // After SSN + DOB are entered, the income sources section appears.
+        // TWN may not auto-populate for this SSN, so we fill manually.
+        await twnPage.fillPrimaryIncomeSources(data);
+        await flow.assertNoBlockingError('Primary income sources');
+    });
 
-    // -- Step 9: Review & Confirm consents ------------------------------------
-    // After TWN income is displayed, the borrower must check three consent
-    // checkboxes (CFPB disclosure, soft-credit consent, Method authorization)
-    // before CONTINUE triggers the credit pull.
-    await flow.fillReviewAndConfirm();
-    await flow.assertNoBlockingError('Review & Confirm consents');
+    await test.step('Sign consents and wait for the credit check', async () => {
+        // -- Step 9: Review & Confirm consents ------------------------------------
+        // After TWN income is displayed, the borrower must check three consent
+        // checkboxes (CFPB disclosure, soft-credit consent, Method authorization)
+        // before CONTINUE triggers the credit pull.
+        await flow.fillReviewAndConfirm();
+        await flow.assertNoBlockingError('Review & Confirm consents');
 
-    // -- Step 10: Wait for "Checking Your Credit…" processing -----------------
-    await flow.waitForCreditCheckProcessing(data);
-    await flow.assertNoBlockingError('Credit check processing');
+        // -- Step 10: Wait for "Checking Your Credit…" processing -----------------
+        await flow.waitForCreditCheckProcessing(data);
+        await flow.assertNoBlockingError('Credit check processing');
+    });
 
-    // -- Step 11: Application Participants page --------------------------------
-    // Covers: co-borrower toggle, co-borrower info (name/email/phone/SSN/DOB),
-    // income sources, job details, address confirmation, marital status,
-    // "who married to" (married flow only), title-only owners.
-    await flow.fillApplicationParticipants(data);
-    await flow.assertNoBlockingError(`Application Participants (${data.borrower.maritalStatus})`);
+    await test.step('Fill Application Participants and Mortgages & Liens', async () => {
+        // -- Step 11: Application Participants page --------------------------------
+        // Covers: co-borrower toggle, co-borrower info (name/email/phone/SSN/DOB),
+        // income sources, job details, address confirmation, marital status,
+        // "who married to" (married flow only), title-only owners.
+        await flow.fillApplicationParticipants(data);
+        await flow.assertNoBlockingError(`Application Participants (${data.borrower.maritalStatus})`);
 
-    // -- Step 12: Select Mortgages & Liens ------------------------------------
-    // Credit-report mortgages are listed; select the first one (BEST EVER
-    // MORTGAGE) and fill the Requested Loan Amount ($80,000) before CONTINUE.
-    await flow.fillMortgagesAndLiens(data);
-    await flow.assertNoBlockingError('Mortgages & Liens');
+        // -- Step 12: Select Mortgages & Liens ------------------------------------
+        // Credit-report mortgages are listed; select the first one (BEST EVER
+        // MORTGAGE) and fill the Requested Loan Amount ($80,000) before CONTINUE.
+        await flow.fillMortgagesAndLiens(data);
+        await flow.assertNoBlockingError('Mortgages & Liens');
+    });
 
-    // -- Step 13: Wait for offer calculation processing -----------------------
-    // The DTC app runs underwriting after Mortgages & Liens.  A "Processing…"
-    // spinner appears while the offer is calculated.
-    await flow.waitForOfferProcessing();
-    await flow.assertNoBlockingError('Offer processing');
+    await test.step('Wait for the offer and continue to the application', async () => {
+        // -- Step 13: Wait for offer calculation processing -----------------------
+        // The DTC app runs underwriting after Mortgages & Liens.  A "Processing…"
+        // spinner appears while the offer is calculated.
+        await flow.waitForOfferProcessing();
+        await flow.assertNoBlockingError('Offer processing');
 
-    // -- Step 14: Verify pre-qualification completed + click Continue ----------
-    // Asserts the "You're pre-qualified" banner is visible, then clicks
-    // "CONTINUE TO APPLICATION" to proceed to the full application.
-    await flow.verifyFlowCompleted();
-    await flow.assertNoBlockingError('Pre-qual offer page');
+        // -- Step 14: Verify pre-qualification completed + click Continue ----------
+        // Asserts the "You're pre-qualified" banner is visible, then clicks
+        // "CONTINUE TO APPLICATION" to proceed to the full application.
+        await flow.verifyFlowCompleted();
+        await flow.assertNoBlockingError('Pre-qual offer page');
+    });
 
-    // -- Step 14b: Other Info page (post-offer) --------------------------------
-    // Marital Status, "Who are you married to?", and Title-Only Owners have
-    // moved to a dedicated "Other Info" page that appears before Demographics.
-    await flow.fillOtherInfo(data);
-    await flow.assertNoBlockingError('Other Info');
+    await test.step('Complete Other Info, Demographics, and Plaid verifications', async () => {
+        // -- Step 14b: Other Info page (post-offer) --------------------------------
+        // Marital Status, "Who are you married to?", and Title-Only Owners have
+        // moved to a dedicated "Other Info" page that appears before Demographics.
+        await flow.fillOtherInfo(data);
+        await flow.assertNoBlockingError('Other Info');
 
-    // -- Step 15: Demographics page -------------------------------------------
-    // Opts out of Ethnicity/Sex/Race disclosure, checks hard-credit
-    // authorization, then clicks Continue.
-    await flow.fillDemographics();
-    await flow.assertNoBlockingError('Demographics');
+        // -- Step 15: Demographics page -------------------------------------------
+        // Opts out of Ethnicity/Sex/Race disclosure, checks hard-credit
+        // authorization, then clicks Continue.
+        await flow.fillDemographics();
+        await flow.assertNoBlockingError('Demographics');
 
-    // -- Step 16: Income Verification (Plaid sandbox) -------------------------
-    // Clicks "BANK ACCOUNT VERIFICATION (PLAID)", enters sandbox phone + OTP
-    // (123456), selects Tartan Bank, confirms, then clicks Continue on the
-    // "Bank Account Verified Successfully" screen.
-    await flow.fillIncomeVerification();
-    await flow.assertNoBlockingError('Income Verification');
+        // -- Step 16: Income Verification (Plaid sandbox) -------------------------
+        // Clicks "BANK ACCOUNT VERIFICATION (PLAID)", enters sandbox phone + OTP
+        // (123456), selects Tartan Bank, confirms, then clicks Continue on the
+        // "Bank Account Verified Successfully" screen.
+        await flow.fillIncomeVerification();
+        await flow.assertNoBlockingError('Income Verification');
 
-    // -- Step 17: Funding Account page ----------------------------------------
-    // Runs Plaid sandbox (phone → OTP → Tartan Bank → Confirm) then clicks
-    // Continue with the pre-selected connected account.
-    // TODO: Replace skip with full Plaid sandbox flow once iframe interaction is stable.
-    await flow.fillFundingAccount();
-    await flow.assertNoBlockingError('Funding Account');
+        // -- Step 17: Funding Account page ----------------------------------------
+        // Runs Plaid sandbox (phone → OTP → Tartan Bank → Confirm) then clicks
+        // Continue with the pre-selected connected account.
+        // TODO: Replace skip with full Plaid sandbox flow once iframe interaction is stable.
+        await flow.fillFundingAccount();
+        await flow.assertNoBlockingError('Funding Account');
+    });
 
-    // -- Step 18: Verify Loan Hub welcome page --------------------------------
-    // After Funding Account the borrower lands on the Loan Hub.  Assert the
-    // "Welcome to Your Loan Hub" banner, "In Process" pipeline stage, then
-    // open the Loan Tracker and confirm B1 = Completed, B2 = Invited.
-    await flow.verifyLoanHub();
-    await flow.assertNoBlockingError('Loan Hub');
+    await test.step('Verify the Loan Hub and complete the co-borrower application', async () => {
+        // -- Step 18: Verify Loan Hub welcome page --------------------------------
+        // After Funding Account the borrower lands on the Loan Hub.  Assert the
+        // "Welcome to Your Loan Hub" banner, "In Process" pipeline stage, then
+        // open the Loan Tracker and confirm B1 = Completed, B2 = Invited.
+        await flow.verifyLoanHub();
+        await flow.assertNoBlockingError('Loan Hub');
 
-    // -- Step 19: Co-borrower invite email in Mailinator ----------------------
-    // The system emails the co-borrower an invite to complete their portion.
-    // Opens Mailinator in an isolated context, clicks "COMPLETE APPLICATION",
-    // and verifies the Review Information page loads.
-    // Returns the co-borrower app tab for Step 20.
-    const coBorrowerPage = await flow.verifyCoBorrowerInviteEmail(data);
-    await flow.assertNoBlockingError('Co-borrower invite email');
+        // -- Step 19: Co-borrower invite email in Mailinator ----------------------
+        // The system emails the co-borrower an invite to complete their portion.
+        // Opens Mailinator in an isolated context, clicks "COMPLETE APPLICATION",
+        // and verifies the Review Information page loads.
+        // Returns the co-borrower app tab for Step 20.
+        const coBorrowerPage = await flow.verifyCoBorrowerInviteEmail(data);
+        await flow.assertNoBlockingError('Co-borrower invite email');
 
-    // -- Step 20: Co-borrower completes their application ---------------------
-    // a. Review Information  → START APPLICATION
-    // b. Tell us about yourself → password + e-consent → Continue
-    // c. Check Your Eligibility → check consent boxes → Continue
-    await flow.fillCoBorrowerApplication(data, coBorrowerPage);
-    await flow.assertNoBlockingError('Co-borrower application');
+        // -- Step 20: Co-borrower completes their application ---------------------
+        // a. Review Information  → START APPLICATION
+        // b. Tell us about yourself → password + e-consent → Continue
+        // c. Check Your Eligibility → check consent boxes → Continue
+        await flow.fillCoBorrowerApplication(data, coBorrowerPage);
+        await flow.assertNoBlockingError('Co-borrower application');
+    });
 }
 
 // ---------------------------------------------------------------------------

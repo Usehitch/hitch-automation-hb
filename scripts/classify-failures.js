@@ -31,6 +31,12 @@ const REPO_NAME = REPO.split("/")[1] || REPO;
 const THRESHOLD = Number(process.env.BUG_THRESHOLD || 2); // consecutive nightlies
 
 // --- load report + prior state ----------------------------------------------
+// No report at all means Playwright died before writing one (crash/kill) — there
+// are no real results to classify, and the streak state must not be advanced.
+if (!fs.existsSync(RESULTS)) {
+  console.log(`[classify-failures] ${RESULTS} not found — no report to classify, skipping.`);
+  process.exit(0);
+}
 const report = JSON.parse(fs.readFileSync(RESULTS, "utf8"));
 let state = { tests: {} };
 try {

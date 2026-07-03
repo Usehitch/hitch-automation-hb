@@ -45,40 +45,50 @@ async function runLOPreQual(data, {
     consentsPage,
     confirmationPage,
 }) {
-    await preQualManualPage.clickStartApp();
-    await preQualManualPage.clickStartPreQualManually();
-    await newApplicationPage.fillApplicationDetails(data);
-    await newApplicationPage.clickNext();
+    await test.step('Start the pre-qual and fill application details', async () => {
+        await preQualManualPage.clickStartApp();
+        await preQualManualPage.clickStartPreQualManually();
+        await newApplicationPage.fillApplicationDetails(data);
+        await newApplicationPage.clickNext();
+    });
 
-    await expect(newApplicationPage.mortgagesHeading).toBeVisible({ timeout: 15000 });
-    await mortgagesAndLiensPage.fillMortgagesAndLiens(data);
-    await mortgagesAndLiensPage.clickNext();
+    await test.step('Fill Mortgages & Liens', async () => {
+        await expect(newApplicationPage.mortgagesHeading).toBeVisible({ timeout: 15000 });
+        await mortgagesAndLiensPage.fillMortgagesAndLiens(data);
+        await mortgagesAndLiensPage.clickNext();
+    });
 
-    await expect(offerReviewPage.pageHeading).toBeVisible({ timeout: 15000 });
-    await offerReviewPage.updateLoanAmount(data);
-    await offerReviewPage.clickManageDebtPayoffs(data);
-    await offerReviewPage.verifyDebtPayoffModal(data);
-    await offerReviewPage.saveDebtPayoffPlan(data);
-    await offerReviewPage.clickEditInitialDraw(data);
-    await offerReviewPage.verifyUpfrontDrawModal(data);
-    await offerReviewPage.setDrawPercent(data);
-    await offerReviewPage.confirmUpfrontDraw(data);
-    await offerReviewPage.acknowledgeDtiLimit();
-    await offerReviewPage.clickNext();
+    await test.step('Review the offer and configure debt payoffs and draw', async () => {
+        await expect(offerReviewPage.pageHeading).toBeVisible({ timeout: 15000 });
+        await offerReviewPage.updateLoanAmount(data);
+        await offerReviewPage.clickManageDebtPayoffs(data);
+        await offerReviewPage.verifyDebtPayoffModal(data);
+        await offerReviewPage.saveDebtPayoffPlan(data);
+        await offerReviewPage.clickEditInitialDraw(data);
+        await offerReviewPage.verifyUpfrontDrawModal(data);
+        await offerReviewPage.setDrawPercent(data);
+        await offerReviewPage.confirmUpfrontDraw(data);
+        await offerReviewPage.acknowledgeDtiLimit();
+        await offerReviewPage.clickNext();
+    });
 
-    await expect(consentsPage.pageHeading).toBeVisible({ timeout: 15000 });
-    await consentsPage.checkAllCertifications();
-    await consentsPage.fillBrokerMloName(data);
-    await consentsPage.verifySignature(data);
-    await consentsPage.clickNext();
+    await test.step('Sign consents', async () => {
+        await expect(consentsPage.pageHeading).toBeVisible({ timeout: 15000 });
+        await consentsPage.checkAllCertifications();
+        await consentsPage.fillBrokerMloName(data);
+        await consentsPage.verifySignature(data);
+        await consentsPage.clickNext();
+    });
 
-    await expect(confirmationPage.successHeading).toBeVisible({ timeout: 15000 });
-    await confirmationPage.verifyConfirmation(data);
-    await confirmationPage.clickCopyBorrowerAppLink();
-    await confirmationPage.clickDownloadPdf();
-    await confirmationPage.clickClose();
+    await test.step('Verify the confirmation and return to the pipeline', async () => {
+        await expect(confirmationPage.successHeading).toBeVisible({ timeout: 15000 });
+        await confirmationPage.verifyConfirmation(data);
+        await confirmationPage.clickCopyBorrowerAppLink();
+        await confirmationPage.clickDownloadPdf();
+        await confirmationPage.clickClose();
 
-    await expect(confirmationPage.portalPipelineSection).toBeVisible({ timeout: 15000 });
+        await expect(confirmationPage.portalPipelineSection).toBeVisible({ timeout: 15000 });
+    });
 }
 
 // ---------------------------------------------------------------------------
@@ -100,8 +110,10 @@ test('Scenario A: LO creates pre-qual and borrower receives invitation', async (
     // worker, or a retry) trips "already associated with an existing application".
     const applicationData = makeApplicationData();
 
-    await page.goto('/portal');
-    await page.waitForLoadState('load');
+    await test.step('Open the portal pipeline', async () => {
+        await page.goto('/portal');
+        await page.waitForLoadState('load');
+    });
 
     await runLOPreQual(applicationData, {
         preQualManualPage,
@@ -112,11 +124,13 @@ test('Scenario A: LO creates pre-qual and borrower receives invitation', async (
         confirmationPage,
     });
 
-    await expectInvitationEmailReceived(
-        page.context(),
-        applicationData.applicant.email,
-        'A — B1 (borrower)'
-    );
+    await test.step('Verify the borrower receives the invitation email', async () => {
+        await expectInvitationEmailReceived(
+            page.context(),
+            applicationData.applicant.email,
+            'A — B1 (borrower)'
+        );
+    });
 });
 
 // ---------------------------------------------------------------------------
@@ -138,8 +152,10 @@ test('Scenario B: LO creates pre-qual with co-borrower and both receive invitati
     // co-borrower email or it hits "already associated to a coborrower invitation".
     const coBorrowerApplicationData = makeCoBorrowerApplicationData();
 
-    await page.goto('/portal');
-    await page.waitForLoadState('load');
+    await test.step('Open the portal pipeline', async () => {
+        await page.goto('/portal');
+        await page.waitForLoadState('load');
+    });
 
     await runLOPreQual(coBorrowerApplicationData, {
         preQualManualPage,
@@ -150,15 +166,19 @@ test('Scenario B: LO creates pre-qual with co-borrower and both receive invitati
         confirmationPage,
     });
 
-    await expectInvitationEmailReceived(
-        page.context(),
-        coBorrowerApplicationData.applicant.email,
-        'B — B1 (borrower)'
-    );
+    await test.step('Verify the borrower receives the invitation email', async () => {
+        await expectInvitationEmailReceived(
+            page.context(),
+            coBorrowerApplicationData.applicant.email,
+            'B — B1 (borrower)'
+        );
+    });
 
-    await expectInvitationEmailReceived(
-        page.context(),
-        coBorrowerApplicationData.coBorrower.email,
-        'B — B2 (co-borrower)'
-    );
+    await test.step('Verify the co-borrower receives the invitation email', async () => {
+        await expectInvitationEmailReceived(
+            page.context(),
+            coBorrowerApplicationData.coBorrower.email,
+            'B — B2 (co-borrower)'
+        );
+    });
 });

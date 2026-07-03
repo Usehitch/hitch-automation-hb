@@ -64,31 +64,37 @@ test.describe('Manage Users — Re-activate User', () => {
             return;
         }
 
-        // Read the email from the inactive row to use as identifier
-        const emailCell = inactiveRow.locator('td').nth(3); // Email is the 4th column (index 3)
-        const inactiveEmail = (await emailCell.innerText().catch(() => '')).trim();
+        await test.step('Open the Re-activate modal for an inactive user', async () => {
+            // Read the email from the inactive row to use as identifier
+            const emailCell = inactiveRow.locator('td').nth(3); // Email is the 4th column (index 3)
+            const inactiveEmail = (await emailCell.innerText().catch(() => '')).trim();
 
-        // Open the re-activate modal
-        await manageUsersPage.clickReactivateForUser(inactiveEmail);
+            // Open the re-activate modal
+            await manageUsersPage.clickReactivateForUser(inactiveEmail);
+        });
 
-        // Heading is visible
-        await expect(manageUsersPage.reactivateUserHeading).toBeVisible();
+        await test.step('Verify the modal content', async () => {
+            // Heading is visible
+            await expect(manageUsersPage.reactivateUserHeading).toBeVisible();
 
-        // Confirmation body text is present
-        await expect(
-            manageUsersPage.reactivateUserModal.getByText(/Are you sure you want to re-activate this user/i)
-        ).toBeVisible();
+            // Confirmation body text is present
+            await expect(
+                manageUsersPage.reactivateUserModal.getByText(/Are you sure you want to re-activate this user/i)
+            ).toBeVisible();
 
-        // Both buttons are present
-        await expect(manageUsersPage.reactivateUserCancelBtn).toBeVisible();
-        await expect(manageUsersPage.reactivateUserConfirmBtn).toBeVisible();
+            // Both buttons are present
+            await expect(manageUsersPage.reactivateUserCancelBtn).toBeVisible();
+            await expect(manageUsersPage.reactivateUserConfirmBtn).toBeVisible();
+        });
 
-        // Cancel — no state change
-        await manageUsersPage.cancelReactivateUser();
+        await test.step('Cancel and verify the user is still inactive', async () => {
+            // Cancel — no state change
+            await manageUsersPage.cancelReactivateUser();
 
-        // User should still be inactive after cancelling
-        const stillInactive = await inactiveRow.isVisible({ timeout: 5000 }).catch(() => false);
-        expect(stillInactive, 'Row should still be present and deactivated after Cancel').toBe(true);
+            // User should still be inactive after cancelling
+            const stillInactive = await inactiveRow.isVisible({ timeout: 5000 }).catch(() => false);
+            expect(stillInactive, 'Row should still be present and deactivated after Cancel').toBe(true);
+        });
     });
 
     // -------------------------------------------------------------------------
@@ -101,33 +107,41 @@ test.describe('Manage Users — Re-activate User', () => {
         const ts        = Date.now();
         const userEmail = randomEmail();
 
-        // Step 1 — Create a fresh user
-        await manageUsersPage.openAddNewUserModal();
-        await expect(manageUsersPage.addUserModalHeading).toBeVisible({ timeout: 10000 });
+        await test.step('Create a fresh user', async () => {
+            // Step 1 — Create a fresh user
+            await manageUsersPage.openAddNewUserModal();
+            await expect(manageUsersPage.addUserModalHeading).toBeVisible({ timeout: 10000 });
 
-        await manageUsersPage.fillAndSubmitAddUserForm({
-            role:        'Loan Officer',
-            company:     'ABC Broker - Test',
-            name:        `Test User ${ts}`,
-            tag:         `testuser-${ts}`,
-            nmls:        randomNmls(),
-            losUsername: `testuser${ts}`,
-            phone:       randomPhone(),
-            email:       userEmail,
+            await manageUsersPage.fillAndSubmitAddUserForm({
+                role:        'Loan Officer',
+                company:     'ABC Broker - Test',
+                name:        `Test User ${ts}`,
+                tag:         `testuser-${ts}`,
+                nmls:        randomNmls(),
+                losUsername: `testuser${ts}`,
+                phone:       randomPhone(),
+                email:       userEmail,
+            });
+
+            await manageUsersPage.verifyUserInTable(userEmail);
         });
 
-        await manageUsersPage.verifyUserInTable(userEmail);
+        await test.step('Deactivate the user', async () => {
+            // Step 2 — Deactivate the user
+            await manageUsersPage.clickDeactivateForUser(userEmail);
+            await manageUsersPage.confirmDeactivateUser();
+            await manageUsersPage.verifyUserIsDeactivated(userEmail);
+        });
 
-        // Step 2 — Deactivate the user
-        await manageUsersPage.clickDeactivateForUser(userEmail);
-        await manageUsersPage.confirmDeactivateUser();
-        await manageUsersPage.verifyUserIsDeactivated(userEmail);
+        await test.step('Re-activate the user', async () => {
+            // Step 3 — Re-activate the user
+            await manageUsersPage.clickReactivateForUser(userEmail);
+            await manageUsersPage.confirmReactivateUser();
+        });
 
-        // Step 3 — Re-activate the user
-        await manageUsersPage.clickReactivateForUser(userEmail);
-        await manageUsersPage.confirmReactivateUser();
-
-        // Step 4 — Verify Active? is back to "Yes"
-        await manageUsersPage.verifyUserIsActive(userEmail);
+        await test.step('Verify the user is active again', async () => {
+            // Step 4 — Verify Active? is back to "Yes"
+            await manageUsersPage.verifyUserIsActive(userEmail);
+        });
     });
 });

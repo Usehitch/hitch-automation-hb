@@ -79,17 +79,21 @@ test.describe('Quick Pricer — HELOC Rate Calculator', () => {
     test('Fill Sample Data populates every form field with expected values', async ({
         quickPricerPage,
     }) => {
-        await quickPricerPage.clickFillSampleData();
+        await test.step('Fill the form with sample data', async () => {
+            await quickPricerPage.clickFillSampleData();
+        });
 
-        // Verify each field contains its exact sample value:
-        //   Property Usage=Primary Residence, State=Colorado,
-        //   Property Value=$900,000, Mortgage Balance=$300,000,
-        //   Building Type=Single Family, Credit Score=720-739,
-        //   Doc Type=Full Documentation, DTI Ratio=40, Loan Amount=$100,000
-        await quickPricerPage.verifyFilledFormValues();
+        await test.step('Verify the populated values and Run Scenario state', async () => {
+            // Verify each field contains its exact sample value:
+            //   Property Usage=Primary Residence, State=Colorado,
+            //   Property Value=$900,000, Mortgage Balance=$300,000,
+            //   Building Type=Single Family, Credit Score=720-739,
+            //   Doc Type=Full Documentation, DTI Ratio=40, Loan Amount=$100,000
+            await quickPricerPage.verifyFilledFormValues();
 
-        // Run Scenario button must be enabled once all required fields are filled
-        await expect(quickPricerPage.runScenarioBtn).toBeEnabled({ timeout: 10000 });
+            // Run Scenario button must be enabled once all required fields are filled
+            await expect(quickPricerPage.runScenarioBtn).toBeEnabled({ timeout: 10000 });
+        });
     });
 
     // -- Run Scenario flow ----------------------------------------------------
@@ -97,20 +101,26 @@ test.describe('Quick Pricer — HELOC Rate Calculator', () => {
     test('Run Scenario with sample data shows Your Amount and pricing table', async ({
         quickPricerPage,
     }) => {
-        // Step 1 — Fill form with sample data
-        await quickPricerPage.clickFillSampleData();
-        await quickPricerPage.verifyFilledFormValues();
-        await expect(quickPricerPage.runScenarioBtn).toBeEnabled({ timeout: 10000 });
+        await test.step('Fill the form with sample data', async () => {
+            // Step 1 — Fill form with sample data
+            await quickPricerPage.clickFillSampleData();
+            await quickPricerPage.verifyFilledFormValues();
+            await expect(quickPricerPage.runScenarioBtn).toBeEnabled({ timeout: 10000 });
+        });
 
-        // Step 2 — Run the scenario
-        await quickPricerPage.runScenario();
+        await test.step('Run the quick pricer scenario', async () => {
+            // Step 2 — Run the scenario
+            await quickPricerPage.runScenario();
+        });
 
-        // Step 3 — Verify the Your Quote panel updates with:
-        //   • Your Amount = $100,000
-        //   • "Select Points & Fees Option" heading
-        //   • Pricing table (Points / Interest Rate / Monthly columns + ≥1 rate row)
-        //   • INVITE BORROWER and DOWNLOAD PDF buttons
-        await quickPricerPage.verifyQuoteResults();
+        await test.step('Verify the Your Quote panel results', async () => {
+            // Step 3 — Verify the Your Quote panel updates with:
+            //   • Your Amount = $100,000
+            //   • "Select Points & Fees Option" heading
+            //   • Pricing table (Points / Interest Rate / Monthly columns + ≥1 rate row)
+            //   • INVITE BORROWER and DOWNLOAD PDF buttons
+            await quickPricerPage.verifyQuoteResults();
+        });
     });
 
     // -- Invite Borrower flow -------------------------------------------------
@@ -118,18 +128,24 @@ test.describe('Quick Pricer — HELOC Rate Calculator', () => {
     test('Invite Borrower modal opens with all required fields and Cancel closes it', async ({
         quickPricerPage,
     }) => {
-        // Prerequisite: run a scenario so INVITE BORROWER button appears
-        await quickPricerPage.clickFillSampleData();
-        await quickPricerPage.runScenario();
-        await expect(quickPricerPage.inviteBorrowerBtn).toBeVisible({ timeout: 10000 });
+        await test.step('Run a scenario to unlock the Invite Borrower button', async () => {
+            // Prerequisite: run a scenario so INVITE BORROWER button appears
+            await quickPricerPage.clickFillSampleData();
+            await quickPricerPage.runScenario();
+            await expect(quickPricerPage.inviteBorrowerBtn).toBeVisible({ timeout: 10000 });
+        });
 
-        // Open modal and verify structure
-        await quickPricerPage.clickInviteBorrower();
-        await quickPricerPage.verifyInviteModalFields();
+        await test.step('Open the invite modal and verify its fields', async () => {
+            // Open modal and verify structure
+            await quickPricerPage.clickInviteBorrower();
+            await quickPricerPage.verifyInviteModalFields();
+        });
 
-        // Cancel — no invite is sent
-        await quickPricerPage.cancelInvite();
-        await expect(quickPricerPage.inviteBorrowerBtn).toBeVisible({ timeout: 10000 });
+        await test.step('Cancel the invite and verify the modal closed', async () => {
+            // Cancel — no invite is sent
+            await quickPricerPage.cancelInvite();
+            await expect(quickPricerPage.inviteBorrowerBtn).toBeVisible({ timeout: 10000 });
+        });
     });
 
     test('Send invite shows the Invite sent success panel with an application link', async ({
@@ -139,26 +155,32 @@ test.describe('Quick Pricer — HELOC Rate Calculator', () => {
         // a distinct invite and does not collide with previous test data.
         const applicantEmail = randomEmail();
 
-        // Step 1 — Run a scenario to unlock the Invite Borrower button
-        await quickPricerPage.clickFillSampleData();
-        await quickPricerPage.runScenario();
-        await expect(quickPricerPage.inviteBorrowerBtn).toBeVisible({ timeout: 10000 });
-
-        // Step 2 — Open the invite modal
-        await quickPricerPage.clickInviteBorrower();
-
-        // Step 3 — Fill the form with the generated email and generic test names
-        await quickPricerPage.fillInviteForm({
-            email:     applicantEmail,
-            firstName: 'Test',
-            lastName:  'Applicant',
+        await test.step('Run a scenario to unlock the Invite Borrower button', async () => {
+            // Step 1 — Run a scenario to unlock the Invite Borrower button
+            await quickPricerPage.clickFillSampleData();
+            await quickPricerPage.runScenario();
+            await expect(quickPricerPage.inviteBorrowerBtn).toBeVisible({ timeout: 10000 });
         });
 
-        // Step 4 — Send the invite
-        await quickPricerPage.sendInvite();
+        await test.step('Open the invite modal and fill the form', async () => {
+            // Step 2 — Open the invite modal
+            await quickPricerPage.clickInviteBorrower();
 
-        // Step 5 — Verify the success panel: heading + application link
-        await quickPricerPage.verifyInviteSentPanel();
+            // Step 3 — Fill the form with the generated email and generic test names
+            await quickPricerPage.fillInviteForm({
+                email:     applicantEmail,
+                firstName: 'Test',
+                lastName:  'Applicant',
+            });
+        });
+
+        await test.step('Send the invite and verify the success panel', async () => {
+            // Step 4 — Send the invite
+            await quickPricerPage.sendInvite();
+
+            // Step 5 — Verify the success panel: heading + application link
+            await quickPricerPage.verifyInviteSentPanel();
+        });
     });
 
     // -- History tab ----------------------------------------------------------
@@ -166,7 +188,12 @@ test.describe('Quick Pricer — HELOC Rate Calculator', () => {
     test('History tab is selectable and shows saved scenario entries', async ({
         quickPricerPage,
     }) => {
-        await quickPricerPage.switchToHistoryTab();
-        await quickPricerPage.verifyHistoryHasEntries();
+        await test.step('Switch to the History tab', async () => {
+            await quickPricerPage.switchToHistoryTab();
+        });
+
+        await test.step('Verify saved scenario entries are listed', async () => {
+            await quickPricerPage.verifyHistoryHasEntries();
+        });
     });
 });

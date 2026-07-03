@@ -24,39 +24,55 @@ test.describe('LO - Pipeline Management', () => {
     });
 
     test('LO can view the pipeline buckets and their contents', async ({ activePage }) => {
-        // -- Page heading ------------------------------------------------------
-        await expect(activePage.pageHeading).toBeVisible({ timeout: 20000 });
+        await test.step('Verify the pipeline page heading', async () => {
+            // -- Page heading ------------------------------------------------------
+            await expect(activePage.pageHeading).toBeVisible({ timeout: 20000 });
+        });
 
-        // -- Overview tiles ----------------------------------------------------
-        // Per-bucket summary bar: My Loans / Pre-Qual / In Process / Closing /
-        // Funded. Counts and dollar amounts are dynamic — labels only.
-        await activePage.verifyOverviewTiles();
+        await test.step('Verify the overview tiles', async () => {
+            // -- Overview tiles ----------------------------------------------------
+            // Per-bucket summary bar: My Loans / Pre-Qual / In Process / Closing /
+            // Funded. Counts and dollar amounts are dynamic — labels only.
+            await activePage.verifyOverviewTiles();
+        });
 
-        // -- Toolbar -----------------------------------------------------------
-        // Search + filter let the LO locate loans within the pipeline.
-        await activePage.verifyToolbar();
+        await test.step('Verify the toolbar', async () => {
+            // -- Toolbar -----------------------------------------------------------
+            // Search + filter let the LO locate loans within the pipeline.
+            await activePage.verifyToolbar();
+        });
 
-        // -- Pipeline buckets --------------------------------------------------
-        // The visual status buckets: Pre-Qual / In Process / Closing / Funded.
-        await activePage.verifyPipelineSections();
+        await test.step('Verify the pipeline buckets', async () => {
+            // -- Pipeline buckets --------------------------------------------------
+            // The visual status buckets: Pre-Qual / In Process / Closing / Funded.
+            await activePage.verifyPipelineSections();
+        });
 
-        // -- Bucket tables -----------------------------------------------------
-        // Standard pipeline tables share the Processor / LOA column and a View
-        // action (View only asserted when the bucket has loans).
-        await activePage.verifyStandardPipelineTables();
+        await test.step('Verify the bucket tables', async () => {
+            // -- Bucket tables -----------------------------------------------------
+            // Standard pipeline tables share the Processor / LOA column and a View
+            // action (View only asserted when the bucket has loans).
+            await activePage.verifyStandardPipelineTables();
+        });
     });
 
     test('LO sees the Pending MLO Certification bucket when loans await certification', async ({ activePage }) => {
-        await expect(activePage.pageHeading).toBeVisible({ timeout: 20000 });
+        await test.step('Verify the pipeline page heading', async () => {
+            await expect(activePage.pageHeading).toBeVisible({ timeout: 20000 });
+        });
 
-        // The Pending MLO Certification heading stays visible even when the
-        // section has "No results". Check for an actual Certify button — it only
-        // renders when at least one loan is awaiting certification.
-        const hasPending = await activePage.certifyBtn
-            .isVisible({ timeout: 15000 })
-            .catch(() => false);
+        const hasPending = await test.step('Check for loans awaiting MLO certification', async () => {
+            // The Pending MLO Certification heading stays visible even when the
+            // section has "No results". Check for an actual Certify button — it only
+            // renders when at least one loan is awaiting certification.
+            return activePage.certifyBtn
+                .isVisible({ timeout: 15000 })
+                .catch(() => false);
+        });
         test.skip(!hasPending, 'No loans currently pending MLO certification on staging');
 
-        await activePage.verifyPendingMloCertTable();
+        await test.step('Verify the Pending MLO Certification table', async () => {
+            await activePage.verifyPendingMloCertTable();
+        });
     });
 });

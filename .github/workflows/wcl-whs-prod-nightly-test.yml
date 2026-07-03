@@ -1,20 +1,21 @@
 # Workflow display name (shown in the Actions tab).
-name: REMN-WHS-PROD Nightly Regression
+name: WCL-WHS-PROD Nightly Regression
 
 # ---------------------------------------------------------------------------
-# Scoped nightly regression for the REMN WHS *production* HELOC portal
-# (heloc.remnwholesale.com). Runs ONLY the curated spec list below — not the
-# full suite — against REMN prod, using a dedicated set of REMN_PROD_* secrets
-# so it never touches the creds used by the other workflows.
+# Scoped nightly regression for the West Capital WHS *production* HELOC portal
+# (wcl-prod-pos.onrender.com — a Render host, so the staging-style 502
+# flakiness caveat applies; config retries:2 mitigates). Runs ONLY the curated
+# spec list below — not the full suite — against prod, using a dedicated set
+# of WCL_PROD_* secrets so it never touches other tenants' creds.
 #
 # Both the broker session (chromium) and the LO session (chromium-lo) log in
-# with the SAME prod MLO account: the workflow maps the one credential into
-# both EMAIL/PASSWORD and EMAIL_LO/PASSWORD_LO.
+# with the SAME prod MLO account: the workflow maps the one prod credential
+# into both EMAIL/PASSWORD and EMAIL_LO/PASSWORD_LO.
 #
 # Required repo secrets (Settings → Secrets and variables → Actions):
-#   REMN_PROD_BASE_URL  → https://heloc.remnwholesale.com/portal
-#   REMN_PROD_EMAIL     → prod_helix_remn_mlo@homebridge.com
-#   REMN_PROD_PASSWORD  → (the prod MLO password)
+#   WCL_PROD_BASE_URL   → https://wcl-prod-pos.onrender.com/portal
+#   WCL_PROD_EMAIL      → prod_helix_wcl_mlo@homebridge.com
+#   WCL_PROD_PASSWORD   → (the prod MLO password)
 # Reused (shared with the other workflows):
 #   HB_TOKEN            → PAT with push rights to gh-pages
 #   SLACK_WEBHOOK_URL   → Slack incoming webhook
@@ -22,16 +23,16 @@ name: REMN-WHS-PROD Nightly Regression
 
 on:
   # Scheduled run. Cron is in UTC: "minute hour day month weekday".
-  # '0 10 * * *' = 10:00 UTC daily — off-peak, and offset from the other
-  # nightlies (staging 20:00, HB-WHS-PROD 08:00, REMN-WHS-STG 06:00) so the
-  # runs never contend for runners or report trends.
+  # '0 16 * * *' = 16:00 UTC daily — the next free slot in the tenant stagger
+  # (CMG-STG 02, NEXA-STG 04, REMN-STG 06, HB-PROD 08, REMN-PROD 10,
+  # CMG-PROD 12, NEXA-PROD 14, WCL-PROD 16, HB staging full nightly 20).
   schedule:
-    - cron: '0 10 * * *'
+    - cron: '0 16 * * *'
   workflow_dispatch:      # manual run from the Actions tab
 
-# Never let two REMN prod runs overlap (a manual dispatch on top of the nightly, etc.)
+# Never let two prod runs overlap (a manual dispatch on top of the nightly, etc.)
 concurrency:
-  group: remn-whs-prod-nightly
+  group: wcl-whs-prod-nightly
   cancel-in-progress: false   # let an in-flight prod run finish rather than killing it
 
 # GITHUB_TOKEN permissions. "write" is required because the gh-pages deploy
@@ -41,8 +42,8 @@ permissions:
 
 jobs:
   test:
-    name: REMN-WHS-PROD — Scoped Nightly Regression
-    timeout-minutes: 120                  # generous cap — real API calls (credit pull, employment verify) are slow
+    name: WCL-WHS-PROD — Scoped Nightly Regression
+    timeout-minutes: 130                  # generous cap — real API calls (credit pull, employment verify) are slow; 18-spec list
     runs-on: ubuntu-latest
 
     container:
@@ -66,9 +67,9 @@ jobs:
       - name: Validate required secrets
         run: |
           missing=""
-          [ -z "$REMN_PROD_BASE_URL" ] && missing="$missing REMN_PROD_BASE_URL"
-          [ -z "$REMN_PROD_EMAIL" ] && missing="$missing REMN_PROD_EMAIL"
-          [ -z "$REMN_PROD_PASSWORD" ] && missing="$missing REMN_PROD_PASSWORD"
+          [ -z "$WCL_PROD_BASE_URL" ] && missing="$missing WCL_PROD_BASE_URL"
+          [ -z "$WCL_PROD_EMAIL" ] && missing="$missing WCL_PROD_EMAIL"
+          [ -z "$WCL_PROD_PASSWORD" ] && missing="$missing WCL_PROD_PASSWORD"
 
           if [ -n "$missing" ]; then
             echo "❌ Missing required secrets:$missing"
@@ -77,12 +78,12 @@ jobs:
 
           echo "✅ All required secrets are present"
         env:
-          REMN_PROD_BASE_URL: ${{ secrets.REMN_PROD_BASE_URL }}
-          REMN_PROD_EMAIL: ${{ secrets.REMN_PROD_EMAIL }}
-          REMN_PROD_PASSWORD: ${{ secrets.REMN_PROD_PASSWORD }}
+          WCL_PROD_BASE_URL: ${{ secrets.WCL_PROD_BASE_URL }}
+          WCL_PROD_EMAIL: ${{ secrets.WCL_PROD_EMAIL }}
+          WCL_PROD_PASSWORD: ${{ secrets.WCL_PROD_PASSWORD }}
 
       # -----------------------------
-      # Run the curated REMN prod spec list
+      # Run the curated prod spec list
       # -----------------------------
       # Exact file paths are passed (Playwright matches them as anchored
       # regexes). This avoids the substring trap — a bare "active" filter would
@@ -91,7 +92,15 @@ jobs:
       # under `chromium` (setup → broker login), LO-session specs under
       # `chromium-lo` (setup-lo → LO login). Both setups log in with the same
       # prod MLO account because EMAIL_LO/PASSWORD_LO are mapped to it below.
-      - name: Run Playwright tests (REMN prod scope)
+      #
+      # NOTE: unlike the other prod nightlies, this scope INCLUDES
+      # loandetail.spec.js, My Loans/active.spec.js, and LO Flow/certifications.spec.js
+      # (requested for WCL). On the other tenants those three are excluded
+      # because they search for a hardcoded fixture loan (SHARED name/address,
+      # "4556 Eliot St") seeded on staging only — if they fail here with
+      # "loan not found"-style errors, WCL prod lacks that fixture too and they
+      # should be dropped from this list.
+      - name: Run Playwright tests (WCL prod scope)
         id: playwright
         # continue-on-error: a failing suite does NOT stop the job here — the
         # reporting/Allure/Slack steps below must still run. We fail the job at
@@ -104,35 +113,34 @@ jobs:
         run: |
           rm -f test-results.json
           npx playwright test \
+            "tests/Broker Flow/loandetail.spec.js" \
             "tests/Broker Flow/shadow-borrower-view.spec.js" \
             "tests/Broker Flow/twn-monitor.spec.js" \
             "tests/Broker Flow/credit-and-income.spec.js" \
             "tests/Broker Flow/pre-qual-manual.spec.js" \
             "tests/Broker Flow/econsent.spec.js" \
+            "tests/Broker Flow/My Loans/active.spec.js" \
             "tests/Broker Flow/My Loans/adversed.spec.js" \
             "tests/Broker Flow/My Loans/inactive.spec.js" \
-            "tests/Borrower Flow/support.spec.js" \
             "tests/LO Flow/pipeline-management.spec.js" \
             "tests/LO Flow/deal-optimization.spec.js" \
+            "tests/LO Flow/certifications.spec.js" \
             "tests/LO Flow/property-applicant-data.spec.js" \
             "tests/Borrower Flow/invitation.spec.js" \
+            "tests/Borrower Flow/support.spec.js" \
             "tests/Borrower Flow/Co-Borrower/coborrower.spec.js" \
             "tests/Borrower Flow/Co-Borrower/verification-documentation.spec.js" \
             "tests/Borrower Flow/Co-Borrower/loan-hub.spec.js"
-          # Excluded from prod scope: loandetail.spec.js, My Loans/active.spec.js,
-          # LO Flow/certifications.spec.js — all search for a hardcoded fixture
-          # loan (SHARED name/address, "4556 Eliot St") seeded on staging only.
-          # They still run in the REMN staging nightly where that data exists.
         env:
-          # Point the whole run at REMN production.
-          BASE_URL: ${{ secrets.REMN_PROD_BASE_URL }}
+          # Point the whole run at West Capital production.
+          BASE_URL: ${{ secrets.WCL_PROD_BASE_URL }}
           # Broker session (chromium) creds.
-          EMAIL: ${{ secrets.REMN_PROD_EMAIL }}
-          PASSWORD: ${{ secrets.REMN_PROD_PASSWORD }}
+          EMAIL: ${{ secrets.WCL_PROD_EMAIL }}
+          PASSWORD: ${{ secrets.WCL_PROD_PASSWORD }}
           # LO session (chromium-lo) creds — reuse the same prod MLO account so
           # the LO-flow specs authenticate without a second login.
-          EMAIL_LO: ${{ secrets.REMN_PROD_EMAIL }}
-          PASSWORD_LO: ${{ secrets.REMN_PROD_PASSWORD }}
+          EMAIL_LO: ${{ secrets.WCL_PROD_EMAIL }}
+          PASSWORD_LO: ${{ secrets.WCL_PROD_PASSWORD }}
 
       # -----------------------------
       # Install jq
@@ -161,7 +169,6 @@ jobs:
             SKIPPED=0
           fi
 
-          # Persist to $GITHUB_ENV so later steps can read them as env.PASSED etc.
           echo "PASSED=$PASSED" >> $GITHUB_ENV
           echo "FAILED=$FAILED" >> $GITHUB_ENV
           echo "SKIPPED=$SKIPPED" >> $GITHUB_ENV
@@ -219,17 +226,17 @@ jobs:
 
       # -----------------------------
       # Allure: restore history JSONL across runs (trends / flakiness).
-      # REMN-prod-namespaced cache key keeps these trends separate from the
-      # other workflows' histories.
+      # WCL-prod-namespaced cache key keeps these trends separate from the
+      # other tenants' histories.
       # -----------------------------
       - name: Restore Allure history
         uses: actions/cache@v4
         if: always()
         with:
           path: allure-history.jsonl
-          key: allure-history-remnprod-${{ github.run_id }}
+          key: allure-history-wclprod-${{ github.run_id }}
           restore-keys: |
-            allure-history-remnprod-
+            allure-history-wclprod-
 
       # -----------------------------
       # Allure: strip spurious "skipped" twin results (see scripts/allure-dedupe.js).
@@ -244,7 +251,7 @@ jobs:
       - name: Generate Allure report
         if: always()
         run: |
-          npx allure generate allure-results --name "REMN-WHS-PROD Nightly #${{ github.run_number }}"
+          npx allure generate allure-results --name "WCL-WHS-PROD Nightly #${{ github.run_number }}"
 
       # -----------------------------
       # Upload Playwright Report
@@ -253,7 +260,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: remn-whs-prod-playwright-report
+          name: wcl-whs-prod-playwright-report
           path: playwright-report/
           retention-days: 30
 
@@ -264,7 +271,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: remn-whs-prod-allure-report
+          name: wcl-whs-prod-allure-report
           path: allure-report/
           retention-days: 30
 
@@ -279,8 +286,8 @@ jobs:
         run: find playwright-report allure-report -type f \( -name '*.zip' -o -name '*.webm' \) -delete || true
 
       # -----------------------------
-      # Deploy Reports to GitHub Pages (REMN-prod-namespaced dirs so they never
-      # clobber the other workflows' reports/ and allure/ trees).
+      # Deploy Reports to GitHub Pages (WCL-prod-namespaced dirs so they never
+      # clobber the other tenants' reports/ and allure/ trees).
       # -----------------------------
       - name: Deploy Playwright report to gh-pages
         uses: peaceiris/actions-gh-pages@v4
@@ -288,7 +295,7 @@ jobs:
         with:
           github_token: ${{ secrets.HB_TOKEN }}
           publish_dir: playwright-report/
-          destination_dir: remn-whs-prod/reports/${{ github.run_id }}
+          destination_dir: wcl-whs-prod/reports/${{ github.run_id }}
           keep_files: true
 
       - name: Deploy Allure report to gh-pages
@@ -297,7 +304,7 @@ jobs:
         with:
           github_token: ${{ secrets.HB_TOKEN }}
           publish_dir: allure-report/
-          destination_dir: remn-whs-prod/allure/${{ github.run_id }}
+          destination_dir: wcl-whs-prod/allure/${{ github.run_id }}
           keep_files: true
 
       # -----------------------------
@@ -310,8 +317,8 @@ jobs:
         # never alerts. Only when zero failures.
         if: ${{ !cancelled() && env.FAILED == '0' }}
         run: |
-          ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/remn-whs-prod/allure/${{ github.run_id }}/"
-          TEXT="✅ *REMN-WHS-PROD Nightly Passed* — ${PASSED} passed, ${SKIPPED} skipped on REMN prod. ${BUSINESS_SUMMARY}. 🟣 <${ALLURE_REPORT}|Allure trends>"
+          ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/wcl-whs-prod/allure/${{ github.run_id }}/"
+          TEXT="✅ *WCL-WHS-PROD Nightly Passed* — ${PASSED} passed, ${SKIPPED} skipped on West Capital prod. ${BUSINESS_SUMMARY}. 🟣 <${ALLURE_REPORT}|Allure trends>"
           jq -n --arg t "$TEXT" '{channel:"#automation-alerts", text:$t}' \
           | curl -sS -X POST -H 'Content-type: application/json' -d @- ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -325,15 +332,15 @@ jobs:
         # never alerts. Only when there are failures.
         if: ${{ !cancelled() && env.FAILED != '0' }}
         run: |
-          RUN_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/remn-whs-prod/reports/${{ github.run_id }}/"
-          ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/remn-whs-prod/allure/${{ github.run_id }}/"
+          RUN_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/wcl-whs-prod/reports/${{ github.run_id }}/"
+          ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/wcl-whs-prod/allure/${{ github.run_id }}/"
           RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
           FAILED_LIST=$(printf '%s\n' "$FAILED_TESTS" | sed 's/^/• /')
 
           TEXT=$(printf '%s\n' \
-            "❌ *REMN-WHS-PROD Nightly Failed* <!here>" \
-            "📦 ${{ github.repository }} — REMN WHS production HELOC portal" \
+            "❌ *WCL-WHS-PROD Nightly Failed* <!here>" \
+            "📦 ${{ github.repository }} — West Capital production HELOC portal" \
             "📈 Passed: ${PASSED} | Failed: ${FAILED} | Skipped: ${SKIPPED}" \
             "" \
             "${BUSINESS_DIGEST}" \
@@ -361,7 +368,7 @@ jobs:
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
-          SLACK_CAPTION: "🖼️ *REMN-WHS-PROD Nightly #${{ github.run_number }}* — failure screenshots (${{ env.FAILED }} failed). Report: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/remn-whs-prod/reports/${{ github.run_id }}/"
+          SLACK_CAPTION: "🖼️ *WCL-WHS-PROD Nightly #${{ github.run_number }}* — failure screenshots (${{ env.FAILED }} failed). Report: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/wcl-whs-prod/reports/${{ github.run_id }}/"
         run: node scripts/slack-upload-screenshots.js test-results.json 10
 
       # -----------------------------

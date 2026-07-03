@@ -78,7 +78,13 @@ jobs:
         # Filename regex (not a path) — matches
         # tests/Broker Flow/quick-pricer-monitor.spec.js. The chromium project's
         # 'setup' dependency runs the broker login automatically.
-        run: npx playwright test quick-pricer-monitor
+        # rm -f first: test-results.json is generated output — if Playwright is
+        # killed before writing a fresh one, NO file must be left behind, or the
+        # reporting steps below would read a stale report and alert on phantom
+        # results (this happened when a leftover copy was committed to the repo).
+        run: |
+          rm -f test-results.json
+          npx playwright test quick-pricer-monitor
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
           EMAIL: ${{ secrets.EMAIL }}

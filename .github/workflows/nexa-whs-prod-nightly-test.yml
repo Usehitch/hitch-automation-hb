@@ -103,7 +103,12 @@ jobs:
         # reporting/Allure/Slack steps below must still run. We fail the job at
         # the very end (see "Fail workflow if tests failed").
         continue-on-error: true
+        # rm -f first: test-results.json is generated output — if Playwright is
+        # killed before writing a fresh one, NO file must be left behind, or the
+        # reporting steps below would read a stale report and alert on phantom
+        # results (this happened when a leftover copy was committed to the repo).
         run: |
+          rm -f test-results.json
           # NOTE: loandetail.spec.js, My Loans/active.spec.js, and
           # LO Flow/certifications.spec.js are intentionally EXCLUDED (matching
           # hb-whs-prod / remn-whs-prod / cmg-whs-prod). All three search for a
@@ -147,11 +152,21 @@ jobs:
       # Extract Test Statistics
       # -----------------------------
       - name: Extract test results
-        if: always()
+        if: ${{ !cancelled() }}
         run: |
-          PASSED=$(jq '.stats.expected // 0' test-results.json)
-          FAILED=$(jq '.stats.unexpected // 0' test-results.json)
-          SKIPPED=$(jq '.stats.skipped // 0' test-results.json)
+          # Pull counts from Playwright's JSON report. "// 0" = default to 0 if the field is missing.
+          # A missing report means Playwright died before writing it — treat that as a
+          # failure (FAILED=?) so the failure alert fires instead of a phantom success.
+          if [ -f test-results.json ]; then
+            PASSED=$(jq '.stats.expected // 0' test-results.json)
+            FAILED=$(jq '.stats.unexpected // 0' test-results.json)
+            SKIPPED=$(jq '.stats.skipped // 0' test-results.json)
+          else
+            echo "::warning::test-results.json not found — Playwright produced no report."
+            PASSED=0
+            FAILED='?'
+            SKIPPED=0
+          fi
 
           echo "PASSED=$PASSED" >> $GITHUB_ENV
           echo "FAILED=$FAILED" >> $GITHUB_ENV
@@ -161,17 +176,50 @@ jobs:
       # Extract Failed Test Names
       # -----------------------------
       - name: Extract failed tests
-        if: always()
+        if: ${{ !cancelled() }}
         run: |
-          FAILED_TESTS=$(jq -r '
-            .suites[]?.specs[]? |
-            select(any(.tests[]?.results[]?; .status=="failed")) |
-            .title
-          ' test-results.json)
+          # jq -r (raw output): for every spec that has any failed result, print its
+          # title. ".." recurses the whole tree so specs nested inside describe()
+          # suites are found too (".suites[].specs[]" only saw top-level specs).
+          if [ -f test-results.json ]; then
+            FAILED_TESTS=$(jq -r '
+              .. | .specs? // empty | .[] |
+              select(any(.tests[]?.results[]?; .status=="failed")) |
+              .title
+            ' test-results.json)
+          else
+            FAILED_TESTS='(no test report produced — Playwright crashed or was killed before writing results)'
+          fi
 
           {
             echo "FAILED_TESTS<<EOF"
             echo "${FAILED_TESTS:-None}"
+            echo "EOF"
+          } >> $GITHUB_ENV
+
+      # -----------------------------
+      # Business digest — translate spec results into stakeholder language
+      # ("what's working / what's broken by business capability") for the Slack
+      # alerts below. The spec → capability mapping lives in
+      # scripts/capability-map.json; scripts/business-digest.js never exits
+      # non-zero, so a digest problem can't break the alerts.
+      # -----------------------------
+      - name: Build business digest
+        if: ${{ !cancelled() }}
+        run: |
+          if [ -f test-results.json ]; then
+            DIGEST=$(node scripts/business-digest.js test-results.json)
+            SUMMARY=$(node scripts/business-digest.js test-results.json --summary)
+          else
+            DIGEST='(business digest unavailable — no test report produced)'
+            SUMMARY=''
+          fi
+          {
+            echo "BUSINESS_DIGEST<<EOF"
+            echo "$DIGEST"
+            echo "EOF"
+            echo "BUSINESS_SUMMARY<<EOF"
+            echo "$SUMMARY"
             echo "EOF"
           } >> $GITHUB_ENV
 
@@ -252,10 +300,14 @@ jobs:
       # Slack Success Alert — quiet one-line digest.
       # -----------------------------
       - name: Slack Alert - Test Success
-        if: always() && env.FAILED == '0'
+        # !cancelled() (not always()): a failure in an earlier step (e.g.
+        # Allure/gh-pages) still can't suppress the alert via the implicit
+        # success() gate, but a CANCELLED run — which has no real results —
+        # never alerts. Only when zero failures.
+        if: ${{ !cancelled() && env.FAILED == '0' }}
         run: |
           ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/nexa-whs-prod/allure/${{ github.run_id }}/"
-          TEXT="✅ *NEXA-WHS-PROD Nightly Passed* — ${PASSED} passed, ${SKIPPED} skipped on NEXA prod. 🟣 <${ALLURE_REPORT}|Allure trends>"
+          TEXT="✅ *NEXA-WHS-PROD Nightly Passed* — ${PASSED} passed, ${SKIPPED} skipped on NEXA prod. ${BUSINESS_SUMMARY}. 🟣 <${ALLURE_REPORT}|Allure trends>"
           jq -n --arg t "$TEXT" '{channel:"#automation-alerts", text:$t}' \
           | curl -sS -X POST -H 'Content-type: application/json' -d @- ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -263,7 +315,11 @@ jobs:
       # Slack Failure Alert — actionable: includes failed test names + links.
       # -----------------------------
       - name: Slack Alert - Test Failed
-        if: always() && env.FAILED != '0'
+        # !cancelled() (not always()): a failure in an earlier step (e.g.
+        # Allure/gh-pages) still can't suppress the alert via the implicit
+        # success() gate, but a CANCELLED run — which has no real results —
+        # never alerts. Only when there are failures.
+        if: ${{ !cancelled() && env.FAILED != '0' }}
         run: |
           RUN_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/nexa-whs-prod/reports/${{ github.run_id }}/"
           ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/nexa-whs-prod/allure/${{ github.run_id }}/"
@@ -275,6 +331,8 @@ jobs:
             "❌ *NEXA-WHS-PROD Nightly Failed* <!here>" \
             "📦 ${{ github.repository }} — NEXA WHS production HELOC portal" \
             "📈 Passed: ${PASSED} | Failed: ${FAILED} | Skipped: ${SKIPPED}" \
+            "" \
+            "${BUSINESS_DIGEST}" \
             "" \
             "*Failed tests:*" \
             "${FAILED_LIST}" \
@@ -295,7 +353,7 @@ jobs:
       # (numeric ID), and the bot must be a member of that channel.
       # -----------------------------
       - name: Upload failure screenshots to Slack
-        if: always() && env.FAILED != '0'
+        if: ${{ !cancelled() && env.FAILED != '0' }}
         continue-on-error: true
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

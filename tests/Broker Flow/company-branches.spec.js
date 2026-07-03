@@ -70,16 +70,25 @@ test.describe('Company Branches (CRU)', () => {
     test('Search by NMLS narrows results to matching branches', async ({ companyBranchesPage }) => {
         // Read the NMLS from the first row — NMLS is explicitly indexed by
         // the portal search ("Search by name or NMLS").
-        const nmls = await companyBranchesPage.getFirstRowNmls();
+        const nmls = await test.step('Read the NMLS from the first branch row', async () => {
+            return await companyBranchesPage.getFirstRowNmls();
+        });
 
-        await companyBranchesPage.search(nmls);
-        await companyBranchesPage.verifySearchResultContains(nmls);
+        await test.step('Search by NMLS and verify matching rows are returned', async () => {
+            await companyBranchesPage.search(nmls);
+            await companyBranchesPage.verifySearchResultContains(nmls);
+        });
     });
 
     test('Clearing search restores the full branch list', async ({ companyBranchesPage }) => {
-        await companyBranchesPage.search('test');
-        await companyBranchesPage.clearSearch();
-        await expect(companyBranchesPage.paginationCounter).toBeVisible({ timeout: 10000 });
+        await test.step('Apply a search to narrow the visible set', async () => {
+            await companyBranchesPage.search('test');
+        });
+
+        await test.step('Clear the search and verify the full list is restored', async () => {
+            await companyBranchesPage.clearSearch();
+            await expect(companyBranchesPage.paginationCounter).toBeVisible({ timeout: 10000 });
+        });
     });
 
     // -- Add New Branch modal -------------------------------------------------
@@ -87,25 +96,39 @@ test.describe('Company Branches (CRU)', () => {
     test('Add New Branch modal opens with all expected fields and Cancel closes it', async ({
         companyBranchesPage,
     }) => {
-        await companyBranchesPage.openAddNewBranchModal();
-        await companyBranchesPage.verifyAddBranchModalFields();
-        await companyBranchesPage.cancelBranchModal();
+        await test.step('Open the Add New Branch modal', async () => {
+            await companyBranchesPage.openAddNewBranchModal();
+        });
 
-        // Page must still show the branch list after cancel
-        await expect(companyBranchesPage.pageHeading).toBeVisible({ timeout: 10000 });
+        await test.step('Verify all expected modal fields', async () => {
+            await companyBranchesPage.verifyAddBranchModalFields();
+        });
+
+        await test.step('Cancel the modal and verify the branch list is shown', async () => {
+            await companyBranchesPage.cancelBranchModal();
+
+            // Page must still show the branch list after cancel
+            await expect(companyBranchesPage.pageHeading).toBeVisible({ timeout: 10000 });
+        });
     });
 
     test('Create a new branch with generated data and verify it appears in the table', async ({
         companyBranchesPage,
     }) => {
-        // Step 1 — Open the Add New Branch modal
-        await companyBranchesPage.openAddNewBranchModal();
+        await test.step('Open the Add New Branch modal', async () => {
+            // Step 1 — Open the Add New Branch modal
+            await companyBranchesPage.openAddNewBranchModal();
+        });
 
-        // Step 2 — Fill branch name, phone, NMLS and select first available company
-        await companyBranchesPage.fillAndSubmitAddBranchForm(createBranchData);
+        await test.step('Fill the branch form and submit', async () => {
+            // Step 2 — Fill branch name, phone, NMLS and select first available company
+            await companyBranchesPage.fillAndSubmitAddBranchForm(createBranchData);
+        });
 
-        // Step 3 — Search by name and confirm the row is visible
-        await companyBranchesPage.verifyBranchInTable(createBranchData.name);
+        await test.step('Verify the new branch appears in the table', async () => {
+            // Step 3 — Search by name and confirm the row is visible
+            await companyBranchesPage.verifyBranchInTable(createBranchData.name);
+        });
     });
 
     // -- Edit Branch modal ----------------------------------------------------
@@ -113,16 +136,22 @@ test.describe('Company Branches (CRU)', () => {
     test('Edit Branch modal opens from the first row and Cancel closes it', async ({
         companyBranchesPage,
     }) => {
-        await companyBranchesPage.verifyTableHasRows();
-        await companyBranchesPage.openEditBranchModal();
+        await test.step('Open the Edit Branch modal from the first row', async () => {
+            await companyBranchesPage.verifyTableHasRows();
+            await companyBranchesPage.openEditBranchModal();
+        });
 
-        // Confirm an editable field is rendered inside the modal
-        await expect(companyBranchesPage.editBranchNameInput).toBeVisible({ timeout: 10000 });
+        await test.step('Verify an editable field is rendered in the modal', async () => {
+            // Confirm an editable field is rendered inside the modal
+            await expect(companyBranchesPage.editBranchNameInput).toBeVisible({ timeout: 10000 });
+        });
 
-        await companyBranchesPage.cancelEditBranchModal();
+        await test.step('Cancel the modal and verify the branch list is shown', async () => {
+            await companyBranchesPage.cancelEditBranchModal();
 
-        // Page must still show the branch list after cancel
-        await expect(companyBranchesPage.pageHeading).toBeVisible({ timeout: 10000 });
+            // Page must still show the branch list after cancel
+            await expect(companyBranchesPage.pageHeading).toBeVisible({ timeout: 10000 });
+        });
     });
 
     test('Edit an existing branch with new random data and verify the table', async ({
@@ -131,19 +160,25 @@ test.describe('Company Branches (CRU)', () => {
         // Self-contained — edits the first branch already in the table; no
         // dependency on the Create test having run first.
 
-        // Step 1 — Guard: at least one row must exist
-        await companyBranchesPage.verifyTableHasRows();
+        await test.step('Open the Edit Branch modal for the first row', async () => {
+            // Step 1 — Guard: at least one row must exist
+            await companyBranchesPage.verifyTableHasRows();
 
-        // Step 2 — Open Edit Branch modal for the first row
-        await companyBranchesPage.openEditBranchModal();
+            // Step 2 — Open Edit Branch modal for the first row
+            await companyBranchesPage.openEditBranchModal();
+        });
 
-        // Step 3 — Update name, phone and NMLS with fresh random values
-        await companyBranchesPage.fillEditBranchForm(editBranchData);
+        await test.step('Fill the edit form with new random data and submit', async () => {
+            // Step 3 — Update name, phone and NMLS with fresh random values
+            await companyBranchesPage.fillEditBranchForm(editBranchData);
 
-        // Step 4 — Submit
-        await companyBranchesPage.submitEditBranch();
+            // Step 4 — Submit
+            await companyBranchesPage.submitEditBranch();
+        });
 
-        // Step 5 — Search by new name and confirm the row is present
-        await companyBranchesPage.verifyBranchInTable(editBranchData.name);
+        await test.step('Verify the updated branch appears in the table', async () => {
+            // Step 5 — Search by new name and confirm the row is present
+            await companyBranchesPage.verifyBranchInTable(editBranchData.name);
+        });
     });
 });

@@ -45,43 +45,51 @@ test.describe('Manage Users — Add Role', () => {
         const userEmail = randomEmail();
         const userName  = `Test User ${ts}`;
 
-        await manageUsersPage.openAddNewUserModal();
-        await expect(manageUsersPage.addUserModalHeading).toBeVisible({ timeout: 10000 });
+        await test.step('Create a Loan Officer user to work with', async () => {
+            await manageUsersPage.openAddNewUserModal();
+            await expect(manageUsersPage.addUserModalHeading).toBeVisible({ timeout: 10000 });
 
-        await manageUsersPage.fillAndSubmitAddUserForm({
-            role:        'Loan Officer',
-            company:     'ABC Broker - Test',
-            name:        userName,
-            tag:         `testuser-${ts}`,
-            nmls:        randomNmls(),
-            losUsername: `testuser${ts}`,
-            phone:       randomPhone(),
-            email:       userEmail,
+            await manageUsersPage.fillAndSubmitAddUserForm({
+                role:        'Loan Officer',
+                company:     'ABC Broker - Test',
+                name:        userName,
+                tag:         `testuser-${ts}`,
+                nmls:        randomNmls(),
+                losUsername: `testuser${ts}`,
+                phone:       randomPhone(),
+                email:       userEmail,
+            });
+
+            // Confirm the user was created and is present in the table
+            await manageUsersPage.verifyUserInTable(userEmail);
         });
 
-        // Confirm the user was created and is present in the table
-        await manageUsersPage.verifyUserInTable(userEmail);
-
-        // -----------------------------------------------------------------------
-        // Step 2 — Open the Add Role modal for the newly created user
-        // -----------------------------------------------------------------------
-        await manageUsersPage.clickAddRoleForUser(userEmail);
-
-        // -----------------------------------------------------------------------
-        // Step 3 — Fill Role = TPO Admin, Company = ABC Broker - Test
-        // -----------------------------------------------------------------------
-        await manageUsersPage.fillAddRoleForm({
-            role:    'TPO Admin',
-            company: 'ABC Broker - Test',
+        await test.step('Open the Add Role modal for the new user', async () => {
+            // -----------------------------------------------------------------------
+            // Step 2 — Open the Add Role modal for the newly created user
+            // -----------------------------------------------------------------------
+            await manageUsersPage.clickAddRoleForUser(userEmail);
         });
 
-        // -----------------------------------------------------------------------
-        // Step 4 — Submit and verify
-        // -----------------------------------------------------------------------
-        await manageUsersPage.submitAddRole();
+        await test.step('Fill in the Add Role form', async () => {
+            // -----------------------------------------------------------------------
+            // Step 3 — Fill Role = TPO Admin, Company = ABC Broker - Test
+            // -----------------------------------------------------------------------
+            await manageUsersPage.fillAddRoleForm({
+                role:    'TPO Admin',
+                company: 'ABC Broker - Test',
+            });
+        });
 
-        // The Role(s) cell should now contain "TPO Admin"
-        await manageUsersPage.verifyUserHasRole(userEmail, 'TPO Admin');
+        await test.step('Submit the new role and verify it in the table', async () => {
+            // -----------------------------------------------------------------------
+            // Step 4 — Submit and verify
+            // -----------------------------------------------------------------------
+            await manageUsersPage.submitAddRole();
+
+            // The Role(s) cell should now contain "TPO Admin"
+            await manageUsersPage.verifyUserHasRole(userEmail, 'TPO Admin');
+        });
     });
 
     // -----------------------------------------------------------------------
@@ -94,22 +102,28 @@ test.describe('Manage Users — Add Role', () => {
         // Use the first user in the table — no creation needed for a read-only check
         const firstEmail = await manageUsersPage.getFirstRowEmail();
 
-        await manageUsersPage.clickAddRoleForUser(firstEmail);
+        await test.step('Open the Add Role modal for the first user', async () => {
+            await manageUsersPage.clickAddRoleForUser(firstEmail);
+        });
 
-        // Heading is visible
-        await expect(manageUsersPage.addRoleModalHeading).toBeVisible({ timeout: 10000 });
+        await test.step('Verify the modal fields and buttons', async () => {
+            // Heading is visible
+            await expect(manageUsersPage.addRoleModalHeading).toBeVisible({ timeout: 10000 });
 
-        // Both dropdowns are present
-        await expect(
-            manageUsersPage.addRoleModal.getByText('Role', { exact: true }).first()
-        ).toBeVisible();
+            // Both dropdowns are present
+            await expect(
+                manageUsersPage.addRoleModal.getByText('Role', { exact: true }).first()
+            ).toBeVisible();
 
-        // Buttons are present
-        await expect(manageUsersPage.addRoleCancelBtn).toBeVisible();
-        await expect(manageUsersPage.addRoleSubmitBtn).toBeVisible();
+            // Buttons are present
+            await expect(manageUsersPage.addRoleCancelBtn).toBeVisible();
+            await expect(manageUsersPage.addRoleSubmitBtn).toBeVisible();
+        });
 
-        // Cancel closes the modal cleanly
-        await manageUsersPage.cancelAddRole();
-        await expect(manageUsersPage.addRoleModal).toBeHidden({ timeout: 10000 });
+        await test.step('Cancel and verify the modal closes', async () => {
+            // Cancel closes the modal cleanly
+            await manageUsersPage.cancelAddRole();
+            await expect(manageUsersPage.addRoleModal).toBeHidden({ timeout: 10000 });
+        });
     });
 });

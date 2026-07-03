@@ -1,0 +1,42 @@
+{
+  "_comment": "Maps each spec file (as it appears in test-results.json `file` fields — testDir-relative, forward slashes) to the business capability it proves. Used by scripts/business-digest.js to build the stakeholder 'what's working / what's broken' section of the nightly Slack alerts. Keep names short, plain-English, and capability-level (several specs may share one capability). A spec missing from this map still shows up in the digest, labelled '(unmapped)' — add it here when that happens.",
+
+  "auth.setup.js": "Portal login (broker test session)",
+  "auth.setup.lo.js": "Portal login (LO test session)",
+
+  "Broker Flow/login.spec.js": "Broker portal login",
+  "Broker Flow/pre-qual-manual.spec.js": "Pre-qual application creation (broker)",
+  "Broker Flow/quick-pricer.spec.js": "Quick Pricer — pricing scenarios & borrower invites",
+  "Broker Flow/quick-pricer-monitor.spec.js": "Quick Pricer — pricing scenarios & borrower invites",
+  "Broker Flow/twn-monitor.spec.js": "Employment verification via TWN (shareable link)",
+  "Broker Flow/econsent.spec.js": "Borrower e-consent signing",
+  "Broker Flow/credit-and-income.spec.js": "Credit pull & income entry (broker)",
+  "Broker Flow/loandetail.spec.js": "Loan detail page (documents, tasks, tracker)",
+  "Broker Flow/companies.spec.js": "Company management",
+  "Broker Flow/company-branches.spec.js": "Branch management",
+  "Broker Flow/shadow-borrower-view.spec.js": "Shadow borrower view (read-only borrower app)",
+  "Broker Flow/Manage Emails/manage-emails.spec.js": "Email template management",
+  "Broker Flow/Manage Users/add-user.spec.js": "Portal user management (add / roles / deactivate / password reset)",
+  "Broker Flow/Manage Users/add-role.spec.js": "Portal user management (add / roles / deactivate / password reset)",
+  "Broker Flow/Manage Users/deactivate-user.spec.js": "Portal user management (add / roles / deactivate / password reset)",
+  "Broker Flow/Manage Users/reactivate-user.spec.js": "Portal user management (add / roles / deactivate / password reset)",
+  "Broker Flow/Manage Users/reset-password.spec.js": "Portal user management (add / roles / deactivate / password reset)",
+  "Broker Flow/Manage Users/manage-users.spec.js": "Portal user management (add / roles / deactivate / password reset)",
+  "Broker Flow/My Loans/active.spec.js": "Loan pipeline — My Loans views & actions",
+  "Broker Flow/My Loans/adversed.spec.js": "Loan pipeline — My Loans views & actions",
+  "Broker Flow/My Loans/inactive.spec.js": "Loan pipeline — My Loans views & actions",
+
+  "Borrower Flow/invitation.spec.js": "Borrower invitation emails",
+  "Borrower Flow/invitation-completion.spec.js": "Invited borrower application completion",
+  "Borrower Flow/support.spec.js": "Help desk / support widget",
+  "Borrower Flow/Co-Borrower/coborrower.spec.js": "Co-borrower application flow (borrower DTC)",
+  "Borrower Flow/Co-Borrower/loan-hub.spec.js": "Borrower Loan Hub",
+  "Borrower Flow/Co-Borrower/verification-documentation.spec.js": "Borrower income verification (Plaid / payroll / paystubs)",
+
+  "LO Flow/certifications.spec.js": "MLO loan certification",
+  "LO Flow/archive-restart.spec.js": "Loan archive & re-creation",
+  "LO Flow/deal-optimization.spec.js": "Deal optimization (DTI improvement)",
+  "LO Flow/pipeline-management.spec.js": "LO pipeline buckets",
+  "LO Flow/property-applicant-data.spec.js": "Trust/LLC property knockouts",
+  "LO Flow/self-employed-income.spec.js": "Self-employed income handling"
+}

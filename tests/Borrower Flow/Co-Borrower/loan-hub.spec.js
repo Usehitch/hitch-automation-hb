@@ -44,70 +44,80 @@ import { makeMarriedCoBorrowerData } from '../../../data/coBorrowerDTCData';
  */
 async function driveToLoanHub(preQualManualPage, data) {
     // -- Step 1: Open shareable link in a new tab ----------------------------
-    const borrowerTab = await preQualManualPage.openShareableLinkInNewTab();
+    const borrowerTab = await test.step('Open the borrower app from the shareable link', async () => {
+        return preQualManualPage.openShareableLinkInNewTab();
+    });
     const twnPage = new TWNPage(borrowerTab);
     const flow = new CoBorrowerFlowPage(borrowerTab);
 
-    // -- Steps 2–8: TWN landing → property → about you → credit → income -----
-    await twnPage.clickGetStartedNow();
-    await flow.assertNoBlockingError('Landing page');
+    await test.step('Fill the pre-qual application through income sources', async () => {
+        // -- Steps 2–8: TWN landing → property → about you → credit → income -----
+        await twnPage.clickGetStartedNow();
+        await flow.assertNoBlockingError('Landing page');
 
-    await twnPage.selectPropertyType(data);
-    await flow.assertNoBlockingError('Property type');
+        await twnPage.selectPropertyType(data);
+        await flow.assertNoBlockingError('Property type');
 
-    await twnPage.selectLoanPurpose(data);
-    await flow.assertNoBlockingError('Loan purpose');
+        await twnPage.selectLoanPurpose(data);
+        await flow.assertNoBlockingError('Loan purpose');
 
-    await twnPage.fillPropertyInfo(data);
-    await flow.assertNoBlockingError('Property info');
+        await twnPage.fillPropertyInfo(data);
+        await flow.assertNoBlockingError('Property info');
 
-    await twnPage.fillAboutYourself(data);
-    await flow.assertNoBlockingError('About yourself');
+        await twnPage.fillAboutYourself(data);
+        await flow.assertNoBlockingError('About yourself');
 
-    await twnPage.fillCreditCheck(data);
-    await flow.assertNoBlockingError('Primary credit check');
+        await twnPage.fillCreditCheck(data);
+        await flow.assertNoBlockingError('Primary credit check');
 
-    await twnPage.fillPrimaryIncomeSources(data);
-    await flow.assertNoBlockingError('Primary income sources');
+        await twnPage.fillPrimaryIncomeSources(data);
+        await flow.assertNoBlockingError('Primary income sources');
+    });
 
-    // -- Step 9: Review & Confirm consents (triggers credit pull) ------------
-    await flow.fillReviewAndConfirm();
-    await flow.assertNoBlockingError('Review & Confirm consents');
+    await test.step('Sign consents and wait for the credit check', async () => {
+        // -- Step 9: Review & Confirm consents (triggers credit pull) ------------
+        await flow.fillReviewAndConfirm();
+        await flow.assertNoBlockingError('Review & Confirm consents');
 
-    // -- Step 10: "Checking Your Credit…" processing -------------------------
-    await flow.waitForCreditCheckProcessing(data);
-    await flow.assertNoBlockingError('Credit check processing');
+        // -- Step 10: "Checking Your Credit…" processing -------------------------
+        await flow.waitForCreditCheckProcessing(data);
+        await flow.assertNoBlockingError('Credit check processing');
+    });
 
-    // -- Step 11: Application Participants (co-borrower details) --------------
-    await flow.fillApplicationParticipants(data);
-    await flow.assertNoBlockingError('Application Participants');
+    await test.step('Complete participants, mortgages, and accept the offer', async () => {
+        // -- Step 11: Application Participants (co-borrower details) --------------
+        await flow.fillApplicationParticipants(data);
+        await flow.assertNoBlockingError('Application Participants');
 
-    // -- Step 12: Mortgages & Liens ------------------------------------------
-    await flow.fillMortgagesAndLiens(data);
-    await flow.assertNoBlockingError('Mortgages & Liens');
+        // -- Step 12: Mortgages & Liens ------------------------------------------
+        await flow.fillMortgagesAndLiens(data);
+        await flow.assertNoBlockingError('Mortgages & Liens');
 
-    // -- Step 13: Offer calculation processing -------------------------------
-    await flow.waitForOfferProcessing();
-    await flow.assertNoBlockingError('Offer processing');
+        // -- Step 13: Offer calculation processing -------------------------------
+        await flow.waitForOfferProcessing();
+        await flow.assertNoBlockingError('Offer processing');
 
-    // -- Step 14: Pre-qualification completed → Continue to Application ------
-    await flow.verifyFlowCompleted();
-    await flow.assertNoBlockingError('Pre-qual offer page');
+        // -- Step 14: Pre-qualification completed → Continue to Application ------
+        await flow.verifyFlowCompleted();
+        await flow.assertNoBlockingError('Pre-qual offer page');
+    });
 
-    // -- Step 14b/15: Other Info → Demographics ------------------------------
-    await flow.fillOtherInfo(data);
-    await flow.assertNoBlockingError('Other Info');
+    await test.step('Complete Other Info, Demographics, and Plaid verifications', async () => {
+        // -- Step 14b/15: Other Info → Demographics ------------------------------
+        await flow.fillOtherInfo(data);
+        await flow.assertNoBlockingError('Other Info');
 
-    await flow.fillDemographics();
-    await flow.assertNoBlockingError('Demographics');
+        await flow.fillDemographics();
+        await flow.assertNoBlockingError('Demographics');
 
-    // -- Step 16: Income Verification (Plaid sandbox) ------------------------
-    await flow.fillIncomeVerification();
-    await flow.assertNoBlockingError('Income Verification');
+        // -- Step 16: Income Verification (Plaid sandbox) ------------------------
+        await flow.fillIncomeVerification();
+        await flow.assertNoBlockingError('Income Verification');
 
-    // -- Step 17: Funding Account (Skip for now → Loan Hub) ------------------
-    await flow.fillFundingAccount();
-    await flow.assertNoBlockingError('Funding Account');
+        // -- Step 17: Funding Account (Skip for now → Loan Hub) ------------------
+        await flow.fillFundingAccount();
+        await flow.assertNoBlockingError('Funding Account');
+    });
 
     return flow;
 }
@@ -141,20 +151,28 @@ test.describe('Borrower Flow — Loan Hub', () => {
 
         const flow = await driveToLoanHub(preQualManualPage, data);
 
-        // -- Loan Hub landed (welcome + In Process) — confirmed DOM ----------
-        await flow.verifyLoanHubLanded();
-        await flow.assertNoBlockingError('Loan Hub landing');
+        await test.step('Verify the Loan Hub landing page', async () => {
+            // -- Loan Hub landed (welcome + In Process) — confirmed DOM ----------
+            await flow.verifyLoanHubLanded();
+            await flow.assertNoBlockingError('Loan Hub landing');
+        });
 
-        // -- 1. To-do list — best-effort / TODO ------------------------------
-        await flow.verifyToDoList();
-        await flow.assertNoBlockingError('Loan Hub to-do list');
+        await test.step('Verify the borrower to-do list', async () => {
+            // -- 1. To-do list — best-effort / TODO ------------------------------
+            await flow.verifyToDoList();
+            await flow.assertNoBlockingError('Loan Hub to-do list');
+        });
 
-        // -- 2. Document center (view / download) — best-effort / TODO -------
-        await flow.verifyDocumentCenter();
-        await flow.assertNoBlockingError('Loan Hub document center');
+        await test.step('Verify the document center', async () => {
+            // -- 2. Document center (view / download) — best-effort / TODO -------
+            await flow.verifyDocumentCenter();
+            await flow.assertNoBlockingError('Loan Hub document center');
+        });
 
-        // -- 3. Visual loan tracker / stage progress — confirmed DOM ---------
-        await flow.verifyLoanTracker();
-        await flow.assertNoBlockingError('Loan Hub loan tracker');
+        await test.step('Verify the loan tracker', async () => {
+            // -- 3. Visual loan tracker / stage progress — confirmed DOM ---------
+            await flow.verifyLoanTracker();
+            await flow.assertNoBlockingError('Loan Hub loan tracker');
+        });
     });
 });

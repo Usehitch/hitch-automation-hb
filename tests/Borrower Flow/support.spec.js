@@ -36,10 +36,15 @@ test.describe('Support — Help Desk Widget', () => {
     }) => {
         const widget = new HelpDeskWidget(page);
 
-        await widget.verifyAvailable();
-        await widget.open();
-        await widget.verifyAiChatBotAvailable();
-        await widget.verifySubmitTicketAvailable();
+        await test.step('Open the help desk widget', async () => {
+            await widget.verifyAvailable();
+            await widget.open();
+        });
+
+        await test.step('Verify the AI chat bot and submit-ticket entries', async () => {
+            await widget.verifyAiChatBotAvailable();
+            await widget.verifySubmitTicketAvailable();
+        });
     });
 
     test('Borrower can access the help desk widget on the application', async ({
@@ -47,11 +52,15 @@ test.describe('Support — Help Desk Widget', () => {
     }) => {
         // The widget is available "throughout the process" — confirm it on a
         // borrower-facing page reached via the shareable application link.
-        const borrowerTab = await preQualManualPage.openShareableLinkInNewTab();
+        const borrowerTab = await test.step('Open a borrower page via the shareable link', async () => {
+            return preQualManualPage.openShareableLinkInNewTab();
+        });
         const widget = new HelpDeskWidget(borrowerTab);
 
-        await widget.verifyAvailable();
-        await widget.open();
+        await test.step('Open the help desk widget', async () => {
+            await widget.verifyAvailable();
+            await widget.open();
+        });
     });
 
 });

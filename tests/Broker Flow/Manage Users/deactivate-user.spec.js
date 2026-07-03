@@ -48,33 +48,39 @@ test.describe('Manage Users — Deactivate User', () => {
         // Use the first user already in the table — no account creation needed
         const firstEmail = await manageUsersPage.getFirstRowEmail();
 
-        // Open the deactivation modal
-        await manageUsersPage.clickDeactivateForUser(firstEmail);
+        await test.step('Open the Deactivate User modal for the first user', async () => {
+            // Open the deactivation modal
+            await manageUsersPage.clickDeactivateForUser(firstEmail);
+        });
 
-        // Heading is visible
-        await expect(manageUsersPage.deactivateUserHeading).toBeVisible();
+        await test.step('Verify the modal content', async () => {
+            // Heading is visible
+            await expect(manageUsersPage.deactivateUserHeading).toBeVisible();
 
-        // Confirmation body text is present (portal has a typo — "deactive")
-        await expect(
-            manageUsersPage.deactivateUserModal.getByText(/Are you sure you want to deactiv/i)
-        ).toBeVisible();
+            // Confirmation body text is present (portal has a typo — "deactive")
+            await expect(
+                manageUsersPage.deactivateUserModal.getByText(/Are you sure you want to deactiv/i)
+            ).toBeVisible();
 
-        // Both action buttons are present
-        await expect(manageUsersPage.deactivateUserCancelBtn).toBeVisible();
-        await expect(manageUsersPage.deactivateUserConfirmBtn).toBeVisible();
+            // Both action buttons are present
+            await expect(manageUsersPage.deactivateUserCancelBtn).toBeVisible();
+            await expect(manageUsersPage.deactivateUserConfirmBtn).toBeVisible();
+        });
 
-        // Cancel — no changes made
-        await manageUsersPage.cancelDeactivateUser();
+        await test.step('Cancel and verify the user remains active', async () => {
+            // Cancel — no changes made
+            await manageUsersPage.cancelDeactivateUser();
 
-        // The user row must still exist and Active? should still read "Yes"
-        const userRow = manageUsersPage.page
-            .locator('tr')
-            .filter({ hasText: firstEmail })
-            .first();
-        await expect(userRow).toBeVisible({ timeout: 10000 });
-        await expect(
-            userRow.locator('td').filter({ hasText: /^Yes$/i })
-        ).toBeVisible({ timeout: 10000 });
+            // The user row must still exist and Active? should still read "Yes"
+            const userRow = manageUsersPage.page
+                .locator('tr')
+                .filter({ hasText: firstEmail })
+                .first();
+            await expect(userRow).toBeVisible({ timeout: 10000 });
+            await expect(
+                userRow.locator('td').filter({ hasText: /^Yes$/i })
+            ).toBeVisible({ timeout: 10000 });
+        });
     });
 
     // -------------------------------------------------------------------------
@@ -89,30 +95,36 @@ test.describe('Manage Users — Deactivate User', () => {
         const ts        = Date.now();
         const userEmail = randomEmail();
 
-        await manageUsersPage.openAddNewUserModal();
-        await expect(manageUsersPage.addUserModalHeading).toBeVisible({ timeout: 10000 });
+        await test.step('Create a fresh Loan Officer user', async () => {
+            await manageUsersPage.openAddNewUserModal();
+            await expect(manageUsersPage.addUserModalHeading).toBeVisible({ timeout: 10000 });
 
-        await manageUsersPage.fillAndSubmitAddUserForm({
-            role:        'Loan Officer',
-            company:     'ABC Broker - Test',
-            name:        `Test User ${ts}`,
-            tag:         `testuser-${ts}`,
-            nmls:        randomNmls(),
-            losUsername: `testuser${ts}`,
-            phone:       randomPhone(),
-            email:       userEmail,
+            await manageUsersPage.fillAndSubmitAddUserForm({
+                role:        'Loan Officer',
+                company:     'ABC Broker - Test',
+                name:        `Test User ${ts}`,
+                tag:         `testuser-${ts}`,
+                nmls:        randomNmls(),
+                losUsername: `testuser${ts}`,
+                phone:       randomPhone(),
+                email:       userEmail,
+            });
+
+            // Confirm the user was created
+            await manageUsersPage.verifyUserInTable(userEmail);
         });
 
-        // Confirm the user was created
-        await manageUsersPage.verifyUserInTable(userEmail);
+        await test.step('Deactivate the user', async () => {
+            // Step 2 — Open the Deactivate User modal
+            await manageUsersPage.clickDeactivateForUser(userEmail);
 
-        // Step 2 — Open the Deactivate User modal
-        await manageUsersPage.clickDeactivateForUser(userEmail);
+            // Step 3 — Confirm the deactivation
+            await manageUsersPage.confirmDeactivateUser();
+        });
 
-        // Step 3 — Confirm the deactivation
-        await manageUsersPage.confirmDeactivateUser();
-
-        // Step 4 — Verify the Active? column now shows "No"
-        await manageUsersPage.verifyUserIsDeactivated(userEmail);
+        await test.step('Verify the Active? column shows No', async () => {
+            // Step 4 — Verify the Active? column now shows "No"
+            await manageUsersPage.verifyUserIsDeactivated(userEmail);
+        });
     });
 });

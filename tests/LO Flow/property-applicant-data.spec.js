@@ -32,12 +32,16 @@ test.describe('LO - Property and Applicant Data', () => {
      * held-in-trust = Yes and the given trust type (manual address entry).
      */
     async function fillAppHeldInTrust(preQualManualPage, newApplicationPage, trustType) {
-        await preQualManualPage.clickStartApp();
-        await preQualManualPage.clickStartPreQualManually();
-        const applicationData = makeApplicationData();
-        await newApplicationPage.fillApplicationDetails({
-            ...applicationData,
-            property: { ...applicationData.property, heldInTrust: true, trustType },
+        await test.step('Start a manual pre-qual application', async () => {
+            await preQualManualPage.clickStartApp();
+            await preQualManualPage.clickStartPreQualManually();
+        });
+        await test.step(`Fill Application Details with the property held in a(n) ${trustType}`, async () => {
+            const applicationData = makeApplicationData();
+            await newApplicationPage.fillApplicationDetails({
+                ...applicationData,
+                property: { ...applicationData.property, heldInTrust: true, trustType },
+            });
         });
     }
 
@@ -50,8 +54,10 @@ test.describe('LO - Property and Applicant Data', () => {
 
             await fillAppHeldInTrust(preQualManualPage, newApplicationPage, trustType);
 
-            // Selecting the trust type alone shows no block — it appears on Next.
-            await newApplicationPage.clickNextExpectingTrustBlock();
+            await test.step('Attempt Next and verify the trust lending block', async () => {
+                // Selecting the trust type alone shows no block — it appears on Next.
+                await newApplicationPage.clickNextExpectingTrustBlock();
+            });
         });
     }
 
@@ -63,14 +69,16 @@ test.describe('LO - Property and Applicant Data', () => {
 
         await fillAppHeldInTrust(preQualManualPage, newApplicationPage, 'Revocable Trust');
 
-        // Control: a revocable trust is accepted (button registers as selected)
-        // and does NOT surface the lending block. We deliberately do not click
-        // Next — advancing would create an application and trigger finalization;
-        // this case only proves the block is specific to irrevocable trusts /
-        // LLCs. (Next-enabled is intentionally not asserted: it depends on full
-        // cross-field form validity + async revalidation, which is unrelated to
-        // the trust-type logic under test here.)
-        await expect(newApplicationPage.revocableTrustBtn).toHaveAttribute('aria-pressed', 'true');
-        await expect(newApplicationPage.trustLendingBlockMessage).toBeHidden();
+        await test.step('Verify the revocable trust is accepted with no lending block', async () => {
+            // Control: a revocable trust is accepted (button registers as selected)
+            // and does NOT surface the lending block. We deliberately do not click
+            // Next — advancing would create an application and trigger finalization;
+            // this case only proves the block is specific to irrevocable trusts /
+            // LLCs. (Next-enabled is intentionally not asserted: it depends on full
+            // cross-field form validity + async revalidation, which is unrelated to
+            // the trust-type logic under test here.)
+            await expect(newApplicationPage.revocableTrustBtn).toHaveAttribute('aria-pressed', 'true');
+            await expect(newApplicationPage.trustLendingBlockMessage).toBeHidden();
+        });
     });
 });

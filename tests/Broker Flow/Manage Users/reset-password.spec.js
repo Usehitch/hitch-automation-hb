@@ -47,28 +47,34 @@ test.describe('Manage Users — Reset Password', () => {
         const ts        = Date.now();
         const userEmail = randomEmail();
 
-        await manageUsersPage.openAddNewUserModal();
-        await expect(manageUsersPage.addUserModalHeading).toBeVisible({ timeout: 10000 });
+        await test.step('Create a fresh Loan Officer user', async () => {
+            await manageUsersPage.openAddNewUserModal();
+            await expect(manageUsersPage.addUserModalHeading).toBeVisible({ timeout: 10000 });
 
-        await manageUsersPage.fillAndSubmitAddUserForm({
-            role:        'Loan Officer',
-            company:     'ABC Broker - Test',
-            name:        `Test User ${ts}`,
-            tag:         `testuser-${ts}`,
-            nmls:        randomNmls(),
-            losUsername: `testuser${ts}`,
-            phone:       randomPhone(),
-            email:       userEmail,
+            await manageUsersPage.fillAndSubmitAddUserForm({
+                role:        'Loan Officer',
+                company:     'ABC Broker - Test',
+                name:        `Test User ${ts}`,
+                tag:         `testuser-${ts}`,
+                nmls:        randomNmls(),
+                losUsername: `testuser${ts}`,
+                phone:       randomPhone(),
+                email:       userEmail,
+            });
+
+            // Confirm the user exists in the table
+            await manageUsersPage.verifyUserInTable(userEmail);
         });
 
-        // Confirm the user exists in the table
-        await manageUsersPage.verifyUserInTable(userEmail);
+        await test.step('Send the password reset for the user', async () => {
+            // Step 2 — Click the Reset Password (key) icon for this user
+            await manageUsersPage.clickResetPasswordForUser(userEmail);
+        });
 
-        // Step 2 — Click the Reset Password (key) icon for this user
-        await manageUsersPage.clickResetPasswordForUser(userEmail);
-
-        // Step 3 — Verify the success toast
-        await manageUsersPage.verifyResetPasswordToast();
+        await test.step('Verify the success toast', async () => {
+            // Step 3 — Verify the success toast
+            await manageUsersPage.verifyResetPasswordToast();
+        });
     });
 
     // -------------------------------------------------------------------------
@@ -81,10 +87,14 @@ test.describe('Manage Users — Reset Password', () => {
         // Use the first user already in the table — no account creation needed
         const firstEmail = await manageUsersPage.getFirstRowEmail();
 
-        // Click the Reset Password icon
-        await manageUsersPage.clickResetPasswordForUser(firstEmail);
+        await test.step(`Send the password reset for the user (${firstEmail})`, async () => {
+            // Click the Reset Password icon
+            await manageUsersPage.clickResetPasswordForUser(firstEmail);
+        });
 
-        // Verify the success toast appears
-        await manageUsersPage.verifyResetPasswordToast();
+        await test.step('Verify the success toast', async () => {
+            // Verify the success toast appears
+            await manageUsersPage.verifyResetPasswordToast();
+        });
     });
 });

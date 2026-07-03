@@ -10,29 +10,39 @@ test.describe('The Work Number (TWN)', () => {
     test('TWN populates borrower info via shareable link', async ({
         preQualManualPage,
     }) => {
-        // Step 1 — Copy shareable link and open in new tab
-        const newTab = await preQualManualPage.openShareableLinkInNewTab();
-        const twnPage = new TWNPage(newTab);
+        const twnPage = await test.step('Open the shareable link in a new tab', async () => {
+            // Step 1 — Copy shareable link and open in new tab
+            const newTab = await preQualManualPage.openShareableLinkInNewTab();
+            return new TWNPage(newTab);
+        });
 
-        // Step 2 — Landing page → Get Started Now
-        await twnPage.clickGetStartedNow();
+        await test.step('Walk the landing and selection screens', async () => {
+            // Step 2 — Landing page → Get Started Now
+            await twnPage.clickGetStartedNow();
 
-        // Step 3 — Select property type (Single Family)
-        await twnPage.selectPropertyType(twnApplicationData);
+            // Step 3 — Select property type (Single Family)
+            await twnPage.selectPropertyType(twnApplicationData);
 
-        // Step 4 — Select loan purpose (Home Improvement)
-        await twnPage.selectLoanPurpose(twnApplicationData);
+            // Step 4 — Select loan purpose (Home Improvement)
+            await twnPage.selectLoanPurpose(twnApplicationData);
+        });
 
-        // Step 5 — Tell us about your property
-        await twnPage.fillPropertyInfo(twnApplicationData);
+        await test.step('Fill in the property and personal details', async () => {
+            // Step 5 — Tell us about your property
+            await twnPage.fillPropertyInfo(twnApplicationData);
 
-        // Step 6 — Tell us about yourself (creates borrower account)
-        await twnPage.fillAboutYourself(twnApplicationData);
+            // Step 6 — Tell us about yourself (creates borrower account)
+            await twnPage.fillAboutYourself(twnApplicationData);
+        });
 
-        // Step 7 — Credit check: fill TWN sandbox SSN + DOB
-        await twnPage.fillCreditCheck(twnApplicationData);
+        await test.step('Complete the credit check with TWN sandbox data', async () => {
+            // Step 7 — Credit check: fill TWN sandbox SSN + DOB
+            await twnPage.fillCreditCheck(twnApplicationData);
+        });
 
-        // Step 8 — Assert TWN populated the employer card
-        await twnPage.verifyTwnPopulated(twnApplicationData);
+        await test.step('Verify TWN populated the employer card', async () => {
+            // Step 8 — Assert TWN populated the employer card
+            await twnPage.verifyTwnPopulated(twnApplicationData);
+        });
     });
 });

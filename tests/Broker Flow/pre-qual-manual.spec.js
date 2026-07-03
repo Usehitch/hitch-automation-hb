@@ -25,53 +25,65 @@ test.describe('Pre-Qual Manually', () => {
         // existing application" and the form can't advance past Application Details.
         const appData = makeApplicationData();
 
-        // Step 1 — Application Details
-        await preQualManualPage.clickStartApp();
-        await preQualManualPage.clickStartPreQualManually();
-        await newApplicationPage.fillApplicationDetails(appData);
-        await newApplicationPage.clickNext();
+        await test.step('Fill in the application details', async () => {
+            // Step 1 — Application Details
+            await preQualManualPage.clickStartApp();
+            await preQualManualPage.clickStartPreQualManually();
+            await newApplicationPage.fillApplicationDetails(appData);
+            await newApplicationPage.clickNext();
+        });
 
-        // Step 2 — Mortgages & Liens
-        await expect(newApplicationPage.mortgagesHeading).toBeVisible({ timeout: 15000 });
-        await mortgagesAndLiensPage.fillMortgagesAndLiens(appData);
-        await mortgagesAndLiensPage.clickNext();
+        await test.step('Fill in mortgages and liens', async () => {
+            // Step 2 — Mortgages & Liens
+            await expect(newApplicationPage.mortgagesHeading).toBeVisible({ timeout: 15000 });
+            await mortgagesAndLiensPage.fillMortgagesAndLiens(appData);
+            await mortgagesAndLiensPage.clickNext();
+        });
 
-        // Step 3 — Offer Review (Pre-Qualification Summary)
-        await expect(offerReviewPage.pageHeading).toBeVisible({ timeout: 15000 });
-        await offerReviewPage.updateLoanAmount(appData);
-        await offerReviewPage.clickManageDebtPayoffs(appData);
-        await offerReviewPage.verifyDebtPayoffModal(appData);
-        await offerReviewPage.saveDebtPayoffPlan(appData);
-        await offerReviewPage.clickEditInitialDraw(appData);
-        await offerReviewPage.verifyUpfrontDrawModal(appData);
-        await offerReviewPage.setDrawPercent(appData);
-        await offerReviewPage.confirmUpfrontDraw(appData);
-        await offerReviewPage.acknowledgeDtiLimit();
-        await offerReviewPage.clickNext();
+        await test.step('Review the pre-qualification offer', async () => {
+            // Step 3 — Offer Review (Pre-Qualification Summary)
+            await expect(offerReviewPage.pageHeading).toBeVisible({ timeout: 15000 });
+            await offerReviewPage.updateLoanAmount(appData);
+            await offerReviewPage.clickManageDebtPayoffs(appData);
+            await offerReviewPage.verifyDebtPayoffModal(appData);
+            await offerReviewPage.saveDebtPayoffPlan(appData);
+            await offerReviewPage.clickEditInitialDraw(appData);
+            await offerReviewPage.verifyUpfrontDrawModal(appData);
+            await offerReviewPage.setDrawPercent(appData);
+            await offerReviewPage.confirmUpfrontDraw(appData);
+            await offerReviewPage.acknowledgeDtiLimit();
+            await offerReviewPage.clickNext();
+        });
 
-        // Step 4 — Consents
-        await expect(consentsPage.pageHeading).toBeVisible({ timeout: 15000 });
-        await consentsPage.checkAllCertifications();
-        await consentsPage.fillBrokerMloName(appData);
-        await consentsPage.verifySignature(appData);
-        await consentsPage.clickNext();
+        await test.step('Complete the consents', async () => {
+            // Step 4 — Consents
+            await expect(consentsPage.pageHeading).toBeVisible({ timeout: 15000 });
+            await consentsPage.checkAllCertifications();
+            await consentsPage.fillBrokerMloName(appData);
+            await consentsPage.verifySignature(appData);
+            await consentsPage.clickNext();
+        });
 
-        // Step 5 — Confirmation
-        await expect(confirmationPage.successHeading).toBeVisible({ timeout: 15000 });
-        await confirmationPage.verifyConfirmation(appData);
-        await confirmationPage.clickCopyBorrowerAppLink();
-        await confirmationPage.clickDownloadPdf();
-        await confirmationPage.clickClose();
+        await test.step('Verify the confirmation and return to the portal', async () => {
+            // Step 5 — Confirmation
+            await expect(confirmationPage.successHeading).toBeVisible({ timeout: 15000 });
+            await confirmationPage.verifyConfirmation(appData);
+            await confirmationPage.clickCopyBorrowerAppLink();
+            await confirmationPage.clickDownloadPdf();
+            await confirmationPage.clickClose();
 
-        // Verify redirect back to portal dashboard
-        await expect(confirmationPage.portalPipelineSection).toBeVisible({ timeout: 15000 });
+            // Verify redirect back to portal dashboard
+            await expect(confirmationPage.portalPipelineSection).toBeVisible({ timeout: 15000 });
+        });
 
-        // Step 6 — Confirm the borrower actually received the invitation email.
-        await expectInvitationEmailReceived(
-            page.context(),
-            appData.applicant.email,
-            'Borrower invite',
-        );
+        await test.step('Confirm the borrower received the invitation email', async () => {
+            // Step 6 — Confirm the borrower actually received the invitation email.
+            await expectInvitationEmailReceived(
+                page.context(),
+                appData.applicant.email,
+                'Borrower invite',
+            );
+        });
     });
 
     test('Create new application with Co-Borrower', async ({
@@ -91,57 +103,69 @@ test.describe('Pre-Qual Manually', () => {
         // co-borrower email or it hits "already associated to a coborrower invitation".
         const coBorrowerApplicationData = makeCoBorrowerApplicationData();
 
-        // Step 1 — Application Details (includes co-borrower section)
-        await preQualManualPage.clickStartApp();
-        await preQualManualPage.clickStartPreQualManually();
-        await newApplicationPage.fillApplicationDetails(coBorrowerApplicationData);
-        await newApplicationPage.clickNext();
+        await test.step('Fill in the application details with a co-borrower', async () => {
+            // Step 1 — Application Details (includes co-borrower section)
+            await preQualManualPage.clickStartApp();
+            await preQualManualPage.clickStartPreQualManually();
+            await newApplicationPage.fillApplicationDetails(coBorrowerApplicationData);
+            await newApplicationPage.clickNext();
+        });
 
-        // Step 2 — Mortgages & Liens
-        await expect(newApplicationPage.mortgagesHeading).toBeVisible({ timeout: 15000 });
-        await mortgagesAndLiensPage.fillMortgagesAndLiens(coBorrowerApplicationData);
-        await mortgagesAndLiensPage.clickNext();
+        await test.step('Fill in mortgages and liens', async () => {
+            // Step 2 — Mortgages & Liens
+            await expect(newApplicationPage.mortgagesHeading).toBeVisible({ timeout: 15000 });
+            await mortgagesAndLiensPage.fillMortgagesAndLiens(coBorrowerApplicationData);
+            await mortgagesAndLiensPage.clickNext();
+        });
 
-        // Step 3 — Offer Review
-        await expect(offerReviewPage.pageHeading).toBeVisible({ timeout: 15000 });
-        await offerReviewPage.updateLoanAmount(coBorrowerApplicationData);
-        await offerReviewPage.clickManageDebtPayoffs(coBorrowerApplicationData);
-        await offerReviewPage.verifyDebtPayoffModal(coBorrowerApplicationData);
-        await offerReviewPage.saveDebtPayoffPlan(coBorrowerApplicationData);
-        await offerReviewPage.clickEditInitialDraw(coBorrowerApplicationData);
-        await offerReviewPage.verifyUpfrontDrawModal(coBorrowerApplicationData);
-        await offerReviewPage.setDrawPercent(coBorrowerApplicationData);
-        await offerReviewPage.confirmUpfrontDraw(coBorrowerApplicationData);
-        await offerReviewPage.acknowledgeDtiLimit();
-        await offerReviewPage.clickNext();
+        await test.step('Review the pre-qualification offer', async () => {
+            // Step 3 — Offer Review
+            await expect(offerReviewPage.pageHeading).toBeVisible({ timeout: 15000 });
+            await offerReviewPage.updateLoanAmount(coBorrowerApplicationData);
+            await offerReviewPage.clickManageDebtPayoffs(coBorrowerApplicationData);
+            await offerReviewPage.verifyDebtPayoffModal(coBorrowerApplicationData);
+            await offerReviewPage.saveDebtPayoffPlan(coBorrowerApplicationData);
+            await offerReviewPage.clickEditInitialDraw(coBorrowerApplicationData);
+            await offerReviewPage.verifyUpfrontDrawModal(coBorrowerApplicationData);
+            await offerReviewPage.setDrawPercent(coBorrowerApplicationData);
+            await offerReviewPage.confirmUpfrontDraw(coBorrowerApplicationData);
+            await offerReviewPage.acknowledgeDtiLimit();
+            await offerReviewPage.clickNext();
+        });
 
-        // Step 4 — Consents
-        await expect(consentsPage.pageHeading).toBeVisible({ timeout: 15000 });
-        await consentsPage.checkAllCertifications();
-        await consentsPage.fillBrokerMloName(coBorrowerApplicationData);
-        await consentsPage.verifySignature(coBorrowerApplicationData);
-        await consentsPage.clickNext();
+        await test.step('Complete the consents', async () => {
+            // Step 4 — Consents
+            await expect(consentsPage.pageHeading).toBeVisible({ timeout: 15000 });
+            await consentsPage.checkAllCertifications();
+            await consentsPage.fillBrokerMloName(coBorrowerApplicationData);
+            await consentsPage.verifySignature(coBorrowerApplicationData);
+            await consentsPage.clickNext();
+        });
 
-        // Step 5 — Confirmation
-        await expect(confirmationPage.successHeading).toBeVisible({ timeout: 15000 });
-        await confirmationPage.verifyConfirmation(coBorrowerApplicationData);
-        await confirmationPage.clickCopyBorrowerAppLink();
-        await confirmationPage.clickDownloadPdf();
-        await confirmationPage.clickClose();
+        await test.step('Verify the confirmation and return to the portal', async () => {
+            // Step 5 — Confirmation
+            await expect(confirmationPage.successHeading).toBeVisible({ timeout: 15000 });
+            await confirmationPage.verifyConfirmation(coBorrowerApplicationData);
+            await confirmationPage.clickCopyBorrowerAppLink();
+            await confirmationPage.clickDownloadPdf();
+            await confirmationPage.clickClose();
 
-        await expect(confirmationPage.portalPipelineSection).toBeVisible({ timeout: 15000 });
+            await expect(confirmationPage.portalPipelineSection).toBeVisible({ timeout: 15000 });
+        });
 
-        // Step 6 — Confirm both the borrower and co-borrower received their invites.
-        await expectInvitationEmailReceived(
-            page.context(),
-            coBorrowerApplicationData.applicant.email,
-            'Borrower invite',
-        );
-        await expectInvitationEmailReceived(
-            page.context(),
-            coBorrowerApplicationData.coBorrower.email,
-            'Co-borrower invite',
-        );
+        await test.step('Confirm the borrower and co-borrower received their invites', async () => {
+            // Step 6 — Confirm both the borrower and co-borrower received their invites.
+            await expectInvitationEmailReceived(
+                page.context(),
+                coBorrowerApplicationData.applicant.email,
+                'Borrower invite',
+            );
+            await expectInvitationEmailReceived(
+                page.context(),
+                coBorrowerApplicationData.coBorrower.email,
+                'Co-borrower invite',
+            );
+        });
     });
 
 });

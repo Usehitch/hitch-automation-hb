@@ -79,27 +79,35 @@ test.describe('Manage Users — Add & Edit User', () => {
     test('Create a Loan Officer user with generated data and verify in table', async ({
         manageUsersPage,
     }) => {
-        // Step 1 — Open modal
-        await manageUsersPage.openAddNewUserModal();
-        await expect(manageUsersPage.addUserModalHeading).toBeVisible({ timeout: 10000 });
+        await test.step('Open the Add User modal', async () => {
+            // Step 1 — Open modal
+            await manageUsersPage.openAddNewUserModal();
+            await expect(manageUsersPage.addUserModalHeading).toBeVisible({ timeout: 10000 });
+        });
 
-        // Step 2 — Fill form and submit
-        await manageUsersPage.fillAndSubmitAddUserForm(userData);
+        await test.step('Fill in the new user form and submit', async () => {
+            // Step 2 — Fill form and submit
+            await manageUsersPage.fillAndSubmitAddUserForm(userData);
+        });
 
-        // Step 3 — Search for the newly created user by email and verify presence
-        await manageUsersPage.verifyUserInTable(userEmail);
+        await test.step('Verify the user appears in the table', async () => {
+            // Step 3 — Search for the newly created user by email and verify presence
+            await manageUsersPage.verifyUserInTable(userEmail);
+        });
 
-        // Step 4 — Confirm key columns for the found row
-        const userRow = manageUsersPage.page
-            .locator('tr')
-            .filter({ hasText: userEmail })
-            .first();
+        await test.step('Confirm key columns for the found row', async () => {
+            // Step 4 — Confirm key columns for the found row
+            const userRow = manageUsersPage.page
+                .locator('tr')
+                .filter({ hasText: userEmail })
+                .first();
 
-        // Email column
-        await expect(userRow.locator('td').filter({ hasText: userEmail })).toBeVisible({ timeout: 10000 });
+            // Email column
+            await expect(userRow.locator('td').filter({ hasText: userEmail })).toBeVisible({ timeout: 10000 });
 
-        // Name column
-        await expect(userRow.locator('td').filter({ hasText: userName })).toBeVisible({ timeout: 10000 });
+            // Name column
+            await expect(userRow.locator('td').filter({ hasText: userName })).toBeVisible({ timeout: 10000 });
+        });
     });
 
     // -------------------------------------------------------------------------
@@ -112,25 +120,31 @@ test.describe('Manage Users — Add & Edit User', () => {
         // Build an updated name so we can distinguish it from the original
         const updatedName = `${userName} (edited)`;
 
-        // Step 1 — Search for the user so the row is visible
-        await manageUsersPage.search(userEmail);
+        await test.step(`Search for the user (${userEmail})`, async () => {
+            // Step 1 — Search for the user so the row is visible
+            await manageUsersPage.search(userEmail);
 
-        const userRow = manageUsersPage.page
-            .locator('tr')
-            .filter({ hasText: userEmail })
-            .first();
-        await expect(userRow).toBeVisible({ timeout: 10000 });
+            const userRow = manageUsersPage.page
+                .locator('tr')
+                .filter({ hasText: userEmail })
+                .first();
+            await expect(userRow).toBeVisible({ timeout: 10000 });
+        });
 
-        // Step 2 — Open the Edit User modal for this row
-        await manageUsersPage.clickEditForUser(userEmail);
+        await test.step('Open the Edit User modal and update the name', async () => {
+            // Step 2 — Open the Edit User modal for this row
+            await manageUsersPage.clickEditForUser(userEmail);
 
-        // Step 3 — Update the display name
-        await manageUsersPage.fillEditUserForm({ name: updatedName });
+            // Step 3 — Update the display name
+            await manageUsersPage.fillEditUserForm({ name: updatedName });
+        });
 
-        // Step 4 — Save and wait for the modal to close
-        await manageUsersPage.saveEditUser();
+        await test.step('Save and verify the updated name in the table', async () => {
+            // Step 4 — Save and wait for the modal to close
+            await manageUsersPage.saveEditUser();
 
-        // Step 5 — Confirm the table now shows the updated name
-        await manageUsersPage.verifyUpdatedUser(userEmail, updatedName);
+            // Step 5 — Confirm the table now shows the updated name
+            await manageUsersPage.verifyUpdatedUser(userEmail, updatedName);
+        });
     });
 });
