@@ -1,0 +1,488 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: Borrower Flow/support.spec.js >> Support — Help Desk Widget >> Loan officer can access the help desk widget (AI bot + submit ticket)
+- Location: tests/Borrower Flow/support.spec.js:34:9
+
+# Error details
+
+```
+Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+
+Call Log:
+- Timeout 15000ms exceeded while waiting on the predicate
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e8]:
+      - list [ref=e10]:
+        - listitem [ref=e11]:
+          - button "logo":
+            - generic:
+              - generic:
+                - img "logo"
+          - button "Toggle Sidebar" [ref=e12] [cursor=pointer]:
+            - img
+            - generic [ref=e13]: Toggle Sidebar
+        - listitem [ref=e14]:
+          - generic [ref=e15]: NEXA Lending
+      - list [ref=e19]:
+        - listitem [ref=e20]:
+          - button "My Loans Chevron down" [ref=e22] [cursor=pointer]:
+            - img [ref=e23]
+            - text: My Loans
+            - img [ref=e26]
+            - generic [ref=e28]: Chevron down
+        - listitem [ref=e29]:
+          - button "Release Notes" [ref=e31] [cursor=pointer]:
+            - img [ref=e32]
+            - text: Release Notes
+      - list [ref=e38]:
+        - listitem [ref=e39]:
+          - button "HN HELIX NEXA TestMLO prod_helix_nexa_mlo@homebridge.com" [ref=e40] [cursor=pointer]:
+            - generic [ref=e42]: HN
+            - generic [ref=e43]:
+              - paragraph [ref=e44]: HELIX NEXA TestMLO
+              - paragraph [ref=e45]: prod_helix_nexa_mlo@homebridge.com
+            - img [ref=e46]
+    - main [ref=e50]:
+      - generic [ref=e51]:
+        - generic [ref=e52]:
+          - heading "My Loans" [level=1] [ref=e53]
+          - generic [ref=e54]:
+            - button "Sharable App Link" [ref=e55] [cursor=pointer]:
+              - img
+              - text: Sharable App Link
+            - button "Start App" [ref=e56] [cursor=pointer]:
+              - img
+              - text: Start App
+        - generic [ref=e57]:
+          - heading "Overview" [level=2] [ref=e59]
+          - generic [ref=e60]:
+            - generic [ref=e62]:
+              - generic [ref=e64]: My Loans
+              - generic [ref=e65]:
+                - generic [ref=e66]: "11"
+                - generic [ref=e67]: / $290,000
+            - generic [ref=e69]:
+              - generic [ref=e70]:
+                - img [ref=e72]
+                - generic [ref=e77]: Pre-Qual
+              - generic [ref=e78]:
+                - generic [ref=e79]: "9"
+                - generic [ref=e80]: / $0
+            - generic [ref=e82]:
+              - generic [ref=e83]:
+                - img [ref=e85]
+                - generic [ref=e87]: In Process
+              - generic [ref=e88]:
+                - generic [ref=e89]: "1"
+                - generic [ref=e90]: / $140,000
+            - generic [ref=e92]:
+              - generic [ref=e93]:
+                - img [ref=e95]
+                - generic [ref=e97]: Closing
+              - generic [ref=e98]:
+                - generic [ref=e99]: "1"
+                - generic [ref=e100]: / $150,000
+            - generic [ref=e102]:
+              - generic [ref=e103]:
+                - img [ref=e105]
+                - generic [ref=e107]: Funded
+              - generic [ref=e108]:
+                - generic [ref=e109]: "0"
+                - generic [ref=e110]: / $0
+        - generic [ref=e111]:
+          - generic [ref=e112]:
+            - generic [ref=e113]:
+              - generic [ref=e114]:
+                - img [ref=e115]
+                - textbox "Search by email, name, full address or loan number" [ref=e118]
+              - button "Filter" [ref=e120] [cursor=pointer]:
+                - img
+                - text: Filter
+            - tablist "View mode" [ref=e121]:
+              - tab "List" [selected] [ref=e122] [cursor=pointer]:
+                - img [ref=e124]
+                - text: List
+          - generic [ref=e125]:
+            - generic [ref=e126]:
+              - button "1 Pre-Qual 9 applications / $0" [ref=e127] [cursor=pointer]:
+                - generic [ref=e128]:
+                  - generic [ref=e129]: "1"
+                  - heading "Pre-Qual" [level=3] [ref=e130]
+                  - generic [ref=e131]: 9 applications / $0
+                - img [ref=e132]
+              - generic [ref=e135]:
+                - table [ref=e137]:
+                  - rowgroup [ref=e138]:
+                    - row "Applicant Property Address Loan Amount Processor / LOA Time in Stage" [ref=e139]:
+                      - columnheader "Applicant" [ref=e140]:
+                        - generic [ref=e141]: Applicant
+                      - columnheader "Property Address" [ref=e142]:
+                        - generic [ref=e143]: Property Address
+                      - columnheader "Loan Amount" [ref=e144]:
+                        - generic [ref=e145]: Loan Amount
+                      - columnheader "Processor / LOA" [ref=e146]:
+                        - generic [ref=e147]: Processor / LOA
+                      - columnheader "Time in Stage" [ref=e148]:
+                        - generic [ref=e149]: Time in Stage
+                      - columnheader [ref=e150]
+                  - rowgroup [ref=e151]:
+                    - 'row "Andy America test.1k0y4.1783094464034@mailinator.com Loan: #323000000000016 4556 Eliot St Denver, CO 80211 $0 HELIX NEXA TestMLO 0 d 1 h View" [ref=e152]':
+                      - 'cell "Andy America test.1k0y4.1783094464034@mailinator.com Loan: #323000000000016" [ref=e153]':
+                        - generic [ref=e154]:
+                          - link "Andy America" [ref=e155] [cursor=pointer]:
+                            - /url: /portal/loan/6a47dcf0734ab3ba0b60fb48/summary/overview
+                          - generic [ref=e156]: test.1k0y4.1783094464034@mailinator.com
+                          - generic [ref=e157]: "Loan: #323000000000016"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e158]:
+                        - generic [ref=e159]:
+                          - generic [ref=e160]: 4556 Eliot St
+                          - generic [ref=e161]: Denver, CO 80211
+                      - cell "$0" [ref=e162]
+                      - cell "HELIX NEXA TestMLO" [ref=e163]
+                      - cell "0 d 1 h" [ref=e164]:
+                        - generic [ref=e165]:
+                          - generic [ref=e166]: 0 d 1 h
+                          - img [ref=e167]
+                      - cell "View" [ref=e169]:
+                        - button "View" [ref=e170] [cursor=pointer]
+                    - 'row "Andy America test.eeifs.1783094206997@mailinator.com Loan: #323000000000015 4556 Eliot St Denver, CO 80211 $0 HELIX NEXA TestMLO 0 d 1 h View" [ref=e171]':
+                      - 'cell "Andy America test.eeifs.1783094206997@mailinator.com Loan: #323000000000015" [ref=e172]':
+                        - generic [ref=e173]:
+                          - link "Andy America" [ref=e174] [cursor=pointer]:
+                            - /url: /portal/loan/6a47dbec734ab3ba0b60fb3a/summary/overview
+                          - generic [ref=e175]: test.eeifs.1783094206997@mailinator.com
+                          - generic [ref=e176]: "Loan: #323000000000015"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e177]:
+                        - generic [ref=e178]:
+                          - generic [ref=e179]: 4556 Eliot St
+                          - generic [ref=e180]: Denver, CO 80211
+                      - cell "$0" [ref=e181]
+                      - cell "HELIX NEXA TestMLO" [ref=e182]
+                      - cell "0 d 1 h" [ref=e183]:
+                        - generic [ref=e184]:
+                          - generic [ref=e185]: 0 d 1 h
+                          - img [ref=e186]
+                      - cell "View" [ref=e188]:
+                        - button "View" [ref=e189] [cursor=pointer]
+                    - 'row "Andy America test.enjp6.1783093725138@mailinator.com Loan: #323000000000013 4556 Eliot St Denver, CO 80211 $0 HELIX NEXA TestMLO 0 d 1 h View" [ref=e190]':
+                      - 'cell "Andy America test.enjp6.1783093725138@mailinator.com Loan: #323000000000013" [ref=e191]':
+                        - generic [ref=e192]:
+                          - link "Andy America" [ref=e193] [cursor=pointer]:
+                            - /url: /portal/loan/6a47da07734ab3ba0b60fb1e/summary/overview
+                          - generic [ref=e194]: test.enjp6.1783093725138@mailinator.com
+                          - generic [ref=e195]: "Loan: #323000000000013"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e196]:
+                        - generic [ref=e197]:
+                          - generic [ref=e198]: 4556 Eliot St
+                          - generic [ref=e199]: Denver, CO 80211
+                      - cell "$0" [ref=e200]
+                      - cell "HELIX NEXA TestMLO" [ref=e201]
+                      - cell "0 d 1 h" [ref=e202]:
+                        - generic [ref=e203]:
+                          - generic [ref=e204]: 0 d 1 h
+                          - img [ref=e205]
+                      - cell "View" [ref=e207]:
+                        - button "View" [ref=e208] [cursor=pointer]
+                    - 'row "Andy America test.80eba.1783092504432@mailinator.com Loan: #323000000000010 4556 Eliot St Denver, CO 80211 $0 HELIX NEXA TestMLO 0 d 1 h View" [ref=e209]':
+                      - 'cell "Andy America test.80eba.1783092504432@mailinator.com Loan: #323000000000010" [ref=e210]':
+                        - generic [ref=e211]:
+                          - link "Andy America" [ref=e212] [cursor=pointer]:
+                            - /url: /portal/loan/6a47d543734ab3ba0b60faf4/summary/overview
+                          - generic [ref=e213]: test.80eba.1783092504432@mailinator.com
+                          - generic [ref=e214]: "Loan: #323000000000010"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e215]:
+                        - generic [ref=e216]:
+                          - generic [ref=e217]: 4556 Eliot St
+                          - generic [ref=e218]: Denver, CO 80211
+                      - cell "$0" [ref=e219]
+                      - cell "HELIX NEXA TestMLO" [ref=e220]
+                      - cell "0 d 1 h" [ref=e221]:
+                        - generic [ref=e222]:
+                          - generic [ref=e223]: 0 d 1 h
+                          - img [ref=e224]
+                      - cell "View" [ref=e226]:
+                        - button "View" [ref=e227] [cursor=pointer]
+                    - 'row "Andy America homebridgesqaforhitch+30892@gmail.com Loan: #323000000000005 8912 Brewer Creek Pl Manassas, VA 20109 $0 HELIX NEXA TestMLO 14 d 4 h View" [ref=e228]':
+                      - 'cell "Andy America homebridgesqaforhitch+30892@gmail.com Loan: #323000000000005" [ref=e229]':
+                        - generic [ref=e230]:
+                          - link "Andy America" [ref=e231] [cursor=pointer]:
+                            - /url: /portal/loan/6a354060569e8c7a1d9b7c00/summary/overview
+                          - generic [ref=e232]: homebridgesqaforhitch+30892@gmail.com
+                          - generic [ref=e233]: "Loan: #323000000000005"
+                      - cell "8912 Brewer Creek Pl Manassas, VA 20109" [ref=e234]:
+                        - generic [ref=e235]:
+                          - generic [ref=e236]: 8912 Brewer Creek Pl
+                          - generic [ref=e237]: Manassas, VA 20109
+                      - cell "$0" [ref=e238]
+                      - cell "HELIX NEXA TestMLO" [ref=e239]
+                      - cell "14 d 4 h" [ref=e240]:
+                        - generic [ref=e241]:
+                          - generic [ref=e242]: 14 d 4 h
+                          - img [ref=e243]
+                      - cell "View" [ref=e245]:
+                        - button "View" [ref=e246] [cursor=pointer]
+                    - 'row "Andy America homebridgesqaforhitch+30912@gmail.com Loan: #323000000000004 84647 9th St Trona, CA 93562 $0 HELIX NEXA TestMLO 14 d 4 h View" [ref=e247]':
+                      - 'cell "Andy America homebridgesqaforhitch+30912@gmail.com Loan: #323000000000004" [ref=e248]':
+                        - generic [ref=e249]:
+                          - link "Andy America" [ref=e250] [cursor=pointer]:
+                            - /url: /portal/loan/6a353e0e569e8c7a1d9b7be9/summary/overview
+                          - generic [ref=e251]: homebridgesqaforhitch+30912@gmail.com
+                          - generic [ref=e252]: "Loan: #323000000000004"
+                      - cell "84647 9th St Trona, CA 93562" [ref=e253]:
+                        - generic [ref=e254]:
+                          - generic [ref=e255]: 84647 9th St
+                          - generic [ref=e256]: Trona, CA 93562
+                      - cell "$0" [ref=e257]
+                      - cell "HELIX NEXA TestMLO" [ref=e258]
+                      - cell "14 d 4 h" [ref=e259]:
+                        - generic [ref=e260]:
+                          - generic [ref=e261]: 14 d 4 h
+                          - img [ref=e262]
+                      - cell "View" [ref=e264]:
+                        - button "View" [ref=e265] [cursor=pointer]
+                - generic [ref=e266]:
+                  - button "Previous" [disabled]:
+                    - img
+                    - text: Previous
+                  - button "1" [ref=e267] [cursor=pointer]
+                  - button "2" [ref=e268] [cursor=pointer]
+                  - button "Next" [ref=e269] [cursor=pointer]:
+                    - text: Next
+                    - img
+            - button "2 In Process 1 applications / $140,000" [ref=e271] [cursor=pointer]:
+              - generic [ref=e272]:
+                - generic [ref=e273]: "2"
+                - heading "In Process" [level=3] [ref=e274]
+                - generic [ref=e275]: 1 applications / $140,000
+              - img [ref=e276]
+            - button "3 Closing 1 applications / $150,000" [ref=e279] [cursor=pointer]:
+              - generic [ref=e280]:
+                - generic [ref=e281]: "3"
+                - heading "Closing" [level=3] [ref=e282]
+                - generic [ref=e283]: 1 applications / $150,000
+              - img [ref=e284]
+            - button "4 Funded 0 applications / $0" [ref=e287] [cursor=pointer]:
+              - generic [ref=e288]:
+                - generic [ref=e289]: "4"
+                - heading "Funded" [level=3] [ref=e290]
+                - generic [ref=e291]: 0 applications / $0
+              - img [ref=e292]
+  - alert [ref=e294]
+  - iframe [active] [ref=e295]:
+    - generic [ref=f14e1]:
+      - dialog "Messaging window" [ref=f14e2]:
+        - generic [ref=f14e3]:
+          - generic [ref=f14e4]:
+            - figure [ref=f14e5]
+            - region [ref=f14e6]:
+              - heading "NEXA HELOC Partner Support" [level=2] [ref=f14e7]
+              - paragraph [ref=f14e8]: Ask us anything
+          - generic [ref=f14e9]:
+            - button "Options menu" [ref=f14e12] [cursor=pointer]:
+              - img [ref=f14e13]
+            - button "Close" [ref=f14e18] [cursor=pointer]:
+              - img [ref=f14e19]
+          - generic:
+            - alert
+        - generic [ref=f14e21]:
+          - log [ref=f14e23]:
+            - paragraph [ref=f14e25]:
+              - text: This chat is recorded using a cloud service and is subject to the terms of our
+              - link "Privacy Notice(opens in a new tab)" [ref=f14e27] [cursor=pointer]:
+                - /url: https://www.nexahomelending.com/privacy-policy
+                - text: Privacy Notice
+                - img "(opens in a new tab)" [ref=f14e28]
+              - text: .
+            - paragraph [ref=f14e31]: 5:20 PM
+            - generic [ref=f14e32]:
+              - paragraph [ref=f14e34]: Harper AI Bot
+              - generic [ref=f14e37]:
+                - generic [ref=f14e38]: "Harper AI Bot says:"
+                - generic [ref=f14e39]: Hello! I'm Harper, the NEXA HELOC Partner AI Assistant. How can I help you today? You can ask me about our products or ask to speak with a live agent.
+            - generic [ref=f14e40]:
+              - figure [ref=f14e42]
+              - generic [ref=f14e45]:
+                - generic [ref=f14e46]: "Harper AI Bot says:"
+                - generic [ref=f14e47]: "All agents are currently unavailable, but we can still help. Please choose an option below:"
+              - paragraph [ref=f14e52]: Just now
+            - list [ref=f14e55]:
+              - listitem [ref=f14e56]:
+                - button "Submit ticket" [ref=f14e57] [cursor=pointer]
+              - listitem [ref=f14e58]:
+                - button "Continue w/AI" [ref=f14e59] [cursor=pointer]
+          - generic [ref=f14e62]:
+            - button "Upload file" [ref=f14e63] [cursor=pointer]:
+              - img [ref=f14e64]
+            - region [ref=f14e66]:
+              - generic [ref=f14e67]:
+                - generic [ref=f14e68]: Type a message
+                - textbox "Type a message" [active] [ref=f14e69]
+      - status [ref=f14e70]
+```
+
+# Test source
+
+```ts
+  1   | import { expect, test } from '../../fixtures';
+  2   | 
+  3   | /**
+  4   |  * Help Desk Widget — the support widget available throughout the app for both
+  5   |  * borrowers and loan officers. It exposes an AI chat bot and the ability to
+  6   |  * submit a support ticket / message.
+  7   |  *
+  8   |  * The widget is a third-party chat widget that renders inside cross-origin
+  9   |  * <iframe> elements pinned to the bottom-right corner (the same "live-chat
+  10  |  * widget" other page objects deliberately avoid matching). Its iframe
+  11  |  * attributes are not stable/known, so this page object locates controls by
+  12  |  * their accessible NAME across every frame on the page rather than by iframe
+  13  |  * selector — vendor-agnostic and resilient.
+  14  |  *
+  15  |  * Confirmed from page snapshots: launcher button "Open messaging window",
+  16  |  * proactive bubble "Hi. Need any help?", and its "Close message from company"
+  17  |  * dismiss button. The contents of the OPENED messenger panel (AI bot / submit
+  18  |  * ticket entry points) are best-effort and TODO-flagged until confirmed.
+  19  |  */
+  20  | class HelpDeskWidget {
+  21  |     constructor(page) {
+  22  |         this.page = page;
+  23  |     }
+  24  | 
+  25  |     // -------------------------------------------------------------------------
+  26  |     // Cross-frame helpers — the widget lives in iframes, and page.getByRole /
+  27  |     // getByText do not cross frame boundaries, so we scan every frame.
+  28  |     // -------------------------------------------------------------------------
+  29  | 
+  30  |     /** Find a control by role + accessible name in ANY frame; null if absent. */
+  31  |     async #findByRoleInAnyFrame(role, nameRe, { timeout = 20000 } = {}) {
+  32  |         let found = null;
+  33  |         await expect.poll(async () => {
+  34  |             for (const frame of this.page.frames()) {
+  35  |                 const loc = frame.getByRole(role, { name: nameRe });
+  36  |                 if (await loc.count().catch(() => 0) > 0) { found = loc.first(); return true; }
+  37  |             }
+  38  |             return false;
+  39  |         }, { timeout, intervals: [500, 1000, 2000] }).toBe(true);
+  40  |         return found;
+  41  |     }
+  42  | 
+  43  |     /** Find text in ANY frame; null if absent. */
+  44  |     async #findTextInAnyFrame(textRe, { timeout = 15000 } = {}) {
+  45  |         let found = null;
+> 46  |         await expect.poll(async () => {
+      |         ^ Error: expect(received).toBe(expected) // Object.is equality
+  47  |             for (const frame of this.page.frames()) {
+  48  |                 const loc = frame.getByText(textRe);
+  49  |                 if (await loc.count().catch(() => 0) > 0) { found = loc.first(); return true; }
+  50  |             }
+  51  |             return false;
+  52  |         }, { timeout, intervals: [500, 1000, 2000] }).toBe(true);
+  53  |         return found;
+  54  |     }
+  55  | 
+  56  |     // -------------------------------------------------------------------------
+  57  | 
+  58  |     /**
+  59  |      * Assert the help desk widget launcher is available on the current page.
+  60  |      */
+  61  |     async verifyAvailable() {
+  62  |         await test.step('Help desk widget — launcher is available', async () => {
+  63  |             const launcher = await this.#findByRoleInAnyFrame(
+  64  |                 'button',
+  65  |                 /Open messaging window|Need any help/i,
+  66  |             );
+  67  |             await expect(launcher).toBeVisible();
+  68  |         });
+  69  |     }
+  70  | 
+  71  |     /**
+  72  |      * Best-effort dismiss of the proactive "Hi. Need any help?" bubble and its
+  73  |      * "Close message from company" (X) button. The bubble floats over the
+  74  |      * bottom-right corner and can intercept pointer events on page controls
+  75  |      * (e.g. "Get Started Now"), so the borrower flow closes it before
+  76  |      * interacting with the page. Never throws — absence of the bubble is fine.
+  77  |      */
+  78  |     async dismissProactiveBubble() {
+  79  |         await test.step('Help desk widget — dismiss proactive bubble', async () => {
+  80  |             const proactiveClose = await this.#findByRoleInAnyFrame(
+  81  |                 'button', /Close message from company/i, { timeout: 3000 },
+  82  |             ).catch(() => null);
+  83  |             if (proactiveClose) await proactiveClose.click().catch(() => { });
+  84  |         });
+  85  |     }
+  86  | 
+  87  |     /**
+  88  |      * Open the messaging window via the launcher. Dismisses the proactive
+  89  |      * "Hi. Need any help?" bubble first if it is overlaying the launcher.
+  90  |      */
+  91  |     async open() {
+  92  |         await test.step('Help desk widget — open messaging window', async () => {
+  93  |             // Best-effort: dismiss the proactive message bubble if present.
+  94  |             await this.dismissProactiveBubble();
+  95  | 
+  96  |             const launcher = await this.#findByRoleInAnyFrame(
+  97  |                 'button', /Open messaging window/i,
+  98  |             );
+  99  |             await launcher.click();
+  100 | 
+  101 |             // Give the messenger panel time to mount its iframe/content.
+  102 |             // TODO: replace with an assertion on a confirmed messenger element
+  103 |             // once the opened-panel DOM is verified against the live app.
+  104 |             await this.page.waitForTimeout(2000);
+  105 |         });
+  106 |     }
+  107 | 
+  108 |     /**
+  109 |      * Assert the opened messenger exposes an AI chat bot entry. Verified
+  110 |      * present against the live widget via tolerant copy.
+  111 |      *
+  112 |      * Outside business hours some tenants (e.g. REMN) show a "currently
+  113 |      * closed" fallback menu (Submit a Ticket / Continue Chatting w/Agent /
+  114 |      * etc.) instead of the AI bot entry — that's expected tenant behavior,
+  115 |      * not a bug, so it's accepted as an alternate pass condition rather than
+  116 |      * failing the AI-bot assertion.
+  117 |      * TODO: tighten to the exact AI-bot control/copy if the messenger UI is
+  118 |      * locked down.
+  119 |      */
+  120 |     async verifyAiChatBotAvailable() {
+  121 |         await test.step('Help desk widget — AI chat bot available', async () => {
+  122 |             const bot = await this.#findTextInAnyFrame(
+  123 |                 /Ask a question|Ask the bot|Fin|AI|instant answer|How can we help|Start a conversation|Chat with us/i,
+  124 |                 { timeout: 5000 },
+  125 |             ).catch(() => null);
+  126 |             if (bot) {
+  127 |                 await expect(bot).toBeVisible();
+  128 |                 return;
+  129 |             }
+  130 | 
+  131 |             const closedFallback = await this.#findTextInAnyFrame(
+  132 |                 /currently closed|choose from the following|outside.*business hours/i,
+  133 |                 { timeout: 5000 },
+  134 |             ).catch(() => null);
+  135 |             expect(
+  136 |                 closedFallback,
+  137 |                 'Neither an AI chat bot entry nor a "currently closed" fallback menu was found',
+  138 |             ).not.toBeNull();
+  139 |         });
+  140 |     }
+  141 | 
+  142 |     /**
+  143 |      * Assert the opened messenger lets the user submit a support ticket /
+  144 |      * message. Verified present against the live widget via tolerant copy.
+  145 |      * TODO: tighten to the exact submit-ticket control/copy if the messenger UI
+  146 |      * is locked down.
+```
