@@ -38,7 +38,9 @@ class CoBorrowerFlowPage {
         this.helpDesk = new HelpDeskWidget(page);
 
         // -- Landing page -------------------------------------------------------
-        this.getStartedBtn = this.page.getByRole('button', { name: /Get Started Now/i }).first();
+        // "Get Started Now" became "Get Started" in the redesigned landing page
+        // (2026-07) — accept both so older environments still match.
+        this.getStartedBtn = this.page.getByRole('button', { name: /Get Started( Now)?/i }).first();
 
         // -- Property type cards ------------------------------------------------
         this.singleFamilyCard = this.page.getByText('Single Family', { exact: true });

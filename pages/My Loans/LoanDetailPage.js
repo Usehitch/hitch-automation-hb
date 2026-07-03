@@ -149,15 +149,19 @@ class LoanDetailPage {
         this.financialsEmploymentIncome  = this.page.getByText('Employment Income').first();
 
         // -- Tracker tab content ----------------------------------------------
-        // Top stepper — four lifecycle stage labels
-        this.trackerPreQual   = this.page.getByText('Pre-Qual').first();
-        this.trackerInProcess = this.page.getByText('In Process').first();
-        this.trackerClosing   = this.page.getByText('Closing').first();
-        this.trackerFunded    = this.page.getByText('Funded').first();
+        // Top stepper — four lifecycle stage labels. The new portal design
+        // renders hidden duplicates of these labels (sidebar submenu entries
+        // and a hidden span inside <main>), so match only visible instances —
+        // a bare .first() would lock onto a hidden node and never resolve.
+        const trackerMain = this.page.locator('main');
+        this.trackerPreQual   = trackerMain.getByText('Pre-Qual').filter({ visible: true }).first();
+        this.trackerInProcess = trackerMain.getByText('In Process').filter({ visible: true }).first();
+        this.trackerClosing   = trackerMain.getByText('Closing').filter({ visible: true }).first();
+        this.trackerFunded    = trackerMain.getByText('Funded').filter({ visible: true }).first();
 
         // Current stage detail panel (e.g. "Stage 1: Pre-Qual")
         this.trackerCurrentStageLabel  = this.page.getByText(/Stage \d+:/i).first();
-        this.trackerCurrentBadge       = this.page.getByText('Current').first();
+        this.trackerCurrentBadge       = this.page.getByText('Current').filter({ visible: true }).first();
         this.trackerStepsCompleted     = this.page.getByText(/\d+\/\d+ steps completed/i).first();
 
         // Pre-Qual step row headers

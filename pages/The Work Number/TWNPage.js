@@ -7,7 +7,9 @@ class TWNPage {
         this.helpDesk = new HelpDeskWidget(page);
 
         // -- Landing page ------------------------------------------------------
-        this.getStartedNowBtn = this.page.getByRole('button', { name: /Get Started Now/i }).first();
+        // Copy changed from "Get Started Now" to "Get Started" in the redesigned
+        // landing page (2026-07) — accept both so older environments still match.
+        this.getStartedNowBtn = this.page.getByRole('button', { name: /Get Started( Now)?/i }).first();
 
         // -- Select Property Type (card-style, no button role) -----------------
         this.singleFamilyCard = this.page.getByText('Single Family', { exact: true });
