@@ -1,0 +1,3 @@
+searchAndWaitForResult: no result for "test.v1403.1783110359129@mailinator.com" on attempt 1/4 — loan may not be indexed yet, retrying in 15000ms
+searchAndWaitForResult: no result for "test.v1403.1783110359129@mailinator.com" on attempt 2/4 — loan may not be indexed yet, retrying in 15000ms
+searchAndWaitForResult: no result for "test.v1403.1783110359129@mailinator.com" on attempt 3/4 — loan may not be indexed yet, retrying in 15000ms

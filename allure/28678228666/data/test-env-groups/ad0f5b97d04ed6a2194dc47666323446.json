@@ -1,0 +1,1 @@
+{"id":"ad0f5b97d04ed6a2194dc47666323446","fullName":"Broker Flow/Manage Users/add-role.spec.js:38:9","name":"Add a second role to a newly created user and verify it appears in the table","status":"broken","testResultsByEnv":{"default":"d808337e5af324ee4f0212448b04be0a"}}
