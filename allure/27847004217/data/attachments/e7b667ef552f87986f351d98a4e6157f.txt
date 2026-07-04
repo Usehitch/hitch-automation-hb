@@ -1,1 +1,0 @@
-trackerCurrentBadge: "Current" text not visible — badge may use different text for this loan stage

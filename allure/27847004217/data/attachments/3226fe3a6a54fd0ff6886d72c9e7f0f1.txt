@@ -1,3 +1,0 @@
-clickManageDebtPayoffs: no dialog appeared after clicking MANAGE — modal may not be applicable for this loan state
-verifyDebtPayoffModal: skipping — debt payoff modal was not opened
-saveDebtPayoffPlan: skipping — debt payoff modal was not opened
