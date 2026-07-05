@@ -1,0 +1,500 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: Borrower Flow/support.spec.js >> Support — Help Desk Widget >> Loan officer can access the help desk widget (AI bot + submit ticket)
+- Location: tests/Borrower Flow/support.spec.js:34:9
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator:  getByText(/Ask a question|Ask the bot|Fin|AI|instant answer|How can we help|Start a conversation|Chat with us/i).first()
+Expected: visible
+Received: hidden
+Timeout:  5000ms
+
+Call log:
+  - Expect "toBeVisible" with timeout 5000ms
+  - waiting for getByText(/Ask a question|Ask the bot|Fin|AI|instant answer|How can we help|Start a conversation|Chat with us/i).first()
+    9 × locator resolved to <div class="tooltip cookies">…</div>
+      - unexpected value "hidden"
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e8]:
+      - list [ref=e10]:
+        - listitem [ref=e11]:
+          - button "logo":
+            - generic:
+              - generic:
+                - img "logo"
+          - button "Toggle Sidebar" [ref=e12] [cursor=pointer]:
+            - img
+            - generic [ref=e13]: Toggle Sidebar
+        - listitem [ref=e14]:
+          - generic [ref=e15]: CMG Home Loan
+      - generic [ref=e16]:
+        - list [ref=e19]:
+          - listitem [ref=e20]:
+            - button "You're in Dev":
+              - img
+              - text: You're in Dev
+        - list [ref=e23]:
+          - listitem [ref=e24]:
+            - button "My Loans Chevron down" [ref=e26] [cursor=pointer]:
+              - img [ref=e27]
+              - text: My Loans
+              - img [ref=e30]
+              - generic [ref=e32]: Chevron down
+          - listitem [ref=e33]:
+            - button "Quick Pricer" [ref=e35] [cursor=pointer]:
+              - img [ref=e36]
+              - text: Quick Pricer
+          - listitem [ref=e38]:
+            - button "Release Notes" [ref=e40] [cursor=pointer]:
+              - img [ref=e41]
+              - text: Release Notes
+        - listitem [ref=e47]:
+          - button "Show Old Design" [ref=e49] [cursor=pointer]:
+            - img [ref=e50]
+            - text: Show Old Design
+      - list [ref=e53]:
+        - listitem [ref=e54]:
+          - button "A Ace ace@usehitch.com" [ref=e55] [cursor=pointer]:
+            - generic [ref=e57]: A
+            - generic [ref=e58]:
+              - paragraph [ref=e59]: Ace
+              - paragraph [ref=e60]: ace@usehitch.com
+            - img [ref=e61]
+    - main [ref=e65]:
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - heading "My Loans" [level=1] [ref=e68]
+          - generic [ref=e69]:
+            - button "Sharable App Link" [ref=e70] [cursor=pointer]:
+              - img
+              - text: Sharable App Link
+            - button "Start App" [ref=e71] [cursor=pointer]:
+              - img
+              - text: Start App
+        - generic [ref=e72]:
+          - heading "Overview" [level=2] [ref=e74]
+          - generic [ref=e75]:
+            - generic [ref=e77]:
+              - generic [ref=e79]: My Loans
+              - generic [ref=e80]:
+                - generic [ref=e81]: "13"
+                - generic [ref=e82]: / $1,100,000
+            - generic [ref=e84]:
+              - generic [ref=e85]:
+                - img [ref=e87]
+                - generic [ref=e92]: Pre-Qual
+              - generic [ref=e93]:
+                - generic [ref=e94]: "13"
+                - generic [ref=e95]: / $1,100,000
+            - generic [ref=e97]:
+              - generic [ref=e98]:
+                - img [ref=e100]
+                - generic [ref=e102]: In Process
+              - generic [ref=e103]:
+                - generic [ref=e104]: "0"
+                - generic [ref=e105]: / $0
+            - generic [ref=e107]:
+              - generic [ref=e108]:
+                - img [ref=e110]
+                - generic [ref=e112]: Closing
+              - generic [ref=e113]:
+                - generic [ref=e114]: "0"
+                - generic [ref=e115]: / $0
+            - generic [ref=e117]:
+              - generic [ref=e118]:
+                - img [ref=e120]
+                - generic [ref=e122]: Funded
+              - generic [ref=e123]:
+                - generic [ref=e124]: "0"
+                - generic [ref=e125]: / $0
+        - generic [ref=e126]:
+          - generic [ref=e127]:
+            - generic [ref=e128]:
+              - generic [ref=e129]:
+                - img [ref=e130]
+                - textbox "Search by email, name, full address or loan number" [ref=e133]
+              - button "Filter" [ref=e135] [cursor=pointer]:
+                - img
+                - text: Filter
+            - tablist "View mode" [ref=e136]:
+              - tab "List" [selected] [ref=e137] [cursor=pointer]:
+                - img [ref=e139]
+                - text: List
+          - generic [ref=e140]:
+            - generic [ref=e141]:
+              - button "1 Pre-Qual 13 applications / $1,100,000" [ref=e142] [cursor=pointer]:
+                - generic [ref=e143]:
+                  - generic [ref=e144]: "1"
+                  - heading "Pre-Qual" [level=3] [ref=e145]
+                  - generic [ref=e146]: 13 applications / $1,100,000
+                - img [ref=e147]
+              - generic [ref=e150]:
+                - table [ref=e152]:
+                  - rowgroup [ref=e153]:
+                    - row "Applicant Property Address Loan Amount Processor / LOA Time in Stage" [ref=e154]:
+                      - columnheader "Applicant" [ref=e155]:
+                        - generic [ref=e156]: Applicant
+                      - columnheader "Property Address" [ref=e157]:
+                        - generic [ref=e158]: Property Address
+                      - columnheader "Loan Amount" [ref=e159]:
+                        - generic [ref=e160]: Loan Amount
+                      - columnheader "Processor / LOA" [ref=e161]:
+                        - generic [ref=e162]: Processor / LOA
+                      - columnheader "Time in Stage" [ref=e163]:
+                        - generic [ref=e164]: Time in Stage
+                      - columnheader [ref=e165]
+                  - rowgroup [ref=e166]:
+                    - row "Andy America 5121231113 4556 Eliot St Denver, CO 80211 $0 Ace 0 d 21 h" [ref=e167]:
+                      - cell "Andy America 5121231113" [ref=e168]:
+                        - generic [ref=e169]:
+                          - link "Andy America" [ref=e170] [cursor=pointer]:
+                            - /url: /portal/loan/6a4894e68482ed3719791af6/summary/overview
+                          - generic [ref=e171]: "5121231113"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e172]:
+                        - generic [ref=e173]:
+                          - generic [ref=e174]: 4556 Eliot St
+                          - generic [ref=e175]: Denver, CO 80211
+                      - cell "$0" [ref=e176]
+                      - cell "Ace" [ref=e177]
+                      - cell "0 d 21 h" [ref=e178]:
+                        - generic [ref=e179]:
+                          - generic [ref=e180]: 0 d 21 h
+                          - img [ref=e181]
+                      - cell [ref=e183]:
+                        - button "More Actions" [ref=e184] [cursor=pointer]:
+                          - img
+                    - row "Andy America 5121231113 4556 Eliot St Denver, CO 80211 $100,000 Ace 0 d 22 h" [ref=e185]:
+                      - cell "Andy America 5121231113" [ref=e186]:
+                        - generic [ref=e187]:
+                          - link "Andy America" [ref=e188] [cursor=pointer]:
+                            - /url: /portal/loan/6a48933e8482ed3719791aac/summary/overview
+                          - generic [ref=e189]: "5121231113"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e190]:
+                        - generic [ref=e191]:
+                          - generic [ref=e192]: 4556 Eliot St
+                          - generic [ref=e193]: Denver, CO 80211
+                      - cell "$100,000" [ref=e194]
+                      - cell "Ace" [ref=e195]
+                      - cell "0 d 22 h" [ref=e196]:
+                        - generic [ref=e197]:
+                          - generic [ref=e198]: 0 d 22 h
+                          - img [ref=e199]
+                      - cell [ref=e201]:
+                        - button "More Actions" [ref=e202] [cursor=pointer]:
+                          - img
+                    - row "Andy America, Amy America 5121231113 4556 Eliot St Denver, CO 80211 $100,000 Ace 0 d 22 h" [ref=e203]:
+                      - cell "Andy America, Amy America 5121231113" [ref=e204]:
+                        - generic [ref=e205]:
+                          - link "Andy America, Amy America" [ref=e206] [cursor=pointer]:
+                            - /url: /portal/loan/6a4891e38482ed37197919b3/summary/overview
+                          - generic [ref=e207]: "5121231113"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e208]:
+                        - generic [ref=e209]:
+                          - generic [ref=e210]: 4556 Eliot St
+                          - generic [ref=e211]: Denver, CO 80211
+                      - cell "$100,000" [ref=e212]
+                      - cell "Ace" [ref=e213]
+                      - cell "0 d 22 h" [ref=e214]:
+                        - generic [ref=e215]:
+                          - generic [ref=e216]: 0 d 22 h
+                          - img [ref=e217]
+                      - cell [ref=e219]:
+                        - button "More Actions" [ref=e220] [cursor=pointer]:
+                          - img
+                    - row "Andy America, Amy America 5121231113 4556 Eliot St Denver, CO 80211 $100,000 Ace 0 d 22 h" [ref=e221]:
+                      - cell "Andy America, Amy America 5121231113" [ref=e222]:
+                        - generic [ref=e223]:
+                          - link "Andy America, Amy America" [ref=e224] [cursor=pointer]:
+                            - /url: /portal/loan/6a488f278482ed3719791897/summary/overview
+                          - generic [ref=e225]: "5121231113"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e226]:
+                        - generic [ref=e227]:
+                          - generic [ref=e228]: 4556 Eliot St
+                          - generic [ref=e229]: Denver, CO 80211
+                      - cell "$100,000" [ref=e230]
+                      - cell "Ace" [ref=e231]
+                      - cell "0 d 22 h" [ref=e232]:
+                        - generic [ref=e233]:
+                          - generic [ref=e234]: 0 d 22 h
+                          - img [ref=e235]
+                      - cell [ref=e237]:
+                        - button "More Actions" [ref=e238] [cursor=pointer]:
+                          - img
+                    - row "Andy America 5121231113 4556 ELIOT ST DENVER, CO 80211 $0 Ace 0 d 22 h" [ref=e239]:
+                      - cell "Andy America 5121231113" [ref=e240]:
+                        - generic [ref=e241]:
+                          - link "Andy America" [ref=e242] [cursor=pointer]:
+                            - /url: /portal/loan/6a488ef38482ed371979188b/summary/overview
+                          - generic [ref=e243]: "5121231113"
+                      - cell "4556 ELIOT ST DENVER, CO 80211" [ref=e244]:
+                        - generic [ref=e245]:
+                          - generic [ref=e246]: 4556 ELIOT ST
+                          - generic [ref=e247]: DENVER, CO 80211
+                      - cell "$0" [ref=e248]
+                      - cell "Ace" [ref=e249]
+                      - cell "0 d 22 h" [ref=e250]:
+                        - generic [ref=e251]:
+                          - generic [ref=e252]: 0 d 22 h
+                          - img [ref=e253]
+                      - cell [ref=e255]:
+                        - button "More Actions" [ref=e256] [cursor=pointer]:
+                          - img
+                    - row "Andy America, Amy America 5121231113 4556 Eliot St Denver, CO 80211 $100,000 Ace 0 d 22 h" [ref=e257]:
+                      - cell "Andy America, Amy America 5121231113" [ref=e258]:
+                        - generic [ref=e259]:
+                          - link "Andy America, Amy America" [ref=e260] [cursor=pointer]:
+                            - /url: /portal/loan/6a488c8f8482ed371979183c/summary/overview
+                          - generic [ref=e261]: "5121231113"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e262]:
+                        - generic [ref=e263]:
+                          - generic [ref=e264]: 4556 Eliot St
+                          - generic [ref=e265]: Denver, CO 80211
+                      - cell "$100,000" [ref=e266]
+                      - cell "Ace" [ref=e267]
+                      - cell "0 d 22 h" [ref=e268]:
+                        - generic [ref=e269]:
+                          - generic [ref=e270]: 0 d 22 h
+                          - img [ref=e271]
+                      - cell [ref=e273]:
+                        - button "More Actions" [ref=e274] [cursor=pointer]:
+                          - img
+                - generic [ref=e275]:
+                  - button "Previous" [disabled]:
+                    - img
+                    - text: Previous
+                  - button "1" [ref=e276] [cursor=pointer]
+                  - button "2" [ref=e277] [cursor=pointer]
+                  - button "3" [ref=e278] [cursor=pointer]
+                  - button "Next" [ref=e279] [cursor=pointer]:
+                    - text: Next
+                    - img
+            - button "2 In Process 0 applications / $0" [ref=e281] [cursor=pointer]:
+              - generic [ref=e282]:
+                - generic [ref=e283]: "2"
+                - heading "In Process" [level=3] [ref=e284]
+                - generic [ref=e285]: 0 applications / $0
+              - img [ref=e286]
+            - button "3 Closing 0 applications / $0" [ref=e289] [cursor=pointer]:
+              - generic [ref=e290]:
+                - generic [ref=e291]: "3"
+                - heading "Closing" [level=3] [ref=e292]
+                - generic [ref=e293]: 0 applications / $0
+              - img [ref=e294]
+            - button "4 Funded 0 applications / $0" [ref=e297] [cursor=pointer]:
+              - generic [ref=e298]:
+                - generic [ref=e299]: "4"
+                - heading "Funded" [level=3] [ref=e300]
+                - generic [ref=e301]: 0 applications / $0
+              - img [ref=e302]
+  - alert [ref=e304]
+  - iframe [active] [ref=e305]:
+    - generic [ref=f13e1]:
+      - dialog "Messaging window" [ref=f13e2]:
+        - generic [ref=f13e3]:
+          - generic [ref=f13e4]:
+            - figure [ref=f13e5]
+            - region [ref=f13e6]:
+              - heading "HELOC Broker Help" [level=2] [ref=f13e7]
+              - paragraph [ref=f13e8]: Ask us anything
+          - generic [ref=f13e9]:
+            - button "Options menu" [ref=f13e12] [cursor=pointer]:
+              - img [ref=f13e13]
+            - button "Close" [ref=f13e18] [cursor=pointer]:
+              - img [ref=f13e19]
+          - generic:
+            - alert
+        - generic [ref=f13e21]:
+          - log [ref=f13e23]:
+            - paragraph [ref=f13e25]: 3:06 AM
+            - generic [ref=f13e26]:
+              - paragraph [ref=f13e28]: CMG AI Assistant
+              - generic [ref=f13e31]:
+                - generic [ref=f13e32]: "CMG AI Assistant says:"
+                - generic [ref=f13e33]:
+                  - paragraph [ref=f13e34]: Hello there! I'm Payton, the HELOC AI Agent here at CMG!
+                  - paragraph [ref=f13e35]: Need some assistance today? Ask me anything I'll do my best to get you what you need.
+            - generic [ref=f13e39]:
+              - generic [ref=f13e40]: "CMG AI Assistant says:"
+              - generic [ref=f13e41]: I can answer most questions, but I'm also happy to offer these options as well to ensure we're doing everything we can to meet you halfway!
+            - generic [ref=f13e42]:
+              - figure [ref=f13e44]
+              - generic [ref=f13e47]:
+                - generic [ref=f13e48]: "CMG AI Assistant says:"
+                - generic [ref=f13e49]: "All agents are currently unavailable or it's outside our regular business hours, but we can still help. Please choose an option below:"
+              - paragraph [ref=f13e54]: Just now
+            - list [ref=f13e57]:
+              - listitem [ref=f13e58]:
+                - button "Submit a Ticket" [ref=f13e59] [cursor=pointer]
+              - listitem [ref=f13e60]:
+                - button "Continue Chatting w/AI" [ref=f13e61] [cursor=pointer]
+          - generic [ref=f13e63]:
+            - generic [ref=f13e64]:
+              - button "Upload file" [ref=f13e65] [cursor=pointer]:
+                - img [ref=f13e66]
+              - region [ref=f13e68]:
+                - generic [ref=f13e69]:
+                  - generic [ref=f13e70]: Type a message
+                  - textbox "Type a message" [active] [ref=f13e71]
+            - generic [ref=f13e72]:
+              - img [ref=f13e73]
+              - 'link "Built with Zendesk: Visit the Zendesk website in a new tab" [ref=f13e75] [cursor=pointer]':
+                - /url: https://www.zendesk.com/service/messaging/?utm_source=webwidgetmessagingweb&utm_medium=webwidgetmessaging&utm_campaign=poweredbyzendesk&utm_content=https://cmg-staging-pos.onrender.com/portal
+                - img [ref=f13e76]
+      - status [ref=f13e78]
+```
+
+# Test source
+
+```ts
+  27  |     // getByText do not cross frame boundaries, so we scan every frame.
+  28  |     // -------------------------------------------------------------------------
+  29  | 
+  30  |     /** Find a control by role + accessible name in ANY frame; null if absent. */
+  31  |     async #findByRoleInAnyFrame(role, nameRe, { timeout = 20000 } = {}) {
+  32  |         let found = null;
+  33  |         await expect.poll(async () => {
+  34  |             for (const frame of this.page.frames()) {
+  35  |                 const loc = frame.getByRole(role, { name: nameRe });
+  36  |                 if (await loc.count().catch(() => 0) > 0) { found = loc.first(); return true; }
+  37  |             }
+  38  |             return false;
+  39  |         }, { timeout, intervals: [500, 1000, 2000] }).toBe(true);
+  40  |         return found;
+  41  |     }
+  42  | 
+  43  |     /** Find text in ANY frame; null if absent. */
+  44  |     async #findTextInAnyFrame(textRe, { timeout = 15000 } = {}) {
+  45  |         let found = null;
+  46  |         await expect.poll(async () => {
+  47  |             for (const frame of this.page.frames()) {
+  48  |                 const loc = frame.getByText(textRe);
+  49  |                 if (await loc.count().catch(() => 0) > 0) { found = loc.first(); return true; }
+  50  |             }
+  51  |             return false;
+  52  |         }, { timeout, intervals: [500, 1000, 2000] }).toBe(true);
+  53  |         return found;
+  54  |     }
+  55  | 
+  56  |     // -------------------------------------------------------------------------
+  57  | 
+  58  |     /**
+  59  |      * Assert the help desk widget launcher is available on the current page.
+  60  |      */
+  61  |     async verifyAvailable() {
+  62  |         await test.step('Help desk widget — launcher is available', async () => {
+  63  |             const launcher = await this.#findByRoleInAnyFrame(
+  64  |                 'button',
+  65  |                 /Open messaging window|Need any help/i,
+  66  |             );
+  67  |             await expect(launcher).toBeVisible();
+  68  |         });
+  69  |     }
+  70  | 
+  71  |     /**
+  72  |      * Best-effort dismiss of the proactive "Hi. Need any help?" bubble and its
+  73  |      * "Close message from company" (X) button. The bubble floats over the
+  74  |      * bottom-right corner and can intercept pointer events on page controls
+  75  |      * (e.g. "Get Started Now"), so the borrower flow closes it before
+  76  |      * interacting with the page. Never throws — absence of the bubble is fine.
+  77  |      */
+  78  |     async dismissProactiveBubble() {
+  79  |         await test.step('Help desk widget — dismiss proactive bubble', async () => {
+  80  |             const proactiveClose = await this.#findByRoleInAnyFrame(
+  81  |                 'button', /Close message from company/i, { timeout: 3000 },
+  82  |             ).catch(() => null);
+  83  |             if (proactiveClose) await proactiveClose.click().catch(() => { });
+  84  |         });
+  85  |     }
+  86  | 
+  87  |     /**
+  88  |      * Open the messaging window via the launcher. Dismisses the proactive
+  89  |      * "Hi. Need any help?" bubble first if it is overlaying the launcher.
+  90  |      */
+  91  |     async open() {
+  92  |         await test.step('Help desk widget — open messaging window', async () => {
+  93  |             // Best-effort: dismiss the proactive message bubble if present.
+  94  |             await this.dismissProactiveBubble();
+  95  | 
+  96  |             const launcher = await this.#findByRoleInAnyFrame(
+  97  |                 'button', /Open messaging window/i,
+  98  |             );
+  99  |             await launcher.click();
+  100 | 
+  101 |             // Give the messenger panel time to mount its iframe/content.
+  102 |             // TODO: replace with an assertion on a confirmed messenger element
+  103 |             // once the opened-panel DOM is verified against the live app.
+  104 |             await this.page.waitForTimeout(2000);
+  105 |         });
+  106 |     }
+  107 | 
+  108 |     /**
+  109 |      * Assert the opened messenger exposes an AI chat bot entry. Verified
+  110 |      * present against the live widget via tolerant copy.
+  111 |      *
+  112 |      * Outside business hours some tenants (e.g. REMN) show a "currently
+  113 |      * closed" fallback menu (Submit a Ticket / Continue Chatting w/Agent /
+  114 |      * etc.) instead of the AI bot entry — that's expected tenant behavior,
+  115 |      * not a bug, so it's accepted as an alternate pass condition rather than
+  116 |      * failing the AI-bot assertion.
+  117 |      * TODO: tighten to the exact AI-bot control/copy if the messenger UI is
+  118 |      * locked down.
+  119 |      */
+  120 |     async verifyAiChatBotAvailable() {
+  121 |         await test.step('Help desk widget — AI chat bot available', async () => {
+  122 |             const bot = await this.#findTextInAnyFrame(
+  123 |                 /Ask a question|Ask the bot|Fin|AI|instant answer|How can we help|Start a conversation|Chat with us/i,
+  124 |                 { timeout: 5000 },
+  125 |             ).catch(() => null);
+  126 |             if (bot) {
+> 127 |                 await expect(bot).toBeVisible();
+      |                                   ^ Error: expect(locator).toBeVisible() failed
+  128 |                 return;
+  129 |             }
+  130 | 
+  131 |             const closedFallback = await this.#findTextInAnyFrame(
+  132 |                 /currently closed|choose from the following|outside.*business hours/i,
+  133 |                 { timeout: 5000 },
+  134 |             ).catch(() => null);
+  135 |             expect(
+  136 |                 closedFallback,
+  137 |                 'Neither an AI chat bot entry nor a "currently closed" fallback menu was found',
+  138 |             ).not.toBeNull();
+  139 |         });
+  140 |     }
+  141 | 
+  142 |     /**
+  143 |      * Assert the opened messenger lets the user submit a support ticket /
+  144 |      * message. Verified present against the live widget via tolerant copy.
+  145 |      * TODO: tighten to the exact submit-ticket control/copy if the messenger UI
+  146 |      * is locked down.
+  147 |      */
+  148 |     async verifySubmitTicketAvailable() {
+  149 |         await test.step('Help desk widget — submit support ticket available', async () => {
+  150 |             const ticket = await this.#findTextInAnyFrame(
+  151 |                 /Send us a message|Send a message|Submit a ticket|Get help|Email us|Leave a message|Message us/i,
+  152 |             );
+  153 |             await expect(ticket).toBeVisible();
+  154 |         });
+  155 |     }
+  156 | }
+  157 | 
+  158 | export default HelpDeskWidget;
+  159 | 
+```
