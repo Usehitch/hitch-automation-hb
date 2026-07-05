@@ -1,0 +1,1 @@
+Scenario A: Demographics not shown after Other Info — continuing to Income Verification check
