@@ -1,0 +1,243 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: Borrower Flow/invitation.spec.js >> Scenario A: LO creates pre-qual and borrower receives invitation
+- Location: tests/Borrower Flow/invitation.spec.js:88:5
+
+# Error details
+
+```
+TimeoutError: locator.waitFor: Timeout 200000ms exceeded.
+Call log:
+  - waiting for getByText('Loan Officer Certifications').first() to be visible
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - button "Go back" [ref=e7] [cursor=pointer]:
+          - img [ref=e8]
+        - generic [ref=e10]: New Application
+        - generic [ref=e11]:
+          - paragraph [ref=e12]: "Application ID:"
+          - generic [ref=e14]: "301000000001384"
+          - button "Copy Application ID" [ref=e15] [cursor=pointer]:
+            - img [ref=e16]
+      - generic [ref=e19]:
+        - generic [ref=e21]:
+          - img [ref=e23]
+          - paragraph [ref=e27]: APPLICATION DETAILS
+        - generic [ref=e31]:
+          - img [ref=e33]
+          - paragraph [ref=e37]: MORTGAGES & LIENS
+        - generic [ref=e41]:
+          - img [ref=e43]:
+            - generic [ref=e45]: "3"
+          - paragraph [ref=e48]: OFFER REVIEW
+        - generic [ref=e52]:
+          - img [ref=e54]:
+            - generic [ref=e56]: "4"
+          - paragraph [ref=e59]: CONSENTS
+    - generic [ref=e60]:
+      - generic [ref=e61]:
+        - img [ref=e63]
+        - paragraph [ref=e65]: Pre-Qualification Summary
+        - generic:
+          - img
+      - generic [ref=e67]:
+        - generic [ref=e68]:
+          - generic [ref=e70]:
+            - generic [ref=e71]:
+              - generic [ref=e72]:
+                - img [ref=e73]
+                - paragraph [ref=e75]: Requested Loan Amount
+              - generic [ref=e76]:
+                - paragraph [ref=e77]: $25,000
+                - paragraph [ref=e78]: / Max eligible $675,000
+            - button "CHANGE" [ref=e79] [cursor=pointer]:
+              - img [ref=e81]
+              - text: CHANGE
+          - generic [ref=e83]:
+            - generic [ref=e84]:
+              - generic [ref=e86]:
+                - generic [ref=e87]:
+                  - generic [ref=e88]:
+                    - img [ref=e89]
+                    - paragraph [ref=e91]: Debt Payoffs Applied
+                  - paragraph [ref=e92]: "-$0"
+                - button "Manage" [ref=e93] [cursor=pointer]: Manage
+              - generic [ref=e95]:
+                - generic [ref=e96]:
+                  - generic [ref=e97]:
+                    - img [ref=e98]
+                    - paragraph [ref=e103]: Initial Draw Amount
+                  - generic [ref=e104]:
+                    - paragraph [ref=e105]: $18,750
+                    - paragraph [ref=e106]: / 75% of available funds
+                - button "edit" [ref=e107] [cursor=pointer]: edit
+            - generic [ref=e108]:
+              - generic [ref=e109]:
+                - generic [ref=e110]:
+                  - paragraph [ref=e111]: Interest Rate (Variable rate)
+                  - generic "The interest rate is variable and may change over time based on market conditions." [ref=e112] [cursor=pointer]:
+                    - img [ref=e113]
+                - paragraph [ref=e115]: 8.94%
+              - generic [ref=e116]:
+                - generic [ref=e117]:
+                  - paragraph [ref=e118]: Estimated Monthly Payment
+                  - paragraph [ref=e119]: Interest-only payment for the first 5 years, then principal + interest
+                - paragraph [ref=e120]: $186.25
+              - generic [ref=e121]:
+                - paragraph [ref=e122]: Origination Fee (2.99%)
+                - paragraph [ref=e123]: $747.50
+              - button "Other Fees $202.19" [ref=e125] [cursor=pointer]:
+                - generic [ref=e127]:
+                  - paragraph [ref=e128]: Other Fees
+                  - paragraph [ref=e129]: $202.19
+                - img [ref=e131]
+              - generic [ref=e133]:
+                - paragraph [ref=e134]: Estimated Cash You'll Receive at Funding
+                - paragraph [ref=e135]: $24,050.31
+        - paragraph [ref=e137]: "*Pre-qualification is based on a soft credit pull and the information provided. This is not a commitment to lend. Final loan approval is subject to a full underwriting review, hard credit pull, property appraisal, and verification of all information. Loan terms, rates, and amounts are subject to change based on market conditions and final underwriting. NMLS #123456. Equal Housing Lender."
+    - generic [ref=e138]:
+      - button "Back" [ref=e139] [cursor=pointer]: Back
+      - button "SAVE FOR LATER" [disabled]
+      - button "Next" [active] [ref=e140] [cursor=pointer]: Next
+  - alert [ref=e141]: /portal/new-application
+  - generic:
+    - generic:
+      - generic [ref=e143]:
+        - iframe [ref=e144]:
+          - button "Close message from company" [ref=f9e4] [cursor=pointer]:
+            - img [ref=f9e5]
+        - iframe [ref=e145]:
+          - button "Get More Help!" [ref=f10e5] [cursor=pointer]
+      - iframe [ref=e146]:
+        - button "Open messaging window" [ref=f11e5] [cursor=pointer]:
+          - img [ref=f11e7]
+          - img [ref=f11e10]
+```
+
+# Test source
+
+```ts
+  412 |     };
+  413 | 
+  414 |     /**
+  415 |      * Verifies the read-only summary rows inside the Edit Upfront Draw modal.
+  416 |      * If expected values are supplied in data they are asserted; otherwise just
+  417 |      * confirms the rows are visible.
+  418 |      */
+  419 |     async verifyUpfrontDrawModal(data) {
+  420 |         await test.step('Verify Edit Upfront Draw modal contents', async () => {
+  421 |             const id = data.offerReview?.initialDraw;
+  422 |             if (!id?.edit) return;
+  423 | 
+  424 |             await expect(this.availableDrawRow).toBeVisible();
+  425 |             await expect(this.drawAmountRow).toBeVisible();
+  426 |             await expect(this.closingCostRow).toBeVisible();
+  427 |             await expect(this.cashToBorrowerRow).toBeVisible();
+  428 | 
+  429 |             if (id.expectedAvailableDraw) {
+  430 |                 await expect(
+  431 |                     this.editUpfrontDrawModal.getByText(id.expectedAvailableDraw).first()
+  432 |                 ).toBeVisible();
+  433 |             }
+  434 |         });
+  435 |     };
+  436 | 
+  437 |     /**
+  438 |      * Adjusts the upfront draw slider to the target percentage (75–100).
+  439 |      * Reads aria-valuenow from the MUI thumb, then nudges with arrow keys.
+  440 |      * Skips if drawPercent is not provided.
+  441 |      */
+  442 |     async setDrawPercent(data) {
+  443 |         await test.step('Set upfront draw percentage', async () => {
+  444 |             const id = data.offerReview?.initialDraw;
+  445 |             if (!id?.edit || id.drawPercent === undefined) return;
+  446 | 
+  447 |             const target = id.drawPercent;
+  448 | 
+  449 |             // Focus the slider thumb so it accepts keyboard events
+  450 |             await this.drawSliderThumb.focus();
+  451 | 
+  452 |             const currentRaw = await this.drawSliderThumb.getAttribute('aria-valuenow');
+  453 |             const current = parseInt(currentRaw ?? '100', 10);
+  454 |             const delta = target - current;
+  455 | 
+  456 |             if (delta === 0) return;
+  457 | 
+  458 |             const key = delta < 0 ? 'ArrowLeft' : 'ArrowRight';
+  459 |             const steps = Math.abs(delta);
+  460 | 
+  461 |             for (let i = 0; i < steps; i++) {
+  462 |                 await this.page.keyboard.press(key);
+  463 |             }
+  464 |         });
+  465 |     };
+  466 | 
+  467 |     /**
+  468 |      * Clicks CONFIRM and waits for the modal to close.
+  469 |      */
+  470 |     async confirmUpfrontDraw(data) {
+  471 |         await test.step('Confirm upfront draw', async () => {
+  472 |             if (!data.offerReview?.initialDraw?.confirm) return;
+  473 | 
+  474 |             await this.confirmDrawBtn.click();
+  475 |             await this.editUpfrontDrawModal.waitFor({ state: 'hidden', timeout: 10000 });
+  476 |         });
+  477 |     };
+  478 | 
+  479 |     // --------------------------------------------------------------------------
+  480 | 
+  481 |     /**
+  482 |      * Checks the "I understand my DTI is above the allowable limit" checkbox
+  483 |      * when it is visible. The checkbox only appears when DTI > 50%, and DTI is
+  484 |      * dynamic — so we check for actual visibility rather than relying on a data
+  485 |      * flag. If visible, it must be checked before NEXT becomes enabled.
+  486 |      */
+  487 |     async acknowledgeDtiLimit() {
+  488 |         await test.step('Acknowledge DTI above allowable limit (if required)', async () => {
+  489 |             const isVisible = await this.dtiAcknowledgmentCheckbox.isVisible().catch(() => false);
+  490 |             if (!isVisible) return;
+  491 | 
+  492 |             await this.dtiAcknowledgmentCheckbox.scrollIntoViewIfNeeded();
+  493 |             await this.dtiAcknowledgmentCheckbox.check({ force: true });
+  494 |         });
+  495 |     };
+  496 | 
+  497 |     async clickNext() {
+  498 |         await test.step('Click Next to proceed to Consents', async () => {
+  499 |             await this.nextBtn.scrollIntoViewIfNeeded();
+  500 |             await this.nextBtn.click({ force: true });
+  501 | 
+  502 |             // Staging can be slow processing the offer submission — wait up to 200 s (co-borrower flows run two credit pulls).
+  503 |             // If still on Offer Review after 10 s, retry the click once (handles the
+  504 |             // case where the first click fired before the button was fully ready).
+  505 |             try {
+  506 |                 await this.consentsHeading.waitFor({ state: 'visible', timeout: 10000 });
+  507 |             } catch {
+  508 |                 const stillOnOfferReview = await this.pageHeading.isVisible().catch(() => false);
+  509 |                 if (stillOnOfferReview) {
+  510 |                     await this.nextBtn.click({ force: true });
+  511 |                 }
+> 512 |                 await this.consentsHeading.waitFor({ state: 'visible', timeout: 200000 });
+      |                                            ^ TimeoutError: locator.waitFor: Timeout 200000ms exceeded.
+  513 |             }
+  514 |         });
+  515 |     };
+  516 | };
+  517 | 
+  518 | export default OfferReviewPage;
+  519 | 
+```
