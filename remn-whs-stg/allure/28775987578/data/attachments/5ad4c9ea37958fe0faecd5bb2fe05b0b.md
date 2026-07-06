@@ -1,0 +1,745 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: LO Flow/pipeline-management.spec.js >> LO - Pipeline Management >> LO sees the Pending MLO Certification bucket when loans await certification
+- Location: tests/LO Flow/pipeline-management.spec.js:49:9
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: getByText('LO Assistant')
+Expected: visible
+Error: strict mode violation: getByText('LO Assistant') resolved to 2 elements:
+    1) <div class="group flex w-full flex-row items-center gap-2">LO Assistant</div> aka getByText('LO Assistant').first()
+    2) <div class="group flex w-full flex-row items-center gap-2">LO Assistant</div> aka getByText('LO Assistant').nth(1)
+
+Call log:
+  - Expect "toBeVisible" with timeout 5000ms
+  - waiting for getByText('LO Assistant')
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e8]:
+      - list [ref=e10]:
+        - listitem [ref=e11]:
+          - button "logo":
+            - generic:
+              - generic:
+                - img "logo"
+          - button "Toggle Sidebar" [ref=e12] [cursor=pointer]:
+            - img
+            - generic [ref=e13]: Toggle Sidebar
+        - listitem [ref=e14]:
+          - generic [ref=e15]: HB Test Broker-REMN
+      - generic [ref=e16]:
+        - list [ref=e19]:
+          - listitem [ref=e20]:
+            - button "You're in Dev":
+              - img
+              - text: You're in Dev
+        - list [ref=e23]:
+          - listitem [ref=e24]:
+            - button "My Loans Chevron down" [ref=e26] [cursor=pointer]:
+              - img [ref=e27]
+              - text: My Loans
+              - img [ref=e30]
+              - generic [ref=e32]: Chevron down
+          - listitem [ref=e33]:
+            - button "Manage Users" [ref=e35] [cursor=pointer]:
+              - img [ref=e36]
+              - text: Manage Users
+          - listitem [ref=e41]:
+            - button "Companies" [ref=e43] [cursor=pointer]:
+              - img [ref=e44]
+              - text: Companies
+          - listitem [ref=e48]:
+            - button "Company Branches" [ref=e50] [cursor=pointer]:
+              - img [ref=e51]
+              - text: Company Branches
+          - listitem [ref=e56]:
+            - button "Quick Pricer" [ref=e58] [cursor=pointer]:
+              - img [ref=e59]
+              - text: Quick Pricer
+          - listitem [ref=e61]:
+            - button "Release Notes" [ref=e63] [cursor=pointer]:
+              - img [ref=e64]
+              - text: Release Notes
+        - listitem [ref=e70]:
+          - button "Show Old Design" [ref=e72] [cursor=pointer]:
+            - img [ref=e73]
+            - text: Show Old Design
+      - list [ref=e76]:
+        - listitem [ref=e77]:
+          - button "HR HELIX REMN TestMLO stg_helix_remn_mlo@homebridge.com" [ref=e78] [cursor=pointer]:
+            - generic [ref=e80]: HR
+            - generic [ref=e81]:
+              - paragraph [ref=e82]: HELIX REMN TestMLO
+              - paragraph [ref=e83]: stg_helix_remn_mlo@homebridge.com
+            - img [ref=e84]
+    - main [ref=e88]:
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - heading "My Loans" [level=1] [ref=e91]
+          - generic [ref=e92]:
+            - button "Sharable App Link" [ref=e93] [cursor=pointer]:
+              - img
+              - text: Sharable App Link
+            - button "Start App" [ref=e94] [cursor=pointer]:
+              - img
+              - text: Start App
+        - generic [ref=e95]:
+          - heading "Overview" [level=2] [ref=e97]
+          - generic [ref=e98]:
+            - generic [ref=e100]:
+              - generic [ref=e102]: My Loans
+              - generic [ref=e103]:
+                - generic [ref=e104]: "220"
+                - generic [ref=e105]: / $23,606,002
+            - generic [ref=e107]:
+              - generic [ref=e108]:
+                - img [ref=e110]
+                - generic [ref=e115]: Pre-Qual
+              - generic [ref=e116]:
+                - generic [ref=e117]: "129"
+                - generic [ref=e118]: / $8,790,878
+            - generic [ref=e120]:
+              - generic [ref=e121]:
+                - img [ref=e123]
+                - generic [ref=e125]: In Process
+              - generic [ref=e126]:
+                - generic [ref=e127]: "91"
+                - generic [ref=e128]: / $14,815,124
+            - generic [ref=e130]:
+              - generic [ref=e131]:
+                - img [ref=e133]
+                - generic [ref=e135]: Closing
+              - generic [ref=e136]:
+                - generic [ref=e137]: "0"
+                - generic [ref=e138]: / $0
+            - generic [ref=e140]:
+              - generic [ref=e141]:
+                - img [ref=e143]
+                - generic [ref=e145]: Funded
+              - generic [ref=e146]:
+                - generic [ref=e147]: "0"
+                - generic [ref=e148]: / $0
+        - generic [ref=e149]:
+          - generic [ref=e150]:
+            - generic [ref=e151]:
+              - generic [ref=e152]:
+                - img [ref=e153]
+                - textbox "Search by email, name, full address or loan number" [ref=e156]
+              - button "Filter" [ref=e158] [cursor=pointer]:
+                - img
+                - text: Filter
+            - tablist "View mode" [ref=e159]:
+              - tab "List" [selected] [ref=e160] [cursor=pointer]:
+                - img [ref=e162]
+                - text: List
+          - generic [ref=e163]:
+            - generic [ref=e164]:
+              - button "Saved Drafts 1 application (Not submitted. Expires in 7 days)" [ref=e165] [cursor=pointer]:
+                - generic [ref=e166]:
+                  - img [ref=e167]
+                  - heading "Saved Drafts" [level=3] [ref=e170]
+                  - generic [ref=e171]: 1 application (Not submitted. Expires in 7 days)
+                - img [ref=e172]
+              - generic [ref=e175]:
+                - table [ref=e177]:
+                  - rowgroup [ref=e178]:
+                    - row "Applicant Property Address Loan Amount Status LO Assistant Time in Stage" [ref=e179]:
+                      - columnheader "Applicant" [ref=e180]:
+                        - generic [ref=e181]: Applicant
+                      - columnheader "Property Address" [ref=e182]:
+                        - generic [ref=e183]: Property Address
+                      - columnheader "Loan Amount" [ref=e184]:
+                        - generic [ref=e185]: Loan Amount
+                      - columnheader "Status" [ref=e186]:
+                        - generic [ref=e187]: Status
+                      - columnheader "LO Assistant" [ref=e188]:
+                        - generic [ref=e189]: LO Assistant
+                      - columnheader "Time in Stage" [ref=e190]:
+                        - generic [ref=e191]: Time in Stage
+                      - columnheader [ref=e192]
+                  - rowgroup [ref=e193]:
+                    - row "Save Draft 3 AmericA 1654687489 829 Farmington Dr, Junction City, OR 97448 $0 Draft HELIX REMN TestMLO 0 d 1 h" [ref=e194]:
+                      - cell "Save Draft 3 AmericA 1654687489" [ref=e195]:
+                        - generic [ref=e196]:
+                          - link "Save Draft 3 AmericA" [ref=e197] [cursor=pointer]:
+                            - /url: /portal/loan/6a4b5f1ff2db321a29bf2a3d/summary/overview
+                          - generic [ref=e198]: "1654687489"
+                      - cell "829 Farmington Dr, Junction City, OR 97448" [ref=e199]
+                      - cell "$0" [ref=e200]
+                      - cell "Draft" [ref=e201]:
+                        - generic [ref=e202]: Draft
+                      - cell "HELIX REMN TestMLO" [ref=e203]
+                      - cell "0 d 1 h" [ref=e204]:
+                        - generic [ref=e205]:
+                          - generic [ref=e206]: 0 d 1 h
+                          - img [ref=e207]
+                      - cell [ref=e209]:
+                        - button [ref=e210] [cursor=pointer]:
+                          - img
+                - generic [ref=e211]:
+                  - button "Previous" [disabled]:
+                    - img
+                    - text: Previous
+                  - button "1" [ref=e212] [cursor=pointer]
+                  - button "Next" [disabled]:
+                    - text: Next
+                    - img
+            - generic [ref=e213]:
+              - button "0 Pending MLO Certification 115 applications / $9,843,803" [ref=e214] [cursor=pointer]:
+                - generic [ref=e215]:
+                  - generic [ref=e216]: "0"
+                  - heading "Pending MLO Certification" [level=3] [ref=e217]
+                  - generic [ref=e218]: 115 applications / $9,843,803
+                - img [ref=e219]
+              - generic [ref=e222]:
+                - table [ref=e224]:
+                  - rowgroup [ref=e225]:
+                    - row "Applicant Property Address Loan Amount Status LO Assistant Time in Stage" [ref=e226]:
+                      - columnheader "Applicant" [ref=e227]:
+                        - generic [ref=e228]: Applicant
+                      - columnheader "Property Address" [ref=e229]:
+                        - generic [ref=e230]: Property Address
+                      - columnheader "Loan Amount" [ref=e231]:
+                        - generic [ref=e232]: Loan Amount
+                      - columnheader "Status" [ref=e233]:
+                        - generic [ref=e234]: Status
+                      - columnheader "LO Assistant" [ref=e235]:
+                        - generic [ref=e236]: LO Assistant
+                      - columnheader "Time in Stage" [ref=e237]:
+                        - generic [ref=e238]: Time in Stage
+                      - columnheader [ref=e239]
+                  - rowgroup [ref=e240]:
+                    - row "Andy America 5121231113 4556 Eliot St, Denver, CO 80211 $50,000 Pending MLO Certification — 0d 0h Time since application was created Certify" [ref=e241]:
+                      - cell "Andy America 5121231113" [ref=e242]:
+                        - generic [ref=e243]:
+                          - link "Andy America" [ref=e244] [cursor=pointer]:
+                            - /url: /portal/loan/6a4b6ec2f2db321a29bf2d0e/summary/overview
+                          - generic [ref=e245]: "5121231113"
+                      - cell "4556 Eliot St, Denver, CO 80211" [ref=e246]
+                      - cell "$50,000" [ref=e247]
+                      - cell "Pending MLO Certification" [ref=e248]:
+                        - generic [ref=e249]: Pending MLO Certification
+                      - cell "—" [ref=e250]
+                      - cell "0d 0h Time since application was created" [ref=e251]:
+                        - generic [ref=e252]:
+                          - text: 0d 0h
+                          - img "Time since application was created" [ref=e253]
+                      - cell "Certify" [ref=e255]:
+                        - generic [ref=e256]:
+                          - button "More Actions" [ref=e257] [cursor=pointer]:
+                            - img
+                          - button "Certify" [ref=e258] [cursor=pointer]
+                    - row "Andy America, Amy America 5121231113 4556 ELIOT ST, DENVER, CO 80211 $180,000 Pending MLO Certification — 0d 0h Time since application was created Certify" [ref=e259]:
+                      - cell "Andy America, Amy America 5121231113" [ref=e260]:
+                        - generic [ref=e261]:
+                          - link "Andy America, Amy America" [ref=e262] [cursor=pointer]:
+                            - /url: /portal/loan/6a4b6a50f2db321a29bf2af6/summary/overview
+                          - generic [ref=e263]: "5121231113"
+                      - cell "4556 ELIOT ST, DENVER, CO 80211" [ref=e264]
+                      - cell "$180,000" [ref=e265]
+                      - cell "Pending MLO Certification" [ref=e266]:
+                        - generic [ref=e267]: Pending MLO Certification
+                      - cell "—" [ref=e268]
+                      - cell "0d 0h Time since application was created" [ref=e269]:
+                        - generic [ref=e270]:
+                          - text: 0d 0h
+                          - img "Time since application was created" [ref=e271]
+                      - cell "Certify" [ref=e273]:
+                        - generic [ref=e274]:
+                          - button "More Actions" [ref=e275] [cursor=pointer]:
+                            - img
+                          - button "Certify" [ref=e276] [cursor=pointer]
+                    - row "Andy America 5121231113 4556 ELIOT ST, DENVER, CO 80211 $0 Pending MLO Certification — 0d 0h Time since application was created Certify" [ref=e277]:
+                      - cell "Andy America 5121231113" [ref=e278]:
+                        - generic [ref=e279]:
+                          - link "Andy America" [ref=e280] [cursor=pointer]:
+                            - /url: /portal/loan/6a4b6a13f2db321a29bf2aeb/summary/overview
+                          - generic [ref=e281]: "5121231113"
+                      - cell "4556 ELIOT ST, DENVER, CO 80211" [ref=e282]
+                      - cell "$0" [ref=e283]
+                      - cell "Pending MLO Certification" [ref=e284]:
+                        - generic [ref=e285]: Pending MLO Certification
+                      - cell "—" [ref=e286]
+                      - cell "0d 0h Time since application was created" [ref=e287]:
+                        - generic [ref=e288]:
+                          - text: 0d 0h
+                          - img "Time since application was created" [ref=e289]
+                      - cell "Certify" [ref=e291]:
+                        - generic [ref=e292]:
+                          - button "More Actions" [ref=e293] [cursor=pointer]:
+                            - img
+                          - button "Certify" [ref=e294] [cursor=pointer]
+                    - row "Tester America 1546876878 4556 ELIOT ST, DENVER, CO 80211 $50,000 Pending MLO Certification — 0d 3h Time since application was created Certify" [ref=e295]:
+                      - cell "Tester America 1546876878" [ref=e296]:
+                        - generic [ref=e297]:
+                          - link "Tester America" [ref=e298] [cursor=pointer]:
+                            - /url: /portal/loan/6a4b449cf2db321a29bf285a/summary/overview
+                          - generic [ref=e299]: "1546876878"
+                      - cell "4556 ELIOT ST, DENVER, CO 80211" [ref=e300]
+                      - cell "$50,000" [ref=e301]
+                      - cell "Pending MLO Certification" [ref=e302]:
+                        - generic [ref=e303]: Pending MLO Certification
+                      - cell "—" [ref=e304]
+                      - cell "0d 3h Time since application was created" [ref=e305]:
+                        - generic [ref=e306]:
+                          - text: 0d 3h
+                          - img "Time since application was created" [ref=e307]
+                      - cell "Certify" [ref=e309]:
+                        - generic [ref=e310]:
+                          - button "More Actions" [ref=e311] [cursor=pointer]:
+                            - img
+                          - button "Certify" [ref=e312] [cursor=pointer]
+                    - row "Andy America 5121231113 4556 Eliot St, Denver, CO 80211 $50,000 Pending MLO Certification — 1d 0h Time since application was created Certify" [ref=e313]:
+                      - cell "Andy America 5121231113" [ref=e314]:
+                        - generic [ref=e315]:
+                          - link "Andy America" [ref=e316] [cursor=pointer]:
+                            - /url: /portal/loan/6a4a17a6f2db321a29bf27ec/summary/overview
+                          - generic [ref=e317]: "5121231113"
+                      - cell "4556 Eliot St, Denver, CO 80211" [ref=e318]
+                      - cell "$50,000" [ref=e319]
+                      - cell "Pending MLO Certification" [ref=e320]:
+                        - generic [ref=e321]: Pending MLO Certification
+                      - cell "—" [ref=e322]
+                      - cell "1d 0h Time since application was created" [ref=e323]:
+                        - generic [ref=e324]:
+                          - text: 1d 0h
+                          - img "Time since application was created" [ref=e325]
+                      - cell "Certify" [ref=e327]:
+                        - generic [ref=e328]:
+                          - button "More Actions" [ref=e329] [cursor=pointer]:
+                            - img
+                          - button "Certify" [ref=e330] [cursor=pointer]
+                    - row "Andy America, Amy America 5121231113 4556 ELIOT ST, DENVER, CO 80211 $180,000 Pending MLO Certification — 1d 0h Time since application was created Certify" [ref=e331]:
+                      - cell "Andy America, Amy America 5121231113" [ref=e332]:
+                        - generic [ref=e333]:
+                          - link "Andy America, Amy America" [ref=e334] [cursor=pointer]:
+                            - /url: /portal/loan/6a4a15bbf2db321a29bf2690/summary/overview
+                          - generic [ref=e335]: "5121231113"
+                      - cell "4556 ELIOT ST, DENVER, CO 80211" [ref=e336]
+                      - cell "$180,000" [ref=e337]
+                      - cell "Pending MLO Certification" [ref=e338]:
+                        - generic [ref=e339]: Pending MLO Certification
+                      - cell "—" [ref=e340]
+                      - cell "1d 0h Time since application was created" [ref=e341]:
+                        - generic [ref=e342]:
+                          - text: 1d 0h
+                          - img "Time since application was created" [ref=e343]
+                      - cell "Certify" [ref=e345]:
+                        - generic [ref=e346]:
+                          - button "More Actions" [ref=e347] [cursor=pointer]:
+                            - img
+                          - button "Certify" [ref=e348] [cursor=pointer]
+                - generic [ref=e349]:
+                  - button "Previous" [disabled]:
+                    - img
+                    - text: Previous
+                  - button "1" [ref=e350] [cursor=pointer]
+                  - button "2" [ref=e351] [cursor=pointer]
+                  - generic [ref=e352]: ...
+                  - button "20" [ref=e353] [cursor=pointer]
+                  - button "Next" [ref=e354] [cursor=pointer]:
+                    - text: Next
+                    - img
+            - generic [ref=e355]:
+              - button "1 Pre-Qual 129 applications / $8,790,878" [ref=e356] [cursor=pointer]:
+                - generic [ref=e357]:
+                  - generic [ref=e358]: "1"
+                  - heading "Pre-Qual" [level=3] [ref=e359]
+                  - generic [ref=e360]: 129 applications / $8,790,878
+                - img [ref=e361]
+              - generic [ref=e364]:
+                - table [ref=e366]:
+                  - rowgroup [ref=e367]:
+                    - row "Applicant Property Address Loan Amount Processor / LOA Time in Stage" [ref=e368]:
+                      - columnheader "Applicant" [ref=e369]:
+                        - generic [ref=e370]: Applicant
+                      - columnheader "Property Address" [ref=e371]:
+                        - generic [ref=e372]: Property Address
+                      - columnheader "Loan Amount" [ref=e373]:
+                        - generic [ref=e374]: Loan Amount
+                      - columnheader "Processor / LOA" [ref=e375]:
+                        - generic [ref=e376]: Processor / LOA
+                      - columnheader "Time in Stage" [ref=e377]:
+                        - generic [ref=e378]: Time in Stage
+                      - columnheader [ref=e379]
+                  - rowgroup [ref=e380]:
+                    - row "Andy America 5121231113 4556 Eliot St Denver, CO 80211 $50,000 HELIX REMN TestMLO 0 d 0 h" [ref=e381]:
+                      - cell "Andy America 5121231113" [ref=e382]:
+                        - generic [ref=e383]:
+                          - link "Andy America" [ref=e384] [cursor=pointer]:
+                            - /url: /portal/loan/6a4b6ec2f2db321a29bf2d0e/summary/overview
+                          - generic [ref=e385]: "5121231113"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e386]:
+                        - generic [ref=e387]:
+                          - generic [ref=e388]: 4556 Eliot St
+                          - generic [ref=e389]: Denver, CO 80211
+                      - cell "$50,000" [ref=e390]
+                      - cell "HELIX REMN TestMLO" [ref=e391]
+                      - cell "0 d 0 h" [ref=e392]:
+                        - generic [ref=e393]:
+                          - generic [ref=e394]: 0 d 0 h
+                          - img [ref=e395]
+                      - cell [ref=e397]:
+                        - button "More Actions" [ref=e398] [cursor=pointer]:
+                          - img
+                    - row "Andy America, Amy America 5121231113 4556 Eliot St Denver, CO 80211 $100,000 HELIX REMN TestMLO 0 d 0 h" [ref=e399]:
+                      - cell "Andy America, Amy America 5121231113" [ref=e400]:
+                        - generic [ref=e401]:
+                          - link "Andy America, Amy America" [ref=e402] [cursor=pointer]:
+                            - /url: /portal/loan/6a4b6e36f2db321a29bf2cb9/summary/overview
+                          - generic [ref=e403]: "5121231113"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e404]:
+                        - generic [ref=e405]:
+                          - generic [ref=e406]: 4556 Eliot St
+                          - generic [ref=e407]: Denver, CO 80211
+                      - cell "$100,000" [ref=e408]
+                      - cell "HELIX REMN TestMLO" [ref=e409]
+                      - cell "0 d 0 h" [ref=e410]:
+                        - generic [ref=e411]:
+                          - generic [ref=e412]: 0 d 0 h
+                          - img [ref=e413]
+                      - cell [ref=e415]:
+                        - button "More Actions" [ref=e416] [cursor=pointer]:
+                          - img
+                    - row "Andy America 5121231113 4556 Eliot St Denver, CO 80211 $100,000 HELIX REMN TestMLO 0 d 0 h" [ref=e417]:
+                      - cell "Andy America 5121231113" [ref=e418]:
+                        - generic [ref=e419]:
+                          - link "Andy America" [ref=e420] [cursor=pointer]:
+                            - /url: /portal/loan/6a4b6dd5f2db321a29bf2c6c/summary/overview
+                          - generic [ref=e421]: "5121231113"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e422]:
+                        - generic [ref=e423]:
+                          - generic [ref=e424]: 4556 Eliot St
+                          - generic [ref=e425]: Denver, CO 80211
+                      - cell "$100,000" [ref=e426]
+                      - cell "HELIX REMN TestMLO" [ref=e427]
+                      - cell "0 d 0 h" [ref=e428]:
+                        - generic [ref=e429]:
+                          - generic [ref=e430]: 0 d 0 h
+                          - img [ref=e431]
+                      - cell [ref=e433]:
+                        - button "More Actions" [ref=e434] [cursor=pointer]:
+                          - img
+                    - row "Andy America 5121231113 4556 ELIOT ST DENVER, CO 80211 $0 - 0 d 0 h" [ref=e435]:
+                      - cell "Andy America 5121231113" [ref=e436]:
+                        - generic [ref=e437]:
+                          - link "Andy America" [ref=e438] [cursor=pointer]:
+                            - /url: /portal/loan/6a4b6a13f2db321a29bf2aeb/summary/overview
+                          - generic [ref=e439]: "5121231113"
+                      - cell "4556 ELIOT ST DENVER, CO 80211" [ref=e440]:
+                        - generic [ref=e441]:
+                          - generic [ref=e442]: 4556 ELIOT ST
+                          - generic [ref=e443]: DENVER, CO 80211
+                      - cell "$0" [ref=e444]
+                      - cell "-" [ref=e445]
+                      - cell "0 d 0 h" [ref=e446]:
+                        - generic [ref=e447]:
+                          - generic [ref=e448]: 0 d 0 h
+                          - img [ref=e449]
+                      - cell [ref=e451]:
+                        - button "More Actions" [ref=e452] [cursor=pointer]:
+                          - img
+                    - row "Andy America, Amy America 5121231113 4556 Eliot St Denver, CO 80211 $100,000 HELIX REMN TestMLO 0 d 0 h" [ref=e453]:
+                      - cell "Andy America, Amy America 5121231113" [ref=e454]:
+                        - generic [ref=e455]:
+                          - link "Andy America, Amy America" [ref=e456] [cursor=pointer]:
+                            - /url: /portal/loan/6a4b62dff2db321a29bf2a97/summary/overview
+                          - generic [ref=e457]: "5121231113"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e458]:
+                        - generic [ref=e459]:
+                          - generic [ref=e460]: 4556 Eliot St
+                          - generic [ref=e461]: Denver, CO 80211
+                      - cell "$100,000" [ref=e462]
+                      - cell "HELIX REMN TestMLO" [ref=e463]
+                      - cell "0 d 0 h" [ref=e464]:
+                        - generic [ref=e465]:
+                          - generic [ref=e466]: 0 d 0 h
+                          - img [ref=e467]
+                      - cell [ref=e469]:
+                        - button "More Actions" [ref=e470] [cursor=pointer]:
+                          - img
+                    - row "Andy America 5121231113 4556 Eliot St Denver, CO 80211 $100,000 HELIX REMN TestMLO 0 d 0 h" [ref=e471]:
+                      - cell "Andy America 5121231113" [ref=e472]:
+                        - generic [ref=e473]:
+                          - link "Andy America" [ref=e474] [cursor=pointer]:
+                            - /url: /portal/loan/6a4b6271f2db321a29bf2a4b/summary/overview
+                          - generic [ref=e475]: "5121231113"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e476]:
+                        - generic [ref=e477]:
+                          - generic [ref=e478]: 4556 Eliot St
+                          - generic [ref=e479]: Denver, CO 80211
+                      - cell "$100,000" [ref=e480]
+                      - cell "HELIX REMN TestMLO" [ref=e481]
+                      - cell "0 d 0 h" [ref=e482]:
+                        - generic [ref=e483]:
+                          - generic [ref=e484]: 0 d 0 h
+                          - img [ref=e485]
+                      - cell [ref=e487]:
+                        - button "More Actions" [ref=e488] [cursor=pointer]:
+                          - img
+                - generic [ref=e489]:
+                  - button "Previous" [disabled]:
+                    - img
+                    - text: Previous
+                  - button "1" [ref=e490] [cursor=pointer]
+                  - button "2" [ref=e491] [cursor=pointer]
+                  - generic [ref=e492]: ...
+                  - button "22" [ref=e493] [cursor=pointer]
+                  - button "Next" [ref=e494] [cursor=pointer]:
+                    - text: Next
+                    - img
+            - button "2 In Process 91 applications / $14,815,124" [ref=e496] [cursor=pointer]:
+              - generic [ref=e497]:
+                - generic [ref=e498]: "2"
+                - heading "In Process" [level=3] [ref=e499]
+                - generic [ref=e500]: 91 applications / $14,815,124
+              - img [ref=e501]
+            - button "3 Closing 0 applications / $0" [ref=e504] [cursor=pointer]:
+              - generic [ref=e505]:
+                - generic [ref=e506]: "3"
+                - heading "Closing" [level=3] [ref=e507]
+                - generic [ref=e508]: 0 applications / $0
+              - img [ref=e509]
+            - button "4 Funded 0 applications / $0" [ref=e512] [cursor=pointer]:
+              - generic [ref=e513]:
+                - generic [ref=e514]: "4"
+                - heading "Funded" [level=3] [ref=e515]
+                - generic [ref=e516]: 0 applications / $0
+              - img [ref=e517]
+  - alert [ref=e519]
+  - generic:
+    - generic:
+      - generic [ref=e521]:
+        - iframe [ref=e522]:
+          - button "Close message from company" [ref=f7e4] [cursor=pointer]:
+            - img [ref=f7e5]
+        - iframe [ref=e523]:
+          - button "Get More Help!" [ref=f8e5] [cursor=pointer]
+      - iframe [ref=e524]:
+        - button "Open messaging window" [ref=f9e5] [cursor=pointer]:
+          - img [ref=f9e7]
+          - img [ref=f9e10]
+```
+
+# Test source
+
+```ts
+  81  |         //
+  82  |         // MUI Autocomplete renders a popup indicator button (aria-label="Open")
+  83  |         // inside the endAdornment of each field.  This button has a proper,
+  84  |         // non-degenerate bounding box that is always inside the dialog content
+  85  |         // area, so clicking it keeps the dialog open and reliably opens the
+  86  |         // option list.
+  87  |         //
+  88  |         // Each dropdown is resolved by finding the FormControl <div> that also
+  89  |         // contains the matching label — unique per field, order-independent.
+  90  |         // Each dropdown is pinned to the INNERMOST ancestor div (.last()) that
+  91  |         // contains that field's label — this is the MuiFormControl-root wrapping
+  92  |         // only that specific Autocomplete.  Using .first() or .nth(n) selects
+  93  |         // progressively-outer ancestors (e.g. MuiDialogContent-root) that span
+  94  |         // the whole dialog and contain all five Open buttons, which causes
+  95  |         // evaluate() to throw a strict-mode violation.
+  96  |         this.companyDropdown = this.filterModal
+  97  |             .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /^Company$/i }) }).last();
+  98  |         this.fileOwnerDropdown = this.filterModal
+  99  |             .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /File Owner/i }) }).last();
+  100 |         this.loanOfficerDropdown = this.filterModal
+  101 |             .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /Loan Officer/i }) }).last();
+  102 |         this.statusDropdown = this.filterModal
+  103 |             .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /^Status$/i }) }).last();
+  104 |         this.stateDropdown = this.filterModal
+  105 |             .locator('div').filter({ has: this.page.locator('label').filter({ hasText: /^State$/i }) }).last();
+  106 | 
+  107 |         // Checkbox and action buttons inside the modal
+  108 |         this.showTestAccountsChk = this.filterModal.getByRole('checkbox', { name: /Show Test Accounts/i });
+  109 |         this.clearAllFiltersBtn = this.filterModal.getByRole('button', { name: /Clear All Filters/i });
+  110 |         this.applyFiltersBtn = this.filterModal.getByRole('button', { name: /Apply Filters/i });
+  111 |     }
+  112 | 
+  113 |     async clickMyLoansNav() {
+  114 |         await test.step('Click My Loans in sidebar navigation', async () => {
+  115 |             await this.myLoansNavItem.click();
+  116 |             await this.page.waitForLoadState('load');
+  117 |         });
+  118 |     }
+  119 | 
+  120 |     async navigateToAdversed() {
+  121 |         await test.step('Navigate to Adversed tab via sidebar', async () => {
+  122 |             await this.clickMyLoansNav();
+  123 |             await this.adversedNavItem.click();
+  124 |             await this.page.waitForLoadState('load');
+  125 |             // waitForLoadState('load') resolves immediately for SPA tab switches.
+  126 |             // Wait for the filter toolbar button — it appears as soon as the tab's
+  127 |             // UI has mounted and is not data-dependent (unlike pendingMloCertSection
+  128 |             // which only renders when there are pending MLO loans and can take > 60 s
+  129 |             // on loaded CI).  Tests that specifically need pipeline sections wait for
+  130 |             // them in their own step bodies.
+  131 |             await expect(this.filterBtn).toBeVisible({ timeout: 30000 });
+  132 |         });
+  133 |     }
+  134 | 
+  135 |     async navigateToInactive() {
+  136 |         await test.step('Navigate to Inactive tab via sidebar', async () => {
+  137 |             await this.clickMyLoansNav();
+  138 |             await this.inactiveNavItem.click();
+  139 |             await this.page.waitForLoadState('load');
+  140 |             // Same toolbar-ready guard as navigateToAdversed.
+  141 |             await expect(this.filterBtn).toBeVisible({ timeout: 30000 });
+  142 |         });
+  143 |     }
+  144 | 
+  145 |     async verifyOverviewTiles() {
+  146 |         await test.step('Verify overview stat tiles', async () => {
+  147 |             await expect(this.overviewSection).toBeVisible();
+  148 |             await expect(this.myLoansTile).toBeVisible();
+  149 |             await expect(this.preQualTile).toBeVisible();
+  150 |             await expect(this.inProcessTile).toBeVisible();
+  151 |             await expect(this.closingTile).toBeVisible();
+  152 |             await expect(this.fundedTile).toBeVisible();
+  153 |         });
+  154 |     }
+  155 | 
+  156 |     async verifyToolbar() {
+  157 |         await test.step('Verify toolbar (search + filter)', async () => {
+  158 |             await expect(this.searchInput).toBeVisible();
+  159 |             await expect(this.filterBtn).toBeVisible();
+  160 |         });
+  161 |     }
+  162 | 
+  163 |     async verifyPipelineSections({ requirePendingMlo = false } = {}) {
+  164 |         await test.step('Verify pipeline section headings', async () => {
+  165 |             if (requirePendingMlo) {
+  166 |                 await expect(this.pendingMloCertSection).toBeVisible();
+  167 |             }
+  168 |             await expect(this.preQualSection).toBeVisible();
+  169 |             await expect(this.inProcessSection).toBeVisible();
+  170 |             await expect(this.closingSection).toBeVisible();
+  171 |             await expect(this.fundedSection).toBeVisible();
+  172 |         });
+  173 |     }
+  174 | 
+  175 |     async verifyPendingMloCertTable() {
+  176 |         await test.step('Verify Pending MLO Certification table columns and actions', async () => {
+  177 |             await expect(this.pendingMloApplicantCol).toBeVisible();
+  178 |             await expect(this.pendingMloAddressCol).toBeVisible();
+  179 |             await expect(this.pendingMloLoanAmountCol).toBeVisible();
+  180 |             await expect(this.pendingMloStatusCol).toBeVisible({ timeout: 30000 });
+> 181 |             await expect(this.pendingMloLoAssistantCol).toBeVisible();
+      |                                                         ^ Error: expect(locator).toBeVisible() failed
+  182 |             await expect(this.pendingMloTimeInStageCol).toBeVisible();
+  183 |             await expect(this.certifyBtn).toBeVisible();
+  184 |             await expect(this.viewBtn).toBeVisible();
+  185 |         });
+  186 |     }
+  187 | 
+  188 |     async verifyStandardPipelineTables() {
+  189 |         await test.step('Verify standard pipeline table columns (Pre-Qual / In Process / Closing / Funded)', async () => {
+  190 |             // "Processor / LOA" column header is always present in these sections.
+  191 |             await expect(this.processorLoaCol).toBeVisible({ timeout: 10000 });
+  192 | 
+  193 |             // View buttons only appear when there are loans in the standard pipeline
+  194 |             // sections.  On the Adversed tab all loans may be in Pending MLO
+  195 |             // Certification only, leaving Pre-Qual / In Process / Closing / Funded
+  196 |             // with "No results" rows and no View buttons.  Skip the assertion
+  197 |             // gracefully when no button is found rather than failing the test.
+  198 |             const hasViewBtn = await this.viewBtn.isVisible({ timeout: 3000 }).catch(() => false);
+  199 |             if (hasViewBtn) {
+  200 |                 await expect(this.viewBtn).toBeVisible();
+  201 |             }
+  202 |         });
+  203 |     }
+  204 | 
+  205 |     // -- MLO Certification ----------------------------------------------------
+  206 | 
+  207 |     /**
+  208 |      * Clicks the first Certify button in the Pending MLO Certification section.
+  209 |      *
+  210 |      * Why waitFor + scrollIntoViewIfNeeded instead of click({ force: true })?
+  211 |      * force: true bypasses Playwright's actionability checks but does NOT wait
+  212 |      * for the element to appear in the DOM.  The Pending MLO Certification section
+  213 |      * loads asynchronously after the page shell renders — if click fires before
+  214 |      * the section mounts the button simply does not exist yet and the click is a
+  215 |      * no-op.  Waiting for visibility ensures the button is present and painted
+  216 |      * before we attempt to interact with it.
+  217 |      */
+  218 |     async clickCertify() {
+  219 |         await test.step('Click Certify on first pending MLO loan', async () => {
+  220 |             await this.certifyBtn.waitFor({ state: 'visible', timeout: 20000 });
+  221 |             await this.certifyBtn.scrollIntoViewIfNeeded();
+  222 |             await this.certifyBtn.click();
+  223 |         });
+  224 |     }
+  225 | 
+  226 |     /**
+  227 |      * Clicks the first View button in the Pre-Qual section and waits for navigation.
+  228 |      */
+  229 |     async clickViewInPreQual() {
+  230 |         await test.step('Click View on first Pre-Qual loan', async () => {
+  231 |             // Scope to the row area below the Pre-Qual section heading
+  232 |             const preQualRow = this.page.locator('section, div').filter({
+  233 |                 has: this.preQualSection,
+  234 |             }).first();
+  235 |             const viewBtn = preQualRow.getByRole('button', { name: /^View$/i }).first();
+  236 |             await viewBtn.click();
+  237 |             await this.page.waitForLoadState('load');
+  238 |         });
+  239 |     }
+  240 | 
+  241 |     // -- Search ---------------------------------------------------------------
+  242 | 
+  243 |     /**
+  244 |      * Types a query in the search box and waits for the list to settle.
+  245 |      * @param {string} query
+  246 |      */
+  247 |     async search(query) {
+  248 |         await test.step(`Search for "${query}"`, async () => {
+  249 |             // Wait for the loan-list page to hydrate before filling — on a cold
+  250 |             // staging start the search input isn't attached yet, and fill() would
+  251 |             // otherwise burn the full test timeout waiting for actionability.
+  252 |             await this.searchInput.waitFor({ state: 'visible', timeout: 45000 });
+  253 |             await this.searchInput.fill(query);
+  254 |             // waitForLoadState('load') resolves instantly on a SPA because the
+  255 |             // 'load' event already fired on initial page load.  waitForLoadState
+  256 |             // 'networkidle' waits until there are no in-flight requests for 500 ms,
+  257 |             // which covers the debounce + API round-trip on CI machines.
+  258 |             // The catch() makes it non-fatal if the page has long-polling requests
+  259 |             // that never reach idle within the timeout.
+  260 |             // 20 s — search involves a debounce + API round-trip on CI machines.
+  261 |             // The catch() makes it non-fatal if long-polling requests prevent idle.
+  262 |             await this.page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => { });
+  263 |         });
+  264 |     }
+  265 | 
+  266 |     /**
+  267 |      * Searches for a query and retries the search itself (not just waits) until
+  268 |      * the View button appears or the budget is exhausted.
+  269 |      *
+  270 |      * A loan created moments earlier in the same test can lag behind the My
+  271 |      * Loans search index/read-replica — the first search can hit a stale
+  272 |      * snapshot with zero results. Re-issuing the search re-queries the backend
+  273 |      * rather than just waiting for a UI element that will never appear against
+  274 |      * stale data.
+  275 |      *
+  276 |      * @param {string} query
+  277 |      * @param {{ attempts?: number, retryDelayMs?: number }} [opts]
+  278 |      */
+  279 |     async searchAndWaitForResult(query, { attempts = 4, retryDelayMs = 15000 } = {}) {
+  280 |         await test.step(`Search for "${query}" and wait for a result (indexing lag retry)`, async () => {
+  281 |             for (let attempt = 1; attempt <= attempts; attempt++) {
+```
