@@ -147,6 +147,18 @@ async function runCoBorrowerFlow(preQualManualPage, data) {
     await flow.fillDemographics();
     await flow.assertNoBlockingError('Demographics');
 
+    // -- Post-Demographics environment divergence -----------------------------
+    // On prod the DTC app submits after Demographics and redirects to the portal
+    // (application → "Pending MLO Certification"); the borrower income-verif /
+    // funding / loan-hub / co-borrower-invite journey does not follow. Accept
+    // that: assert submission and end the test green. On staging the borrower
+    // continues to Income Verification, so run steps 16–20 as normal.
+    if (await flow.didSubmitToPortalAfterDemographics()) {
+        await flow.assertApplicationSubmittedToPortal();
+        await flow.assertNoBlockingError('Application submitted (prod)');
+        return;
+    }
+
     // -- Step 16: Income Verification (Plaid sandbox) -------------------------
     // Clicks "BANK ACCOUNT VERIFICATION (PLAID)", enters sandbox phone + OTP
     // (123456), selects Tartan Bank, confirms, then clicks Continue on the

@@ -14,7 +14,9 @@ class LoginPage {
             await this.email.fill(email);
             await this.password.fill(password);
             await this.login_btn.click();
-            await this.page.waitForLoadState('networkidle');
+            // Bounded: staging never reaches true networkidle. Callers assert the
+            // post-login URL, which is the real ready signal — this is best-effort.
+            await this.page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
         });
     };
 
@@ -26,7 +28,9 @@ class LoginPage {
                 await otpInputs.nth(i).fill(digits[i]);
             }
             await this.verify_btn.click();
-            await this.page.waitForLoadState('networkidle');
+            // Bounded: staging never reaches true networkidle. Callers assert the
+            // post-login URL, which is the real ready signal — this is best-effort.
+            await this.page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
         });
     };
 

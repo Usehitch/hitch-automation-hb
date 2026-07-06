@@ -640,19 +640,62 @@ class CoBorrowerFlowPage {
 
             // Job details (company, compensation, start date) — only when salary
             if ((cb.incomeSources ?? []).some(s => /salary|hourly/i.test(s))) {
-                if (cb.companyName) {
-                    await this.page.getByLabel(/Company Name/i).first()
-                        .fill(cb.companyName);
-                }
-                if (cb.annualCompensation) {
-                    const compInput = this.page.getByLabel(/Annual Compensation|Total Annual/i).first();
-                    await compInput.click({ clickCount: 3 });
-                    await compInput.fill(cb.annualCompensation);
-                    await compInput.press('Tab');
-                }
-                if (cb.startDate) {
-                    await this.page.getByLabel(/Start Date/i).first()
-                        .fill(cb.startDate);
+                // On prod, The Work Number runs an async employer lookup after the
+                // salary checkbox is checked, then renders a read-only Verified job
+                // card ("cannot be modified or deleted"). On staging TWN does not
+                // pre-fill and the inputs are editable + required.
+                //
+                // The lookup takes time to load: while it runs, prod overlays the
+                // section (compensation input covered + re-rendering, never stable).
+                // We must wait for that loading to FINISH before deciding — a probe
+                // fired mid-load sees no verified card yet, wrongly picks the fill
+                // path, and hangs on the covered input.
+                //
+                // Detect "loading finished" via actionability, env-agnostically:
+                // race the verified card (prod) against a trial click on the comp
+                // input (staging). Neither can win until loading settles — during
+                // load the input can't receive events and the card isn't rendered.
+                const verifiedRecord = this.page
+                    .getByText(/verified through The Work Number/i)
+                    .filter({ visible: true })
+                    .first();
+                const compInput = this.page
+                    .getByLabel(/Annual Compensation|Total Annual/i).first();
+
+                const isVerified = await Promise.race([
+                    verifiedRecord.waitFor({ state: 'visible', timeout: 60000 })
+                        .then(() => true).catch(() => false),
+                    // trial click waits out the loading overlay, then succeeds once
+                    // the input is genuinely actionable (staging) → not verified.
+                    compInput.click({ trial: true, timeout: 60000 })
+                        .then(() => false).catch(() => false),
+                ]);
+
+                if (isVerified) {
+                    // Prod path: salary already verified and pre-filled — assert
+                    // the record is shown and leave it untouched.
+                    await expect(verifiedRecord).toBeVisible();
+                } else {
+                    // Staging path: fill the editable job details. Use bounded
+                    // fill() (not click({clickCount:3})) — the prod income section
+                    // re-renders continuously, so a click never passes the
+                    // stability check and burns the whole test timeout.
+                    if (cb.companyName) {
+                        const companyInput = this.page.getByLabel(/Company Name/i).first();
+                        await companyInput.waitFor({ state: 'visible', timeout: 10000 });
+                        await companyInput.fill(cb.companyName);
+                    }
+                    if (cb.annualCompensation) {
+                        await compInput.waitFor({ state: 'visible', timeout: 10000 });
+                        await compInput.fill(cb.annualCompensation, { timeout: 15000 });
+                        await compInput.press('Tab');
+                    }
+                    if (cb.startDate) {
+                        const startInput = this.page.getByLabel(/Start Date/i).first();
+                        await startInput.waitFor({ state: 'visible', timeout: 10000 });
+                        await startInput.fill(cb.startDate);
+                        await startInput.press('Tab');
+                    }
                 }
             }
 
@@ -702,10 +745,27 @@ class CoBorrowerFlowPage {
      */
     async fillOtherInfo(data) {
         await test.step('Fill Other Info page (post-offer)', async () => {
-            await this.page.getByText(/Other Info/i)
-                .filter({ visible: true })
-                .first()
-                .waitFor({ state: 'visible', timeout: 30000 });
+            // Detect this page by its CONTENT (the Marital Status section), not
+            // the "Other Info" heading. On prod the dedicated post-offer page
+            // doesn't render under that heading — marital status + title owners
+            // are collected pre-offer on Application Participants, and the flow
+            // routes straight to Demographics. Race the marital section against
+            // the Demographics markers so we skip cleanly instead of hanging 30s
+            // (and never click Continue on the wrong page).
+            const maritalSection = this.page.getByText(/Marital Status/i)
+                .filter({ visible: true }).first();
+            const demographicsMarker = this.page
+                .getByText(/Ethnicity|I do not wish to provide this information/i)
+                .filter({ visible: true }).first();
+
+            const onOtherInfo = await Promise.race([
+                maritalSection.waitFor({ state: 'visible', timeout: 30000 })
+                    .then(() => true).catch(() => false),
+                demographicsMarker.waitFor({ state: 'visible', timeout: 30000 })
+                    .then(() => false).catch(() => false),
+            ]);
+
+            if (!onOtherInfo) return; // prod: no post-offer Other Info page
 
             await this.#fillMaritalStatusAndTitleOwnersIfPresent(data);
 
@@ -946,6 +1006,69 @@ class CoBorrowerFlowPage {
             await continueBtn.waitFor({ state: 'visible', timeout: 10000 });
             await expect(continueBtn).toBeEnabled({ timeout: 10000 });
             await continueBtn.click({ force: true });
+        });
+    }
+
+    // -------------------------------------------------------------------------
+
+    /**
+     * After Demographics the flow diverges by environment (feature-detected,
+     * not env-gated):
+     *   • Staging → the borrower continues to the Income Verification page.
+     *   • Prod    → the DTC app submits and redirects to the portal (My Loans);
+     *               the application lands in "Pending MLO Certification" and the
+     *               borrower income-verif / funding / loan-hub / invite journey
+     *               does NOT follow (prod auto-verifies income via TWN and the
+     *               shareable link runs in the MLO's authenticated session).
+     *
+     * Races the Income Verification page against the portal so we can branch
+     * without hanging. Returns true if the app submitted to the portal (prod).
+     */
+    async didSubmitToPortalAfterDemographics() {
+        return await test.step('Detect submission-to-portal vs. income verification', async () => {
+            // Prod is SLOW to submit + redirect after Demographics (hard-credit
+            // + finalization can take ~1–2 min), so a short window closes before
+            // the redirect lands and mis-detects "staging". Give it a wide window.
+            // Staging resolves fast (income-verification shows), so the window is
+            // only ever fully "spent" on prod. URL is the primary signal — it
+            // fires the instant navigation happens; text is a backup.
+            const TIMEOUT = 180000;
+
+            // Each side fulfills when EITHER its URL or its on-page marker appears
+            // (Promise.any → first fulfil wins, rejects only if both time out).
+            const incomeSignal = Promise.any([
+                this.page.waitForURL(/income-verification/i, { timeout: TIMEOUT }),
+                this.page.getByText(/Login to Your Company Payroll Account/i).first()
+                    .waitFor({ state: 'visible', timeout: TIMEOUT }),
+            ]).then(() => 'income');
+
+            const portalSignal = Promise.any([
+                this.page.waitForURL(/\/portal(\/|$|\?)/i, { timeout: TIMEOUT }),
+                this.page.getByText(/Pending MLO Certification/i).first()
+                    .waitFor({ state: 'visible', timeout: TIMEOUT }),
+            ]).then(() => 'portal');
+
+            // First side to settle wins; if neither appears, treat as staging so
+            // the downstream income-verif step surfaces a clear failure.
+            const outcome = await Promise.any([incomeSignal, portalSignal])
+                .catch(() => 'timeout');
+            return outcome === 'portal';
+        });
+    }
+
+    // -------------------------------------------------------------------------
+
+    /**
+     * Prod-path terminal assertion: after the DTC app submits it redirects to
+     * the portal with the application in the "Pending MLO Certification" bucket.
+     * Asserts that bucket is shown (no borrower PII asserted — the bucket label
+     * is enough to confirm submission).
+     */
+    async assertApplicationSubmittedToPortal() {
+        await test.step('Assert application submitted (Pending MLO Certification)', async () => {
+            await expect(
+                this.page.getByText(/Pending MLO Certification/i).first()
+            ).toBeVisible({ timeout: 30000 });
         });
     }
 

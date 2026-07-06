@@ -7,7 +7,9 @@ setup('authenticate', async ({ page, context, loginPage }) => {
     await context.clearCookies();
 
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    // No networkidle wait: the staging SPA (chat widget / analytics) never goes
+    // idle and hangs the full test timeout. clickGoToBrokerPortal() auto-waits
+    // for the button (45s + cold-start reload), which is the real ready signal.
     await loginPage.clickGoToBrokerPortal();
 
     await expect(page).toHaveURL(/portal\/login/);
