@@ -1,0 +1,1 @@
+navigateToManageUsers: pagination counter not visible after 10s — proceeding; individual assertions will wait for table data
