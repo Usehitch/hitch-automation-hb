@@ -236,7 +236,7 @@ jobs:
         run: |
           ALLURE_REPORT="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure/${{ github.run_id }}/"
           # <url|label> is Slack's hyperlink syntax.
-          TEXT="✅ *Nightly Regression Passed* — ${PASSED} passed, ${SKIPPED} skipped on \`${{ github.ref_name }}\`. 🟣 <${ALLURE_REPORT}|Allure trends>"
+          TEXT="✅ *HB-WHS-STAGING Nightly Regression Passed* — ${PASSED} passed, ${SKIPPED} skipped on \`${{ github.ref_name }}\`. 🟣 <${ALLURE_REPORT}|Allure trends>"
           # jq -n --arg builds a safely-escaped JSON body; curl POSTs it (-d @- reads from stdin).
           jq -n --arg t "$TEXT" '{channel:"#automation-alerts", text:$t}' \
           | curl -sS -X POST -H 'Content-type: application/json' -d @- ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -264,7 +264,7 @@ jobs:
           # the YAML block scalar (raw multiline strings dedented to column 0
           # would terminate the block and break YAML parsing).
           TEXT=$(printf '%s\n' \
-            "❌ *Nightly Regression Failed* <!here>" \
+            "❌ *HB-WHS-STAGING Nightly Regression Failed* <!here>" \
             "📦 ${{ github.repository }} (\`${{ github.ref_name }}\`)" \
             "📈 Passed: ${PASSED} | Failed: ${FAILED} | Skipped: ${SKIPPED}" \
             "" \
