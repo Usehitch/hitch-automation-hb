@@ -1,0 +1,522 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: Broker Flow/shadow-borrower-view.spec.js >> Shadow Borrower View >> CONTINUE opens read-only mode and verifies all available content
+- Location: tests/Broker Flow/shadow-borrower-view.spec.js:60:9
+
+# Error details
+
+```
+Test timeout of 180000ms exceeded while running "beforeEach" hook.
+```
+
+```
+Error: locator.click: Test timeout of 180000ms exceeded.
+Call log:
+  - waiting for locator('section, div').filter({ has: getByText('Pre-Qual').nth(1) }).first().getByRole('button', { name: /^View$/i }).first()
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e8]:
+      - list [ref=e10]:
+        - listitem [ref=e11]:
+          - button "logo":
+            - generic:
+              - generic:
+                - img "logo"
+          - button "Toggle Sidebar" [ref=e12] [cursor=pointer]:
+            - img
+            - generic [ref=e13]: Toggle Sidebar
+        - listitem [ref=e14]:
+          - generic [ref=e15]: CMG Home Loan
+      - generic [ref=e16]:
+        - list [ref=e19]:
+          - listitem [ref=e20]:
+            - button "You're in Dev":
+              - img
+              - text: You're in Dev
+        - list [ref=e23]:
+          - listitem [ref=e24]:
+            - button "My Loans Chevron down" [ref=e26] [cursor=pointer]:
+              - img [ref=e27]
+              - text: My Loans
+              - img [ref=e30]
+              - generic [ref=e32]: Chevron down
+          - listitem [ref=e33]:
+            - button "Quick Pricer" [ref=e35] [cursor=pointer]:
+              - img [ref=e36]
+              - text: Quick Pricer
+          - listitem [ref=e38]:
+            - button "Release Notes" [ref=e40] [cursor=pointer]:
+              - img [ref=e41]
+              - text: Release Notes
+        - listitem [ref=e47]:
+          - button "Show Old Design" [ref=e49] [cursor=pointer]:
+            - img [ref=e50]
+            - text: Show Old Design
+      - list [ref=e53]:
+        - listitem [ref=e54]:
+          - button "A Ace ace@usehitch.com" [ref=e55] [cursor=pointer]:
+            - generic [ref=e57]: A
+            - generic [ref=e58]:
+              - paragraph [ref=e59]: Ace
+              - paragraph [ref=e60]: ace@usehitch.com
+            - img [ref=e61]
+    - main [ref=e65]:
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - heading "My Loans" [level=1] [ref=e68]
+          - generic [ref=e69]:
+            - button "Sharable App Link" [ref=e70] [cursor=pointer]:
+              - img
+              - text: Sharable App Link
+            - button "Start App" [ref=e71] [cursor=pointer]:
+              - img
+              - text: Start App
+        - generic [ref=e72]:
+          - heading "Overview" [level=2] [ref=e74]
+          - generic [ref=e75]:
+            - generic [ref=e77]:
+              - generic [ref=e79]: My Loans
+              - generic [ref=e80]:
+                - generic [ref=e81]: "45"
+                - generic [ref=e82]: / $4,050,000
+            - generic [ref=e84]:
+              - generic [ref=e85]:
+                - img [ref=e87]
+                - generic [ref=e92]: Pre-Qual
+              - generic [ref=e93]:
+                - generic [ref=e94]: "45"
+                - generic [ref=e95]: / $4,050,000
+            - generic [ref=e97]:
+              - generic [ref=e98]:
+                - img [ref=e100]
+                - generic [ref=e102]: In Process
+              - generic [ref=e103]:
+                - generic [ref=e104]: "0"
+                - generic [ref=e105]: / $0
+            - generic [ref=e107]:
+              - generic [ref=e108]:
+                - img [ref=e110]
+                - generic [ref=e112]: Closing
+              - generic [ref=e113]:
+                - generic [ref=e114]: "0"
+                - generic [ref=e115]: / $0
+            - generic [ref=e117]:
+              - generic [ref=e118]:
+                - img [ref=e120]
+                - generic [ref=e122]: Funded
+              - generic [ref=e123]:
+                - generic [ref=e124]: "0"
+                - generic [ref=e125]: / $0
+        - generic [ref=e126]:
+          - generic [ref=e127]:
+            - generic [ref=e128]:
+              - generic [ref=e129]:
+                - img [ref=e130]
+                - textbox "Search by email, name, full address or loan number" [ref=e133]
+              - button "Filter" [ref=e135] [cursor=pointer]:
+                - img
+                - text: Filter
+            - tablist "View mode" [ref=e136]:
+              - tab "List" [selected] [ref=e137] [cursor=pointer]:
+                - img [ref=e139]
+                - text: List
+          - generic [ref=e140]:
+            - generic [ref=e141]:
+              - button "1 Pre-Qual 45 applications / $4,050,000" [ref=e142] [cursor=pointer]:
+                - generic [ref=e143]:
+                  - generic [ref=e144]: "1"
+                  - heading "Pre-Qual" [level=3] [ref=e145]
+                  - generic [ref=e146]: 45 applications / $4,050,000
+                - img [ref=e147]
+              - generic [ref=e150]:
+                - table [ref=e152]:
+                  - rowgroup [ref=e153]:
+                    - row "Applicant Property Address Loan Amount Processor / LOA Time in Stage" [ref=e154]:
+                      - columnheader "Applicant" [ref=e155]:
+                        - generic [ref=e156]: Applicant
+                      - columnheader "Property Address" [ref=e157]:
+                        - generic [ref=e158]: Property Address
+                      - columnheader "Loan Amount" [ref=e159]:
+                        - generic [ref=e160]: Loan Amount
+                      - columnheader "Processor / LOA" [ref=e161]:
+                        - generic [ref=e162]: Processor / LOA
+                      - columnheader "Time in Stage" [ref=e163]:
+                        - generic [ref=e164]: Time in Stage
+                      - columnheader [ref=e165]
+                  - rowgroup [ref=e166]:
+                    - row "Andy America, Amy America 5121231113 4556 Eliot St Denver, CO 80211 $100,000 Ace 0 d 0 h" [ref=e167]:
+                      - cell "Andy America, Amy America 5121231113" [ref=e168]:
+                        - generic [ref=e169]:
+                          - link "Andy America, Amy America" [ref=e170] [cursor=pointer]:
+                            - /url: /portal/loan/6a4c8147e0aa4eda910e65e3/summary/overview
+                          - generic [ref=e171]: "5121231113"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e172]:
+                        - generic [ref=e173]:
+                          - generic [ref=e174]: 4556 Eliot St
+                          - generic [ref=e175]: Denver, CO 80211
+                      - cell "$100,000" [ref=e176]
+                      - cell "Ace" [ref=e177]
+                      - cell "0 d 0 h" [ref=e178]:
+                        - generic [ref=e179]:
+                          - generic [ref=e180]: 0 d 0 h
+                          - img [ref=e181]
+                      - cell [ref=e183]:
+                        - button "More Actions" [ref=e184] [cursor=pointer]:
+                          - img
+                    - row "Andy America 5121231113 4556 Eliot St Denver, CO 80211 $100,000 Ace 0 d 0 h" [ref=e185]:
+                      - cell "Andy America 5121231113" [ref=e186]:
+                        - generic [ref=e187]:
+                          - link "Andy America" [ref=e188] [cursor=pointer]:
+                            - /url: /portal/loan/6a4c7eb0e0aa4eda910e659a/summary/overview
+                          - generic [ref=e189]: "5121231113"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e190]:
+                        - generic [ref=e191]:
+                          - generic [ref=e192]: 4556 Eliot St
+                          - generic [ref=e193]: Denver, CO 80211
+                      - cell "$100,000" [ref=e194]
+                      - cell "Ace" [ref=e195]
+                      - cell "0 d 0 h" [ref=e196]:
+                        - generic [ref=e197]:
+                          - generic [ref=e198]: 0 d 0 h
+                          - img [ref=e199]
+                      - cell [ref=e201]:
+                        - button "More Actions" [ref=e202] [cursor=pointer]:
+                          - img
+                    - row "Andy America 5121231113 4556 Eliot St Denver, CO 80211 $100,000 Ace 0 d 0 h" [ref=e203]:
+                      - cell "Andy America 5121231113" [ref=e204]:
+                        - generic [ref=e205]:
+                          - link "Andy America" [ref=e206] [cursor=pointer]:
+                            - /url: /portal/loan/6a4c7bece0aa4eda910e6550/summary/overview
+                          - generic [ref=e207]: "5121231113"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e208]:
+                        - generic [ref=e209]:
+                          - generic [ref=e210]: 4556 Eliot St
+                          - generic [ref=e211]: Denver, CO 80211
+                      - cell "$100,000" [ref=e212]
+                      - cell "Ace" [ref=e213]
+                      - cell "0 d 0 h" [ref=e214]:
+                        - generic [ref=e215]:
+                          - generic [ref=e216]: 0 d 0 h
+                          - img [ref=e217]
+                      - cell [ref=e219]:
+                        - button "More Actions" [ref=e220] [cursor=pointer]:
+                          - img
+                    - row "Andy America 5121231113 4556 Eliot St Denver, CO 80211 $100,000 Ace 0 d 0 h" [ref=e221]:
+                      - cell "Andy America 5121231113" [ref=e222]:
+                        - generic [ref=e223]:
+                          - link "Andy America" [ref=e224] [cursor=pointer]:
+                            - /url: /portal/loan/6a4c7955e0aa4eda910e6505/summary/overview
+                          - generic [ref=e225]: "5121231113"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e226]:
+                        - generic [ref=e227]:
+                          - generic [ref=e228]: 4556 Eliot St
+                          - generic [ref=e229]: Denver, CO 80211
+                      - cell "$100,000" [ref=e230]
+                      - cell "Ace" [ref=e231]
+                      - cell "0 d 0 h" [ref=e232]:
+                        - generic [ref=e233]:
+                          - generic [ref=e234]: 0 d 0 h
+                          - img [ref=e235]
+                      - cell [ref=e237]:
+                        - button "More Actions" [ref=e238] [cursor=pointer]:
+                          - img
+                    - row "Andy America, Amy America 5121231113 4556 Eliot St Denver, CO 80211 $100,000 Ace 0 d 1 h" [ref=e239]:
+                      - cell "Andy America, Amy America 5121231113" [ref=e240]:
+                        - generic [ref=e241]:
+                          - link "Andy America, Amy America" [ref=e242] [cursor=pointer]:
+                            - /url: /portal/loan/6a4c7305e0aa4eda910e64b5/summary/overview
+                          - generic [ref=e243]: "5121231113"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e244]:
+                        - generic [ref=e245]:
+                          - generic [ref=e246]: 4556 Eliot St
+                          - generic [ref=e247]: Denver, CO 80211
+                      - cell "$100,000" [ref=e248]
+                      - cell "Ace" [ref=e249]
+                      - cell "0 d 1 h" [ref=e250]:
+                        - generic [ref=e251]:
+                          - generic [ref=e252]: 0 d 1 h
+                          - img [ref=e253]
+                      - cell [ref=e255]:
+                        - button "More Actions" [ref=e256] [cursor=pointer]:
+                          - img
+                    - row "Andy America, Amy America 5121231113 4556 Eliot St Denver, CO 80211 $100,000 Ace 0 d 1 h" [ref=e257]:
+                      - cell "Andy America, Amy America 5121231113" [ref=e258]:
+                        - generic [ref=e259]:
+                          - link "Andy America, Amy America" [ref=e260] [cursor=pointer]:
+                            - /url: /portal/loan/6a4c7007e0aa4eda910e6465/summary/overview
+                          - generic [ref=e261]: "5121231113"
+                      - cell "4556 Eliot St Denver, CO 80211" [ref=e262]:
+                        - generic [ref=e263]:
+                          - generic [ref=e264]: 4556 Eliot St
+                          - generic [ref=e265]: Denver, CO 80211
+                      - cell "$100,000" [ref=e266]
+                      - cell "Ace" [ref=e267]
+                      - cell "0 d 1 h" [ref=e268]:
+                        - generic [ref=e269]:
+                          - generic [ref=e270]: 0 d 1 h
+                          - img [ref=e271]
+                      - cell [ref=e273]:
+                        - button "More Actions" [ref=e274] [cursor=pointer]:
+                          - img
+                - generic [ref=e275]:
+                  - button "Previous" [disabled]:
+                    - img
+                    - text: Previous
+                  - button "1" [ref=e276] [cursor=pointer]
+                  - button "2" [ref=e277] [cursor=pointer]
+                  - generic [ref=e278]: ...
+                  - button "8" [ref=e279] [cursor=pointer]
+                  - button "Next" [ref=e280] [cursor=pointer]:
+                    - text: Next
+                    - img
+            - button "2 In Process 0 applications / $0" [ref=e282] [cursor=pointer]:
+              - generic [ref=e283]:
+                - generic [ref=e284]: "2"
+                - heading "In Process" [level=3] [ref=e285]
+                - generic [ref=e286]: 0 applications / $0
+              - img [ref=e287]
+            - button "3 Closing 0 applications / $0" [ref=e290] [cursor=pointer]:
+              - generic [ref=e291]:
+                - generic [ref=e292]: "3"
+                - heading "Closing" [level=3] [ref=e293]
+                - generic [ref=e294]: 0 applications / $0
+              - img [ref=e295]
+            - button "4 Funded 0 applications / $0" [ref=e298] [cursor=pointer]:
+              - generic [ref=e299]:
+                - generic [ref=e300]: "4"
+                - heading "Funded" [level=3] [ref=e301]
+                - generic [ref=e302]: 0 applications / $0
+              - img [ref=e303]
+  - alert [ref=e305]
+  - generic:
+    - generic:
+      - generic [ref=e307]:
+        - iframe [ref=e308]:
+          - button "Close message from company" [ref=f9e4] [cursor=pointer]:
+            - img [ref=f9e5]
+        - iframe [ref=e309]:
+          - button "Hi. Need any help?" [ref=f10e5] [cursor=pointer]
+      - iframe [ref=e310]:
+        - button "Open messaging window" [ref=f11e5] [cursor=pointer]:
+          - img [ref=f11e7]
+          - img [ref=f11e10]
+```
+
+# Test source
+
+```ts
+  136 |         await test.step('Navigate to Inactive tab via sidebar', async () => {
+  137 |             await this.clickMyLoansNav();
+  138 |             await this.inactiveNavItem.click();
+  139 |             await this.page.waitForLoadState('load');
+  140 |             // Same toolbar-ready guard as navigateToAdversed.
+  141 |             await expect(this.filterBtn).toBeVisible({ timeout: 30000 });
+  142 |         });
+  143 |     }
+  144 | 
+  145 |     async verifyOverviewTiles() {
+  146 |         await test.step('Verify overview stat tiles', async () => {
+  147 |             await expect(this.overviewSection).toBeVisible();
+  148 |             await expect(this.myLoansTile).toBeVisible();
+  149 |             await expect(this.preQualTile).toBeVisible();
+  150 |             await expect(this.inProcessTile).toBeVisible();
+  151 |             await expect(this.closingTile).toBeVisible();
+  152 |             await expect(this.fundedTile).toBeVisible();
+  153 |         });
+  154 |     }
+  155 | 
+  156 |     async verifyToolbar() {
+  157 |         await test.step('Verify toolbar (search + filter)', async () => {
+  158 |             await expect(this.searchInput).toBeVisible();
+  159 |             await expect(this.filterBtn).toBeVisible();
+  160 |         });
+  161 |     }
+  162 | 
+  163 |     async verifyPipelineSections({ requirePendingMlo = false } = {}) {
+  164 |         await test.step('Verify pipeline section headings', async () => {
+  165 |             if (requirePendingMlo) {
+  166 |                 await expect(this.pendingMloCertSection).toBeVisible();
+  167 |             }
+  168 |             await expect(this.preQualSection).toBeVisible();
+  169 |             await expect(this.inProcessSection).toBeVisible();
+  170 |             await expect(this.closingSection).toBeVisible();
+  171 |             await expect(this.fundedSection).toBeVisible();
+  172 |         });
+  173 |     }
+  174 | 
+  175 |     async verifyPendingMloCertTable() {
+  176 |         await test.step('Verify Pending MLO Certification table columns and actions', async () => {
+  177 |             await expect(this.pendingMloApplicantCol).toBeVisible();
+  178 |             await expect(this.pendingMloAddressCol).toBeVisible();
+  179 |             await expect(this.pendingMloLoanAmountCol).toBeVisible();
+  180 |             await expect(this.pendingMloStatusCol).toBeVisible({ timeout: 30000 });
+  181 |             await expect(this.pendingMloLoAssistantCol).toBeVisible();
+  182 |             await expect(this.pendingMloTimeInStageCol).toBeVisible();
+  183 |             await expect(this.certifyBtn).toBeVisible();
+  184 |             await expect(this.viewBtn).toBeVisible();
+  185 |         });
+  186 |     }
+  187 | 
+  188 |     async verifyStandardPipelineTables() {
+  189 |         await test.step('Verify standard pipeline table columns (Pre-Qual / In Process / Closing / Funded)', async () => {
+  190 |             // "Processor / LOA" column header is always present in these sections.
+  191 |             await expect(this.processorLoaCol).toBeVisible({ timeout: 10000 });
+  192 | 
+  193 |             // View buttons only appear when there are loans in the standard pipeline
+  194 |             // sections.  On the Adversed tab all loans may be in Pending MLO
+  195 |             // Certification only, leaving Pre-Qual / In Process / Closing / Funded
+  196 |             // with "No results" rows and no View buttons.  Skip the assertion
+  197 |             // gracefully when no button is found rather than failing the test.
+  198 |             const hasViewBtn = await this.viewBtn.isVisible({ timeout: 3000 }).catch(() => false);
+  199 |             if (hasViewBtn) {
+  200 |                 await expect(this.viewBtn).toBeVisible();
+  201 |             }
+  202 |         });
+  203 |     }
+  204 | 
+  205 |     // -- MLO Certification ----------------------------------------------------
+  206 | 
+  207 |     /**
+  208 |      * Clicks the first Certify button in the Pending MLO Certification section.
+  209 |      *
+  210 |      * Why waitFor + scrollIntoViewIfNeeded instead of click({ force: true })?
+  211 |      * force: true bypasses Playwright's actionability checks but does NOT wait
+  212 |      * for the element to appear in the DOM.  The Pending MLO Certification section
+  213 |      * loads asynchronously after the page shell renders — if click fires before
+  214 |      * the section mounts the button simply does not exist yet and the click is a
+  215 |      * no-op.  Waiting for visibility ensures the button is present and painted
+  216 |      * before we attempt to interact with it.
+  217 |      */
+  218 |     async clickCertify() {
+  219 |         await test.step('Click Certify on first pending MLO loan', async () => {
+  220 |             await this.certifyBtn.waitFor({ state: 'visible', timeout: 20000 });
+  221 |             await this.certifyBtn.scrollIntoViewIfNeeded();
+  222 |             await this.certifyBtn.click();
+  223 |         });
+  224 |     }
+  225 | 
+  226 |     /**
+  227 |      * Clicks the first View button in the Pre-Qual section and waits for navigation.
+  228 |      */
+  229 |     async clickViewInPreQual() {
+  230 |         await test.step('Click View on first Pre-Qual loan', async () => {
+  231 |             // Scope to the row area below the Pre-Qual section heading
+  232 |             const preQualRow = this.page.locator('section, div').filter({
+  233 |                 has: this.preQualSection,
+  234 |             }).first();
+  235 |             const viewBtn = preQualRow.getByRole('button', { name: /^View$/i }).first();
+> 236 |             await viewBtn.click();
+      |                           ^ Error: locator.click: Test timeout of 180000ms exceeded.
+  237 |             await this.page.waitForLoadState('load');
+  238 |         });
+  239 |     }
+  240 | 
+  241 |     // -- Search ---------------------------------------------------------------
+  242 | 
+  243 |     /**
+  244 |      * Types a query in the search box and waits for the list to settle.
+  245 |      * @param {string} query
+  246 |      */
+  247 |     async search(query) {
+  248 |         await test.step(`Search for "${query}"`, async () => {
+  249 |             // Wait for the loan-list page to hydrate before filling — on a cold
+  250 |             // staging start the search input isn't attached yet, and fill() would
+  251 |             // otherwise burn the full test timeout waiting for actionability.
+  252 |             await this.searchInput.waitFor({ state: 'visible', timeout: 45000 });
+  253 |             await this.searchInput.fill(query);
+  254 |             // waitForLoadState('load') resolves instantly on a SPA because the
+  255 |             // 'load' event already fired on initial page load.  waitForLoadState
+  256 |             // 'networkidle' waits until there are no in-flight requests for 500 ms,
+  257 |             // which covers the debounce + API round-trip on CI machines.
+  258 |             // The catch() makes it non-fatal if the page has long-polling requests
+  259 |             // that never reach idle within the timeout.
+  260 |             // 20 s — search involves a debounce + API round-trip on CI machines.
+  261 |             // The catch() makes it non-fatal if long-polling requests prevent idle.
+  262 |             await this.page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => { });
+  263 |         });
+  264 |     }
+  265 | 
+  266 |     /**
+  267 |      * Searches for a query and retries the search itself (not just waits) until
+  268 |      * the View button appears or the budget is exhausted.
+  269 |      *
+  270 |      * A loan created moments earlier in the same test can lag behind the My
+  271 |      * Loans search index/read-replica — the first search can hit a stale
+  272 |      * snapshot with zero results. Re-issuing the search re-queries the backend
+  273 |      * rather than just waiting for a UI element that will never appear against
+  274 |      * stale data.
+  275 |      *
+  276 |      * @param {string} query
+  277 |      * @param {{ attempts?: number, retryDelayMs?: number }} [opts]
+  278 |      */
+  279 |     async searchAndWaitForResult(query, { attempts = 4, retryDelayMs = 15000 } = {}) {
+  280 |         await test.step(`Search for "${query}" and wait for a result (indexing lag retry)`, async () => {
+  281 |             for (let attempt = 1; attempt <= attempts; attempt++) {
+  282 |                 await this.search(query);
+  283 |                 const found = await this.viewBtn.isVisible({ timeout: 10000 }).catch(() => false);
+  284 |                 if (found) return;
+  285 |                 if (attempt < attempts) {
+  286 |                     console.warn(
+  287 |                         `searchAndWaitForResult: no result for "${query}" on attempt ${attempt}/${attempts} — ` +
+  288 |                         `loan may not be indexed yet, retrying in ${retryDelayMs}ms`
+  289 |                     );
+  290 |                     await this.page.waitForTimeout(retryDelayMs);
+  291 |                 }
+  292 |             }
+  293 |             await expect(
+  294 |                 this.viewBtn,
+  295 |                 `View button did not appear for "${query}" after ${attempts} search attempts — ` +
+  296 |                 'the newly created loan may not be indexed in My Loans search yet.'
+  297 |             ).toBeVisible({ timeout: 10000 });
+  298 |         });
+  299 |     }
+  300 | 
+  301 |     /**
+  302 |      * Clears the search box and waits for results to reset.
+  303 |      */
+  304 |     async clearSearch() {
+  305 |         await test.step('Clear search', async () => {
+  306 |             await this.searchInput.clear();
+  307 |             await this.page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => { });
+  308 |         });
+  309 |     }
+  310 | 
+  311 |     // -- Filter modal ---------------------------------------------------------
+  312 | 
+  313 |     /**
+  314 |      * Opens the Filter modal and confirms its heading is visible.
+  315 |      *
+  316 |      * Idempotent — if the modal is already open the click is skipped entirely.
+  317 |      * Clicking the Filter button while the dialog is visible triggers MUI's
+  318 |      * click-away handler (the button is behind the backdrop) and closes the modal
+  319 |      * instead of opening it, which is a frequent source of CI flakiness when
+  320 |      * openFilter() is called twice in the same test.
+  321 |      *
+  322 |      * Uses waitFor + evaluate() for the button click so no MUI re-render cycle
+  323 |      * can detach the node between Playwright's element-resolve and event-dispatch.
+  324 |      */
+  325 |     async openFilter() {
+  326 |         await test.step('Open Filter modal', async () => {
+  327 |             // Skip the button click when the modal is already visible to avoid
+  328 |             // triggering MUI's click-away handler on CI.
+  329 |             const alreadyOpen = await this.filterModal.isVisible().catch(() => false);
+  330 |             if (!alreadyOpen) {
+  331 |                 await this.filterBtn.waitFor({ state: 'visible', timeout: 15000 });
+  332 |                 await this.filterBtn.evaluate(el => el.click());
+  333 |             }
+  334 |             await expect(this.filterModalHeading).toBeVisible({ timeout: 10000 });
+  335 |         });
+  336 |     }
+```
