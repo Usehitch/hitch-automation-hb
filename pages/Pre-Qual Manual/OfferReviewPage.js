@@ -1,8 +1,13 @@
 import { expect, test } from '../../fixtures';
+import HelpDeskWidget from '../Support/HelpDeskWidget';
 
 class OfferReviewPage {
     constructor(page) {
         this.page = page;
+
+        // "Hi. Need any help?" chat widget — floats over the bottom-right and
+        // can intercept clicks on the NEXT button (see clickNext).
+        this.helpDesk = new HelpDeskWidget(page);
 
         // -- Page heading -------------------------------------------------------
         // Stepper label says "OFFER REVIEW"; the card heading is "Pre-Qualification Summary"
@@ -496,18 +501,31 @@ class OfferReviewPage {
 
     async clickNext() {
         await test.step('Click Next to proceed to Consents', async () => {
+            // Dismiss the "Hi. Need any help?" chat bubble first. It pops in a few
+            // seconds after the page loads and floats over the bottom-right, right
+            // where NEXT sits — and because click({force:true}) only skips
+            // actionability checks (it still dispatches at the coordinate), the
+            // bubble's iframe swallows the click and the page never advances
+            // (seen as a 200s timeout waiting for the Consents heading, with the
+            // button still [active] and Offer Review still showing). Intermittent
+            // because it depends on whether the bubble has appeared yet.
+            await this.helpDesk.dismissProactiveBubble();
+
             await this.nextBtn.scrollIntoViewIfNeeded();
             await this.nextBtn.click({ force: true });
 
             // Staging can be slow processing the offer submission — wait up to 200 s (co-borrower flows run two credit pulls).
-            // If still on Offer Review after 10 s, retry the click once (handles the
-            // case where the first click fired before the button was fully ready).
+            // If still on Offer Review after 10 s, the click was likely swallowed
+            // by the (re-appearing) chat bubble — dismiss it again and click the
+            // button at the DOM level, which dispatches straight to the element
+            // and bypasses any overlay entirely.
             try {
                 await this.consentsHeading.waitFor({ state: 'visible', timeout: 10000 });
             } catch {
                 const stillOnOfferReview = await this.pageHeading.isVisible().catch(() => false);
                 if (stillOnOfferReview) {
-                    await this.nextBtn.click({ force: true });
+                    await this.helpDesk.dismissProactiveBubble();
+                    await this.nextBtn.evaluate(el => el.click());
                 }
                 await this.consentsHeading.waitFor({ state: 'visible', timeout: 200000 });
             }

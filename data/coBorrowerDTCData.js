@@ -22,7 +22,7 @@ import { SHARED } from './shared';
 const BASE_CO_BORROWER = {
     firstName:   'Amy',
     lastName:    'America',
-    phoneNumber: '5121231114',
+    phoneNumber: '3855130513',
     // email is generated per-scenario below to avoid duplicate-account errors
 };
 

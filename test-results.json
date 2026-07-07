@@ -111,9 +111,9 @@
     "shard": null,
     "tags": [],
     "updateSnapshots": "missing",
-    "updateSourceMethod": "3way",
+    "updateSourceMethod": "patch",
     "version": "1.59.1",
-    "workers": 1,
+    "workers": 2,
     "webServer": null
   },
   "suites": [
@@ -136,10 +136,10 @@
               "projectName": "setup-lo",
               "results": [
                 {
-                  "workerIndex": 10,
+                  "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 24179,
+                  "duration": 23800,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
@@ -147,16 +147,22 @@
                   "steps": [
                     {
                       "title": "Click the go to broker portal",
-                      "duration": 117
+                      "duration": 141
                     },
                     {
                       "title": "Submit email and password",
-                      "duration": 15130
+                      "duration": 15163
                     }
                   ],
-                  "startTime": "2026-07-06T17:36:34.082Z",
+                  "startTime": "2026-07-07T17:56:00.967Z",
                   "annotations": [],
-                  "attachments": []
+                  "attachments": [
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\test-results\\auth.setup.lo.js-authenticate-as-LO-setup-lo\\trace.zip"
+                    }
+                  ]
                 }
               ],
               "status": "expected"
@@ -170,53 +176,53 @@
       ]
     },
     {
-      "title": "Borrower Flow\\Co-Borrower\\coborrower.spec.js",
-      "file": "Borrower Flow/Co-Borrower/coborrower.spec.js",
+      "title": "Borrower Flow\\invitation-completion.spec.js",
+      "file": "Borrower Flow/invitation-completion.spec.js",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Co-Borrower Flow — End-to-End via Shareable Link",
-          "file": "Borrower Flow/Co-Borrower/coborrower.spec.js",
-          "line": 191,
+          "title": "LO Invitation — completion flows",
+          "file": "Borrower Flow/invitation-completion.spec.js",
+          "line": 88,
           "column": 6,
           "specs": [
             {
-              "title": "Married co-borrower flow — no blocking errors end-to-end",
+              "title": "Scenario A: invited borrower opens the email and completes the application",
               "ok": false,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 480000,
+                  "timeout": 960000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium-lo",
                   "projectName": "chromium-lo",
                   "results": [
                     {
-                      "workerIndex": 11,
+                      "workerIndex": 1,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 350454,
+                      "duration": 312888,
                       "error": {
-                        "message": "TimeoutError: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Other Info/i).filter({ visible: true }).first() to be visible\u001b[22m\n",
-                        "stack": "TimeoutError: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Other Info/i).filter({ visible: true }).first() to be visible\u001b[22m\n\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:751:18\n    at CoBorrowerFlowPage.fillOtherInfo (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:747:9)\n    at runCoBorrowerFlow (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\Co-Borrower\\coborrower.spec.js:141:5)\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\Co-Borrower\\coborrower.spec.js:223:9",
+                        "message": "TimeoutError: locator.waitFor: Timeout 300000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Finalizing pre-qualification').first() to be hidden\u001b[22m\n\u001b[2m    41 × locator resolved to visible <p class=\"MuiTypography-root MuiTypography-body1 css-yjbx3s\">Finalizing pre-qualification</p>\u001b[22m\n\u001b[2m    552 × locator resolved to visible <p class=\"MuiTypography-root MuiTypography-body1 css-17fher9\">Finalizing pre-qualification</p>\u001b[22m\n",
+                        "stack": "TimeoutError: locator.waitFor: Timeout 300000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Finalizing pre-qualification').first() to be hidden\u001b[22m\n\u001b[2m    41 × locator resolved to visible <p class=\"MuiTypography-root MuiTypography-body1 css-yjbx3s\">Finalizing pre-qualification</p>\u001b[22m\n\u001b[2m    552 × locator resolved to visible <p class=\"MuiTypography-root MuiTypography-body1 css-17fher9\">Finalizing pre-qualification</p>\u001b[22m\n\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\NewApplicationPage.js:526:50\n    at withProcessAppRetry (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\utils\\routeHelpers.js:22:9)\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\NewApplicationPage.js:497:13\n    at NewApplicationPage.clickNext (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\NewApplicationPage.js:488:9)\n    at runLOPreQual (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\invitation-completion.spec.js:67:5)\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\invitation-completion.spec.js:112:13\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\invitation-completion.spec.js:111:9",
                         "location": {
-                          "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js",
-                          "column": 18,
-                          "line": 751
+                          "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\NewApplicationPage.js",
+                          "column": 50,
+                          "line": 526
                         },
-                        "snippet": "\u001b[90m   at \u001b[39m..\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:751\n\n\u001b[0m \u001b[90m 749 |\u001b[39m                 \u001b[33m.\u001b[39mfilter({ visible\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m })\n \u001b[90m 750 |\u001b[39m                 \u001b[33m.\u001b[39mfirst()\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 751 |\u001b[39m                 \u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m30000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 752 |\u001b[39m\n \u001b[90m 753 |\u001b[39m             \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39m\u001b[33m#\u001b[39mfillMaritalStatusAndTitleOwnersIfPresent(data)\u001b[33m;\u001b[39m\n \u001b[90m 754 |\u001b[39m\u001b[0m"
+                        "snippet": "\u001b[90m   at \u001b[39m..\\pages\\Pre-Qual Manual\\NewApplicationPage.js:526\n\n\u001b[0m \u001b[90m 524 |\u001b[39m                     \u001b[90m// 300s — raised from 200s after REMN prod exceeded that ceiling;\u001b[39m\n \u001b[90m 525 |\u001b[39m                     \u001b[90m// its finalization backend runs slower than HB prod/staging.\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 526 |\u001b[39m                     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mfinalizingHeading\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'hidden'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m300000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 527 |\u001b[39m                 }\n \u001b[90m 528 |\u001b[39m             })\u001b[33m;\u001b[39m\n \u001b[90m 529 |\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
                           "location": {
-                            "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js",
-                            "column": 18,
-                            "line": 751
+                            "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\NewApplicationPage.js",
+                            "column": 50,
+                            "line": 526
                           },
-                          "message": "TimeoutError: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Other Info/i).filter({ visible: true }).first() to be visible\u001b[22m\n\n\n\u001b[90m   at \u001b[39m..\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:751\n\n\u001b[0m \u001b[90m 749 |\u001b[39m                 \u001b[33m.\u001b[39mfilter({ visible\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m })\n \u001b[90m 750 |\u001b[39m                 \u001b[33m.\u001b[39mfirst()\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 751 |\u001b[39m                 \u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m30000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 752 |\u001b[39m\n \u001b[90m 753 |\u001b[39m             \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39m\u001b[33m#\u001b[39mfillMaritalStatusAndTitleOwnersIfPresent(data)\u001b[33m;\u001b[39m\n \u001b[90m 754 |\u001b[39m\u001b[0m\n\u001b[2m    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:751:18\u001b[22m\n\u001b[2m    at CoBorrowerFlowPage.fillOtherInfo (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:747:9)\u001b[22m\n\u001b[2m    at runCoBorrowerFlow (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\Co-Borrower\\coborrower.spec.js:141:5)\u001b[22m\n\u001b[2m    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\Co-Borrower\\coborrower.spec.js:223:9\u001b[22m"
+                          "message": "TimeoutError: locator.waitFor: Timeout 300000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Finalizing pre-qualification').first() to be hidden\u001b[22m\n\u001b[2m    41 × locator resolved to visible <p class=\"MuiTypography-root MuiTypography-body1 css-yjbx3s\">Finalizing pre-qualification</p>\u001b[22m\n\u001b[2m    552 × locator resolved to visible <p class=\"MuiTypography-root MuiTypography-body1 css-17fher9\">Finalizing pre-qualification</p>\u001b[22m\n\n\n   at ..\\pages\\Pre-Qual Manual\\NewApplicationPage.js:526\n\n  524 |                     // 300s — raised from 200s after REMN prod exceeded that ceiling;\n  525 |                     // its finalization backend runs slower than HB prod/staging.\n> 526 |                     await this.finalizingHeading.waitFor({ state: 'hidden', timeout: 300000 });\n      |                                                  ^\n  527 |                 }\n  528 |             });\n  529 |\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\NewApplicationPage.js:526:50\n    at withProcessAppRetry (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\utils\\routeHelpers.js:22:9)\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\NewApplicationPage.js:497:13\n    at NewApplicationPage.clickNext (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\NewApplicationPage.js:488:9)\n    at runLOPreQual (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\invitation-completion.spec.js:67:5)\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\invitation-completion.spec.js:112:13\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\invitation-completion.spec.js:111:9"
                         }
                       ],
                       "stdout": [],
@@ -224,166 +230,238 @@
                       "retry": 0,
                       "steps": [
                         {
-                          "title": "Open shareable app link in new tab",
-                          "duration": 2393
-                        },
-                        {
-                          "title": "Click Get Started Now",
-                          "duration": 981,
+                          "title": "A1 — LO creates the pre-qual",
+                          "duration": 307187,
+                          "error": {
+                            "message": "TimeoutError: locator.waitFor: Timeout 300000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Finalizing pre-qualification').first() to be hidden\u001b[22m\n\u001b[2m    41 × locator resolved to visible <p class=\"MuiTypography-root MuiTypography-body1 css-yjbx3s\">Finalizing pre-qualification</p>\u001b[22m\n\u001b[2m    552 × locator resolved to visible <p class=\"MuiTypography-root MuiTypography-body1 css-17fher9\">Finalizing pre-qualification</p>\u001b[22m\n",
+                            "stack": "TimeoutError: locator.waitFor: Timeout 300000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Finalizing pre-qualification').first() to be hidden\u001b[22m\n\u001b[2m    41 × locator resolved to visible <p class=\"MuiTypography-root MuiTypography-body1 css-yjbx3s\">Finalizing pre-qualification</p>\u001b[22m\n\u001b[2m    552 × locator resolved to visible <p class=\"MuiTypography-root MuiTypography-body1 css-17fher9\">Finalizing pre-qualification</p>\u001b[22m\n\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\NewApplicationPage.js:526:50\n    at withProcessAppRetry (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\utils\\routeHelpers.js:22:9)\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\NewApplicationPage.js:497:13\n    at NewApplicationPage.clickNext (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\NewApplicationPage.js:488:9)\n    at runLOPreQual (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\invitation-completion.spec.js:67:5)\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\invitation-completion.spec.js:112:13\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\invitation-completion.spec.js:111:9",
+                            "location": {
+                              "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\NewApplicationPage.js",
+                              "column": 50,
+                              "line": 526
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\Pre-Qual Manual\\NewApplicationPage.js:526\n\n\u001b[0m \u001b[90m 524 |\u001b[39m                     \u001b[90m// 300s — raised from 200s after REMN prod exceeded that ceiling;\u001b[39m\n \u001b[90m 525 |\u001b[39m                     \u001b[90m// its finalization backend runs slower than HB prod/staging.\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 526 |\u001b[39m                     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mfinalizingHeading\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'hidden'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m300000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 527 |\u001b[39m                 }\n \u001b[90m 528 |\u001b[39m             })\u001b[33m;\u001b[39m\n \u001b[90m 529 |\u001b[39m\u001b[0m"
+                          },
                           "steps": [
                             {
-                              "title": "Help desk widget — dismiss proactive bubble",
-                              "duration": 915
+                              "title": "Click the start app button",
+                              "duration": 1194
+                            },
+                            {
+                              "title": "Click the start pre-qual manually button",
+                              "duration": 2310
+                            },
+                            {
+                              "title": "Fill application details",
+                              "duration": 3347,
+                              "steps": [
+                                {
+                                  "title": "Fill property address",
+                                  "duration": 758
+                                },
+                                {
+                                  "title": "Fill job details",
+                                  "duration": 367
+                                }
+                              ]
+                            },
+                            {
+                              "title": "Click Next to proceed to Mortgages & Liens",
+                              "duration": 300330,
+                              "error": {
+                                "message": "TimeoutError: locator.waitFor: Timeout 300000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Finalizing pre-qualification').first() to be hidden\u001b[22m\n\u001b[2m    41 × locator resolved to visible <p class=\"MuiTypography-root MuiTypography-body1 css-yjbx3s\">Finalizing pre-qualification</p>\u001b[22m\n\u001b[2m    552 × locator resolved to visible <p class=\"MuiTypography-root MuiTypography-body1 css-17fher9\">Finalizing pre-qualification</p>\u001b[22m\n",
+                                "stack": "TimeoutError: locator.waitFor: Timeout 300000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Finalizing pre-qualification').first() to be hidden\u001b[22m\n\u001b[2m    41 × locator resolved to visible <p class=\"MuiTypography-root MuiTypography-body1 css-yjbx3s\">Finalizing pre-qualification</p>\u001b[22m\n\u001b[2m    552 × locator resolved to visible <p class=\"MuiTypography-root MuiTypography-body1 css-17fher9\">Finalizing pre-qualification</p>\u001b[22m\n\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\NewApplicationPage.js:526:50\n    at withProcessAppRetry (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\utils\\routeHelpers.js:22:9)\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\NewApplicationPage.js:497:13\n    at NewApplicationPage.clickNext (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\NewApplicationPage.js:488:9)\n    at runLOPreQual (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\invitation-completion.spec.js:67:5)\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\invitation-completion.spec.js:112:13\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\invitation-completion.spec.js:111:9",
+                                "location": {
+                                  "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\NewApplicationPage.js",
+                                  "column": 50,
+                                  "line": 526
+                                },
+                                "snippet": "\u001b[90m   at \u001b[39m..\\pages\\Pre-Qual Manual\\NewApplicationPage.js:526\n\n\u001b[0m \u001b[90m 524 |\u001b[39m                     \u001b[90m// 300s — raised from 200s after REMN prod exceeded that ceiling;\u001b[39m\n \u001b[90m 525 |\u001b[39m                     \u001b[90m// its finalization backend runs slower than HB prod/staging.\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 526 |\u001b[39m                     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mfinalizingHeading\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'hidden'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m300000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 527 |\u001b[39m                 }\n \u001b[90m 528 |\u001b[39m             })\u001b[33m;\u001b[39m\n \u001b[90m 529 |\u001b[39m\u001b[0m"
+                              }
                             }
                           ]
-                        },
-                        {
-                          "title": "Assert no blocking error on: Landing page",
-                          "duration": 25
-                        },
-                        {
-                          "title": "Select property type",
-                          "duration": 891
-                        },
-                        {
-                          "title": "Assert no blocking error on: Property type",
-                          "duration": 10
-                        },
-                        {
-                          "title": "Select loan purpose",
-                          "duration": 1366
-                        },
-                        {
-                          "title": "Assert no blocking error on: Loan purpose",
-                          "duration": 9
-                        },
-                        {
-                          "title": "Fill property info",
-                          "duration": 32940
-                        },
-                        {
-                          "title": "Assert no blocking error on: Property info",
-                          "duration": 11
-                        },
-                        {
-                          "title": "Fill about yourself",
-                          "duration": 274
-                        },
-                        {
-                          "title": "Assert no blocking error on: About yourself",
-                          "duration": 15
-                        },
-                        {
-                          "title": "Fill credit check fields (TWN)",
-                          "duration": 23027
-                        },
-                        {
-                          "title": "Assert no blocking error on: Primary credit check",
-                          "duration": 12
-                        },
-                        {
-                          "title": "Fill primary borrower income sources",
-                          "duration": 270
-                        },
-                        {
-                          "title": "Assert no blocking error on: Primary income sources",
-                          "duration": 13
-                        },
-                        {
-                          "title": "Fill Review & Confirm consents",
-                          "duration": 1159
-                        },
-                        {
-                          "title": "Assert no blocking error on: Review & Confirm consents",
-                          "duration": 14
-                        },
-                        {
-                          "title": "Wait for credit-check processing to complete",
-                          "duration": 885
-                        },
-                        {
-                          "title": "Assert no blocking error on: Credit check processing",
-                          "duration": 8
-                        },
-                        {
-                          "title": "Fill Application Participants page",
-                          "duration": 94735
-                        },
-                        {
-                          "title": "Assert no blocking error on: Application Participants (Married)",
-                          "duration": 13
-                        },
-                        {
-                          "title": "Fill Mortgages & Liens (DTC)",
-                          "duration": 14842
-                        },
-                        {
-                          "title": "Assert no blocking error on: Mortgages & Liens",
-                          "duration": 10
-                        },
-                        {
-                          "title": "Wait for offer calculation / underwriting",
-                          "duration": 10021
-                        },
-                        {
-                          "title": "Assert no blocking error on: Offer processing",
-                          "duration": 8
-                        },
-                        {
-                          "title": "Verify co-borrower flow reached completion",
-                          "duration": 132782
-                        },
-                        {
-                          "title": "Assert no blocking error on: Pre-qual offer page",
-                          "duration": 10
-                        },
-                        {
-                          "title": "Fill Other Info page (post-offer)",
-                          "duration": 30016,
-                          "error": {
-                            "message": "TimeoutError: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Other Info/i).filter({ visible: true }).first() to be visible\u001b[22m\n",
-                            "stack": "TimeoutError: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/Other Info/i).filter({ visible: true }).first() to be visible\u001b[22m\n\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:751:18\n    at CoBorrowerFlowPage.fillOtherInfo (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:747:9)\n    at runCoBorrowerFlow (D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\Co-Borrower\\coborrower.spec.js:141:5)\n    at D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\tests\\Borrower Flow\\Co-Borrower\\coborrower.spec.js:223:9",
-                            "location": {
-                              "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js",
-                              "column": 18,
-                              "line": 751
-                            },
-                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js:751\n\n\u001b[0m \u001b[90m 749 |\u001b[39m                 \u001b[33m.\u001b[39mfilter({ visible\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m })\n \u001b[90m 750 |\u001b[39m                 \u001b[33m.\u001b[39mfirst()\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 751 |\u001b[39m                 \u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m30000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 752 |\u001b[39m\n \u001b[90m 753 |\u001b[39m             \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39m\u001b[33m#\u001b[39mfillMaritalStatusAndTitleOwnersIfPresent(data)\u001b[33m;\u001b[39m\n \u001b[90m 754 |\u001b[39m\u001b[0m"
-                          }
                         }
                       ],
-                      "startTime": "2026-07-06T17:36:59.254Z",
+                      "startTime": "2026-07-07T17:56:27.825Z",
                       "annotations": [],
                       "attachments": [
                         {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\test-results\\Borrower Flow-Co-Borrower--4d1f7--blocking-errors-end-to-end-chromium-lo\\test-failed-2.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\test-results\\Borrower Flow-Co-Borrower--4d1f7--blocking-errors-end-to-end-chromium-lo\\test-failed-1.png"
+                          "path": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\test-results\\Borrower Flow-invitation-c-5a39f-d-completes-the-application-chromium-lo\\test-failed-1.png"
                         },
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
-                          "path": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\test-results\\Borrower Flow-Co-Borrower--4d1f7--blocking-errors-end-to-end-chromium-lo\\error-context.md"
+                          "path": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\test-results\\Borrower Flow-invitation-c-5a39f-d-completes-the-application-chromium-lo\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\test-results\\Borrower Flow-invitation-c-5a39f-d-completes-the-application-chromium-lo\\trace.zip"
                         }
                       ],
                       "errorLocation": {
-                        "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\CoBorrowerFlowPage.js",
-                        "column": 18,
-                        "line": 751
+                        "file": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\pages\\Pre-Qual Manual\\NewApplicationPage.js",
+                        "column": 50,
+                        "line": 526
                       }
                     }
                   ],
                   "status": "unexpected"
                 }
               ],
-              "id": "f810c02d4554ff4f0e78-5eb7e9bafec89b712b6b",
-              "file": "Borrower Flow/Co-Borrower/coborrower.spec.js",
-              "line": 211,
+              "id": "d6314f15c9a5009d2927-3d8c01ada4ab6413d9a5",
+              "file": "Borrower Flow/invitation-completion.spec.js",
+              "line": 94,
+              "column": 9
+            },
+            {
+              "title": "Scenario B: invited co-borrower opens the email and completes their portion",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 1260000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-lo",
+                  "projectName": "chromium-lo",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 156685,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "B1 — LO creates the pre-qual with co-borrower",
+                          "duration": 125466,
+                          "steps": [
+                            {
+                              "title": "Click the start app button",
+                              "duration": 1254
+                            },
+                            {
+                              "title": "Click the start pre-qual manually button",
+                              "duration": 2317
+                            },
+                            {
+                              "title": "Fill application details",
+                              "duration": 8249,
+                              "steps": [
+                                {
+                                  "title": "Fill property address",
+                                  "duration": 798
+                                },
+                                {
+                                  "title": "Fill job details",
+                                  "duration": 384
+                                },
+                                {
+                                  "title": "Fill co-borrower details",
+                                  "duration": 4876
+                                }
+                              ]
+                            },
+                            {
+                              "title": "Click Next to proceed to Mortgages & Liens",
+                              "duration": 103072,
+                              "steps": [
+                                {
+                                  "title": "Close soft credit consent PDF tab(s)",
+                                  "duration": 1
+                                }
+                              ]
+                            },
+                            {
+                              "title": "Fill mortgages & liens",
+                              "duration": 307
+                            },
+                            {
+                              "title": "Click Next to proceed to Offer Review",
+                              "duration": 6162
+                            },
+                            {
+                              "title": "Acknowledge DTI above allowable limit (if required)",
+                              "duration": 162
+                            },
+                            {
+                              "title": "Click Next to proceed to Consents",
+                              "duration": 1160,
+                              "steps": [
+                                {
+                                  "title": "Help desk widget — dismiss proactive bubble",
+                                  "duration": 210
+                                }
+                              ]
+                            },
+                            {
+                              "title": "Check all Loan Officer Certifications",
+                              "duration": 594
+                            },
+                            {
+                              "title": "Fill Broker MLO Name",
+                              "duration": 157
+                            },
+                            {
+                              "title": "Verify signature fields",
+                              "duration": 11
+                            },
+                            {
+                              "title": "Click Next to submit consents",
+                              "duration": 909
+                            },
+                            {
+                              "title": "Close confirmation and return to portal",
+                              "duration": 1032
+                            }
+                          ]
+                        },
+                        {
+                          "title": "B — co-borrower invite: open invitation email and extract the invite link",
+                          "duration": 9153
+                        },
+                        {
+                          "title": "B3 — review invitation and start the application",
+                          "duration": 2791
+                        },
+                        {
+                          "title": "B4 — co-borrower account setup",
+                          "duration": 5299,
+                          "steps": [
+                            {
+                              "title": "Complete invited-borrower account setup",
+                              "duration": 5298
+                            }
+                          ]
+                        },
+                        {
+                          "title": "B5 — declare income and consent on Check Your Eligibility",
+                          "duration": 7369
+                        }
+                      ],
+                      "startTime": "2026-07-07T18:01:44.719Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "D:\\Projects\\Automation\\Hitch-Playwright\\homebridge\\test-results\\Borrower Flow-invitation-c-b2035-and-completes-their-portion-chromium-lo\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d6314f15c9a5009d2927-f80610a4d23d068fd3bd",
+              "file": "Borrower Flow/invitation-completion.spec.js",
+              "line": 194,
               "column": 9
             }
           ]
@@ -393,9 +471,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-07-06T17:36:32.708Z",
-    "duration": 377576.213,
-    "expected": 1,
+    "startTime": "2026-07-07T17:56:00.046Z",
+    "duration": 504693.107,
+    "expected": 2,
     "skipped": 0,
     "unexpected": 1,
     "flaky": 0

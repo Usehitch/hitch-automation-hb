@@ -24,5 +24,5 @@ export const SHARED = {
     // -- Borrower ----------------------------------------------------------
     firstName:      'Andy',
     lastName:       'America',
-    phoneNumber:    '5121231113',  // Method Fi dev sandbox phone
+    phoneNumber:    '3855130513',  // Method Fi dev sandbox phone
 };

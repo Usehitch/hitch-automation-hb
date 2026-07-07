@@ -4,6 +4,11 @@ class PreQualManualPage {
     constructor(page) {
         this.page = page;
 
+        // Fresh browser contexts opened for the borrower DTC flow (see
+        // openShareableLinkInNewTab). Closed in the preQualManualPage fixture
+        // teardown so they don't leak across tests.
+        this.borrowerContexts = [];
+
         // -- Portal header actions --------------------------------------------
         this.startApp_btn = this.page.getByRole("button", { name: "Start App" });
         this.sharableAppLinkBtn = this.page.getByRole("button", { name: /Sharable App Link/i })
@@ -56,8 +61,17 @@ class PreQualManualPage {
             await linkText.waitFor({ state: 'visible', timeout: 10000 });
             const shareableUrl = (await linkText.textContent()).trim();
 
-            // Open in a new tab
-            const newTab = await this.page.context().newPage();
+            // Open the borrower link in a FRESH, unauthenticated context. A real
+            // borrower/co-borrower is not signed in as the MLO. Opening it as a
+            // new tab in the LO's context inherits the MLO session cookies, and
+            // the DTC app then redirects the tab to /portal (My Loans) partway
+            // through the flow — surfacing as unrelated timeouts (the loan-purpose
+            // card or the Demographics opt-out never appearing) while the page was
+            // actually the MLO dashboard. Tracked and closed in the
+            // preQualManualPage fixture teardown (closeBorrowerContexts).
+            const borrowerContext = await this.page.context().browser().newContext();
+            this.borrowerContexts.push(borrowerContext);
+            const newTab = await borrowerContext.newPage();
             await newTab.goto(`https://${shareableUrl.replace(/^https?:\/\//, '')}`);
             await newTab.waitForLoadState('domcontentloaded');
 
@@ -67,6 +81,14 @@ class PreQualManualPage {
 
             return newTab;
         });
+    };
+
+    /** Close any borrower contexts opened via openShareableLinkInNewTab. */
+    async closeBorrowerContexts() {
+        for (const ctx of this.borrowerContexts) {
+            await ctx.close().catch(() => { });
+        }
+        this.borrowerContexts = [];
     };
 };
 

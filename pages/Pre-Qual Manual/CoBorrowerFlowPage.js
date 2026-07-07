@@ -134,8 +134,12 @@ class CoBorrowerFlowPage {
         //
         // Both branches require error-keyword text so only genuine error
         // messages are matched.
+        // NB: the error phrase is "could not verify your identity" — do NOT match
+        // a bare "verify your identity", or the legit Identity Verification page
+        // subtitle ("Verify your identity to continue your application") triggers
+        // a false positive. "could not verify" and "unable" cover the real errors.
         this.errorBanner = this.page.locator('[role="alert"]').filter({
-            hasText: /error|failed|invalid|blocked|went wrong|not allowed|unable|could not verify|verify your identity/i,
+            hasText: /error|failed|invalid|blocked|went wrong|not allowed|unable|could not verify/i,
         }).first();
         this.errorDialog = this.page.locator('[role="dialog"]').filter({
             hasText: /error|sorry|failed|problem|issue|went wrong/i,
@@ -1059,6 +1063,61 @@ class CoBorrowerFlowPage {
     // -------------------------------------------------------------------------
 
     /**
+     * Post-Demographics environment divergence (feature-detected, not env-gated).
+     *
+     * Prod inserts an Identity Verification step (/app/identity-verification —
+     * "Verify ID Instantly" via Plaid IDV, or "Upload ID Manually") between
+     * Demographics and Income Verification. Staging routes straight to Income
+     * Verification. Races the two so we can branch without hanging the full
+     * test timeout on whichever page never appears. Returns true if Identity
+     * Verification was reached (prod). Wide window — prod is slow to submit
+     * Demographics (hard-credit + finalization) before routing on.
+     */
+    async reachedIdentityVerification() {
+        return await test.step('Detect Identity Verification (prod) vs Income Verification (staging)', async () => {
+            const TIMEOUT = 180000;
+
+            const identitySignal = Promise.any([
+                this.page.waitForURL(/identity-verification/i, { timeout: TIMEOUT }),
+                this.page.getByText(/Verify ID Instantly|Upload ID Manually/i).first()
+                    .waitFor({ state: 'visible', timeout: TIMEOUT }),
+            ]).then(() => 'identity');
+
+            const incomeSignal = Promise.any([
+                this.page.waitForURL(/income-verification/i, { timeout: TIMEOUT }),
+                this.page.getByText(/Login to Your Company Payroll Account/i).first()
+                    .waitFor({ state: 'visible', timeout: TIMEOUT }),
+            ]).then(() => 'income');
+
+            // First side to settle wins; if neither appears, treat as staging so
+            // the downstream income-verif step surfaces a clear failure.
+            const outcome = await Promise.any([identitySignal, incomeSignal])
+                .catch(() => 'timeout');
+            return outcome === 'identity';
+        });
+    }
+
+    /**
+     * Prod terminal assertion: the borrower reached Identity Verification. Its
+     * Plaid IDV (document/selfie capture) and manual ID upload can't be driven
+     * deterministically in an automated run, so the co-borrower test ends here
+     * on prod. Assert both verification methods are offered (main-panel labels,
+     * not the sidebar step name) to confirm we're genuinely on the step.
+     */
+    async assertIdentityVerificationReached() {
+        await test.step('Assert Identity Verification reached', async () => {
+            await expect(
+                this.page.getByText(/Verify ID Instantly/i).first()
+            ).toBeVisible({ timeout: 15000 });
+            await expect(
+                this.page.getByText(/Upload ID Manually/i).first()
+            ).toBeVisible({ timeout: 15000 });
+        });
+    }
+
+    // -------------------------------------------------------------------------
+
+    /**
      * Prod-path terminal assertion: after the DTC app submits it redirects to
      * the portal with the application in the "Pending MLO Certification" bucket.
      * Asserts that bucket is shown (no borrower PII asserted — the bucket label
@@ -1960,6 +2019,15 @@ class CoBorrowerFlowPage {
             });
             await continueToApp.waitFor({ state: 'visible', timeout: 10000 });
             await continueToApp.scrollIntoViewIfNeeded();
+
+            // The button stays DISABLED until the offer finishes finalizing in
+            // the background, which can lag well past the pre-qual banner.
+            // Force-clicking a disabled button silently no-ops, so the flow stalls
+            // and fails much later at "Ethnicity not found" on Demographics. Wait
+            // for enabled so we either ride out slow finalization or, on a genuine
+            // stall (coborrower-offer-flaky product issue), fail here with an
+            // accurate cause instead of a misleading downstream timeout.
+            await expect(continueToApp).toBeEnabled({ timeout: 120000 });
 
             // "CONTINUE TO APPLICATION" opens the full application in a new tab.
             // Listen for the new page BEFORE clicking so we don't miss it.

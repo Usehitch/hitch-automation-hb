@@ -119,22 +119,37 @@ class NewApplicationPage {
             .last()
             .getByRole('button', { name: 'Expand' });
 
-        // The co-borrower choice is a Yes/No radio group. Scope to the Co-Borrower
-        // accordion (the innermost div holding both the label and a radio) so its
-        // "Yes"/"No" don't collide with the trust Yes/No radios. Only valid once
-        // the section is expanded — callers must expand first.
-        // hasNot the trust question: if the co-borrower radios ever disappear
-        // (as happened in the 2026-07 prod redesign), the innermost div holding
-        // both a "Co-Borrower" label and a Yes radio is a page-level wrapper
-        // that also contains the trust radiogroup — without this filter the
-        // check() lands on the trust "Yes" and silently flips that answer.
-        this.coBorrowerSection = this.page.locator('div')
+        // Staging renders the co-borrower choice as a Yes/No radio group. Scope
+        // it to the Co-Borrower accordion (innermost div holding the label and a
+        // Yes radio), excluding the trust radiogroup so "Yes"/"No" don't collide
+        // with the trust Yes/No. On the 2026-07 prod redesign this control is a
+        // descriptive toggle button instead (see coBorrowerYesToggleBtn), so on
+        // prod this radio scope matches nothing and the toggle path is taken.
+        const coBorrowerRadioScope = this.page.locator('div')
             .filter({ has: this.page.getByText('Co-Borrower', { exact: true }) })
             .filter({ has: this.page.getByRole('radio', { name: 'Yes' }) })
             .filter({ hasNot: this.page.getByText('Is the HELOC property currently held in a trust?') })
             .last();
-        this.coBorrowerYesRadio = this.coBorrowerSection.getByRole('radio', { name: 'Yes' });
-        this.coBorrowerNoRadio = this.coBorrowerSection.getByRole('radio', { name: 'No' });
+        this.coBorrowerYesRadio = coBorrowerRadioScope.getByRole('radio', { name: 'Yes' });
+        this.coBorrowerNoRadio = coBorrowerRadioScope.getByRole('radio', { name: 'No' });
+
+        // The co-borrower sub-form fields (email/SSN/DOB/phone have no testid).
+        // Scope them to the co-borrower accordion, identified as the innermost div
+        // holding BOTH the "Co-Borrower" header and the first-name field (a stable
+        // testid present only in this sub-form). Requiring both is what forces the
+        // match up to the accordion — anchoring on the testid alone collapses to
+        // the tight wrapper around the first-name input, which excludes email/etc.
+        // Anchoring on a field rather than the Yes/No control keeps this working
+        // whether that control is a radio (staging) or a toggle (prod). The old
+        // "has a Yes radio" anchor broke on prod: the only remaining "Yes" radio
+        // is the trust question, which the hasNot filter then excludes, leaving
+        // the section matching nothing. Only valid once Yes is selected and the
+        // fields have rendered.
+        this.coBorrowerSection = this.page.locator('div')
+            .filter({ has: this.page.getByText('Co-Borrower', { exact: true }) })
+            .filter({ has: this.page.getByTestId('coborrowerFirstName') })
+            .filter({ hasNot: this.page.getByText('Is the HELOC property currently held in a trust?') })
+            .last();
 
         // 2026-07 prod redesign: the co-borrower Yes/No radios became descriptive
         // toggle buttons ("Yes I have a co-borrower who will apply with me" /
@@ -151,10 +166,11 @@ class NewApplicationPage {
         // Remaining fields have no testid, so match them by label scoped to the
         // co-borrower accordion (which wraps the whole sub-form). This isolates
         // them from the identically-labelled main-applicant fields, which live in
-        // a separate accordion. Note the SSN field is labelled "SSN" (not
-        // "Social Security Number").
+        // a separate accordion. The SSN field's label differs by environment
+        // (see coBorrowerSsnInput below).
         this.coBorrowerEmailInput = this.coBorrowerSection.getByLabel(/Email Address/);
-        this.coBorrowerSsnInput = this.coBorrowerSection.getByLabel(/^SSN/);
+        // Prod labels this "Social Security Number"; staging uses "SSN".
+        this.coBorrowerSsnInput = this.coBorrowerSection.getByLabel(/Social Security Number|^SSN/);
         this.coBorrowerDobInput = this.coBorrowerSection.getByLabel(/Date of Birth/);
         this.coBorrowerPhoneInput = this.coBorrowerSection.getByLabel(/Phone Number/);
 

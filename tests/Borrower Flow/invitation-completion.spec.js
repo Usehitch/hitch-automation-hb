@@ -174,7 +174,16 @@ test.describe('LO Invitation — completion flows', () => {
                 }
             });
 
-            await test.step('A7 — borrower reaches Income Verification', async () => {
+            await test.step('A7 — borrower reaches Income Verification (or Identity Verification on prod)', async () => {
+                // Prod inserts an Identity Verification step (Plaid IDV / manual
+                // ID upload) between Demographics and Income Verification that
+                // can't be driven deterministically. On prod, assert we reached
+                // it and stop here; staging has no such step and shows the income
+                // verification options.
+                if (await flow.reachedIdentityVerification()) {
+                    await flow.assertIdentityVerificationReached();
+                    return;
+                }
                 await flow.verifyIncomeVerificationOptions();
             });
         } finally {

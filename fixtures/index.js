@@ -45,7 +45,10 @@ export const test = base.extend({
     },
 
     preQualManualPage: async ({ page }, use) => {
-        await use(new PreQualManualPage(page));
+        const pom = new PreQualManualPage(page);
+        await use(pom);
+        // Tear down any fresh borrower contexts opened for the DTC flow.
+        await pom.closeBorrowerContexts();
     },
 
     newApplicationPage: async ({ page }, use) => {

@@ -147,15 +147,19 @@ async function runCoBorrowerFlow(preQualManualPage, data) {
     await flow.fillDemographics();
     await flow.assertNoBlockingError('Demographics');
 
-    // -- Post-Demographics environment divergence -----------------------------
-    // On prod the DTC app submits after Demographics and redirects to the portal
-    // (application → "Pending MLO Certification"); the borrower income-verif /
-    // funding / loan-hub / co-borrower-invite journey does not follow. Accept
-    // that: assert submission and end the test green. On staging the borrower
-    // continues to Income Verification, so run steps 16–20 as normal.
-    if (await flow.didSubmitToPortalAfterDemographics()) {
-        await flow.assertApplicationSubmittedToPortal();
-        await flow.assertNoBlockingError('Application submitted (prod)');
+    // -- Post-Demographics environment divergence (feature-detected) ----------
+    // Prod inserts an Identity Verification step (/app/identity-verification —
+    // Plaid IDV or manual ID upload) between Demographics and Income Verification.
+    // Its document/selfie capture can't be driven deterministically in an
+    // automated run, so on prod we assert we reached Identity Verification and
+    // end the test green there. Staging has no such step and continues to Income
+    // Verification, so run steps 16–20 as normal.
+    // (Earlier the borrower tab ran in the MLO's authenticated context and got
+    // bounced to the portal here — fixed by opening it in a fresh unauthenticated
+    // context in openShareableLinkInNewTab.)
+    if (await flow.reachedIdentityVerification()) {
+        await flow.assertIdentityVerificationReached();
+        await flow.assertNoBlockingError('Identity Verification (prod)');
         return;
     }
 

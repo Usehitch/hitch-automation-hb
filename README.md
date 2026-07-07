@@ -8,6 +8,9 @@ End-to-end tests for the **Hitch Broker Portal** (HomeBridge), covering the full
 
 > Full per-spec test counts and the project (broker vs LO session) split live in
 > [TEST-COVERAGE.md](TEST-COVERAGE.md). The tree below is the file layout.
+>
+> How to triage a failing test (Low / Medium / High) is in
+> [SEVERITY-LEVELS.md](SEVERITY-LEVELS.md).
 
 ```
 homebridge/

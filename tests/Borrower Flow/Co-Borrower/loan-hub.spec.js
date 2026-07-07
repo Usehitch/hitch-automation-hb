@@ -101,6 +101,18 @@ async function driveToLoanHub(preQualManualPage, data) {
     await flow.fillDemographics();
     await flow.assertNoBlockingError('Demographics');
 
+    // Prod inserts an Identity Verification step (Plaid IDV / manual ID upload)
+    // after Demographics that can't be driven deterministically, and it gates
+    // Income Verification → Funding → Loan Hub. On prod we assert we reached it
+    // and stop (flow.stoppedAtIdentity) — the caller skips the Loan Hub checks.
+    // Staging has no such step and continues.
+    if (await flow.reachedIdentityVerification()) {
+        await flow.assertIdentityVerificationReached();
+        await flow.assertNoBlockingError('Identity Verification (prod)');
+        flow.stoppedAtIdentity = true;
+        return flow;
+    }
+
     // -- Step 16: Income Verification (Plaid sandbox) ------------------------
     await flow.fillIncomeVerification();
     await flow.assertNoBlockingError('Income Verification');
@@ -140,6 +152,10 @@ test.describe('Borrower Flow — Loan Hub', () => {
         const data = makeMarriedCoBorrowerData();
 
         const flow = await driveToLoanHub(preQualManualPage, data);
+
+        // Prod gates the Loan Hub behind the un-automatable Identity Verification
+        // step; driveToLoanHub asserts it was reached and stops there.
+        if (flow.stoppedAtIdentity) return;
 
         // -- Loan Hub landed (welcome + In Process) — confirmed DOM ----------
         await flow.verifyLoanHubLanded();

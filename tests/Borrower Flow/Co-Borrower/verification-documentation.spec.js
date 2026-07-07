@@ -111,6 +111,17 @@ async function driveToIncomeVerification(preQualManualPage, data) {
     await flow.fillDemographics();
     await flow.assertNoBlockingError('Demographics');
 
+    // Prod inserts an Identity Verification step (Plaid IDV / manual ID upload)
+    // after Demographics that can't be driven deterministically, and it gates
+    // the Income Verification page this test targets. On prod we assert we
+    // reached it and stop (flow.stoppedAtIdentity) — the caller skips the
+    // income-verification checks. Staging has no such step and continues.
+    if (await flow.reachedIdentityVerification()) {
+        await flow.assertIdentityVerificationReached();
+        await flow.assertNoBlockingError('Identity Verification (prod)');
+        flow.stoppedAtIdentity = true;
+    }
+
     return flow;
 }
 
@@ -137,6 +148,11 @@ test.describe('Borrower Flow — Verification and Documentation', () => {
         const data = makeMarriedCoBorrowerData();
 
         const flow = await driveToIncomeVerification(preQualManualPage, data);
+
+        // Prod gates income verification behind the un-automatable Identity
+        // Verification step; driveToIncomeVerification asserts it was reached
+        // and stops there.
+        if (flow.stoppedAtIdentity) return;
 
         // -- Verification & Documentation: all three options are offered -----
         await flow.verifyIncomeVerificationOptions();
